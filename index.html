@@ -29,16 +29,16 @@
             justify-content: center;
             height: 100%;
         }
-        .selection-btn svg {
+        .selection-btn svg { /* For weather icons */
             transition: all 0.2s ease-in-out;
-            fill: #9ca3af;
+            fill: #9ca3af; /* gray-400 */
         }
         .selection-btn:hover svg {
             fill: white;
         }
         .selection-btn.active {
-            background-color: #3b82f6;
-            border-color: #60a5fa;
+            background-color: #3b82f6; /* blue-600 */
+            border-color: #60a5fa; /* blue-400 */
             color: white;
         }
         .selection-btn.active svg {
@@ -54,6 +54,13 @@
         .selection-btn.active img {
             filter: grayscale(0%) brightness(1);
         }
+        .rec-button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
         #results {
             transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
             opacity: 0;
@@ -63,75 +70,60 @@
             opacity: 1;
             transform: translateY(0);
         }
-        /* Styles for the integrated rating system */
-        .bait-card {
-            background-color: #374151; /* gray-700 */
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            text-align: center;
-        }
-        .star-rating svg {
-            width: 1rem;
-            height: 1rem;
-            cursor: pointer;
-            transition: color 0.2s;
-            color: #4b5563; /* gray-600 */
-        }
-        .star-rating:hover svg {
-            color: #facc15; /* yellow-400 */
-        }
-        .star-rating svg.hovered {
-             color: #facc15 !important;
-        }
-        .star-rating svg.selected {
-            color: #f59e0b; /* amber-500 */
-        }
-        .rating-display-stars {
-            color: #f59e0b; /* amber-500 */
-        }
-         .rating-display-stars .inactive-star {
-            color: #4b5563; /* gray-600 */
-        }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
 
     <div class="bg-gray-800 border border-blue-500/50 rounded-2xl p-6 sm:p-8 max-w-4xl w-full space-y-6 card-glow">
         
+        <!-- Header -->
         <div class="text-center">
             <img src="images/bitefinder_logo.png" alt="Bitefinder Logo" class="h-24 w-auto mx-auto">
             <p class="text-gray-400 mt-4">Get bait recommendations for your target species.</p>
         </div>
 
+        <!-- Input Fields -->
         <div class="space-y-6">
              <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">1. Select Target Species</label>
-                <div id="fish-selector" class="grid grid-cols-3 sm:grid-cols-6 gap-3"></div>
+                <div id="fish-selector" class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                    <!-- Fish buttons will be dynamically inserted here -->
+                </div>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">2. Select Weather Condition</label>
-                <div id="weather-selector" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+                <div id="weather-selector" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <!-- Weather buttons will be dynamically inserted here -->
+                </div>
             </div>
+            
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">3. Select Water Clarity</label>
-                <div id="clarity-selector" class="grid grid-cols-3 gap-3"></div>
+                <div id="clarity-selector" class="grid grid-cols-3 gap-3">
+                     <!-- Clarity buttons will be dynamically inserted here -->
+                </div>
             </div>
+
              <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">4. Select Water Temperature</label>
-                <div id="temp-selector" class="grid grid-cols-2 gap-3"></div>
+                <div id="temp-selector" class="grid grid-cols-2 gap-3">
+                     <!-- Temp buttons will be dynamically inserted here -->
+                </div>
             </div>
         </div>
 
+        <!-- Action Button -->
         <button id="getRecommendation" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 btn-glow">
             Find Your Bait
         </button>
 
+        <!-- Results Area -->
         <div id="results" class="bg-gray-900/50 rounded-lg p-6 border border-gray-700 hidden">
             <h2 class="text-xl font-semibold text-blue-300 mb-4">Recommended Setup:</h2>
             <div class="space-y-4">
                 <div>
-                    <h3 class="font-medium text-gray-400 mb-2">Bait / Lure Type (Click stars to rate)</h3>
-                    <div id="bait-result" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                    <h3 class="font-medium text-gray-400">Bait / Lure Type:</h3>
+                    <div id="bait-result" class="flex flex-wrap items-center gap-2 mt-2"></div>
                 </div>
                 <div>
                     <h3 class="font-medium text-gray-400">Tackle Color:</h3>
@@ -142,54 +134,14 @@
                     <h3 class="text-xl font-semibold text-blue-300">Pro Tips:</h3>
                     <div id="tip-result" class="text-sm text-gray-300"></div>
                 </div>
-
-                <hr class="border-gray-600">
-                <div id="logbook-section" class="bg-gray-700/30 p-4 rounded-lg">
-                    <h3 class="text-xl font-semibold text-blue-300">Community Leaderboard</h3>
-                    <p class="text-sm text-gray-400 mb-4">Top-rated baits for these conditions from all users.</p>
-                    <div id="logbook-ratings-display" class="space-y-2">
-                        <!-- Community average ratings will be displayed here -->
-                    </div>
-                </div>
-
             </div>
         </div>
         
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const firebaseConfig = {
-                apiKey: "AIzaSyBBzzO8ZTQL7JsG1qDyzu9lJjFaKLBcjEg",
-                authDomain: "bitefinder-app.firebaseapp.com",
-                projectId: "bitefinder-app",
-                storageBucket: "bitefinder-app.appspot.com",
-                messagingSenderId: "68189599837",
-                appId: "1:68189599837:web:e4488c70cc12a5b09575b4",
-                measurementId: "G-61EK9K4H2T"
-            };
-
-            let db, auth;
-            const logbookSection = document.getElementById('logbook-section');
-
-            try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                await signInAnonymously(auth);
-            } catch (e) {
-                console.error("Firebase initialization failed. Please enable Anonymous Sign-in in your Firebase project.", e);
-                if(logbookSection) {
-                    logbookSection.innerHTML = `<p class="text-yellow-400 text-center text-sm p-4 bg-yellow-900/20 rounded-lg"><b>Logbook connection failed.</b><br>Enable Anonymous Sign-in in Firebase to use this feature.</p>`;
-                }
-                db = null;
-            }
-            
-            // --- Element Selectors & State ---
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Element Selectors ---
             const getRecommendationBtn = document.getElementById('getRecommendation');
             const resultsDiv = document.getElementById('results');
             const baitResult = document.getElementById('bait-result');
@@ -199,14 +151,12 @@
             const weatherSelector = document.getElementById('weather-selector');
             const claritySelector = document.getElementById('clarity-selector');
             const tempSelector = document.getElementById('temp-selector');
-            const logbookRatingsDisplay = document.getElementById('logbook-ratings-display');
             
+            // --- State Variables ---
             let selectedFish = 'largemouth';
             let selectedWeather = 'sunny';
             let selectedClarity = 'clear';
             let selectedTemp = 'warm';
-            let currentRatingsUnsubscribe = null;
-            let allRatings = {}; // Cache for all ratings
 
             // --- Data Definitions ---
             const weatherTypes = {
@@ -215,6 +165,7 @@
                 rainy: { name: 'Rainy', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 h-8 mx-auto mb-1"><path d="M12 22a7 7 0 0 1-7-7c0-3.87 7-13 7-13s7 9.13 7 13a7 7 0 0 1-7 7z"/></svg>'},
                 windy: { name: 'Windy', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 h-8 mx-auto mb-1"><path d="M15.5,5.5a2.5,2.5,0,0,0-2.42,2H5a1,1,0,0,0,0,2H13.08a2.5,2.5,0,0,0,4.84,0A2.5,2.5,0,0,0,15.5,5.5Zm0,3a.5.5,0,1,1,.5-.5A.5.5,0,0,1,15.5,8.5ZM21,11H8.5a2.5,2.5,0,0,0-2.42,2H3a1,1,0,0,0,0,2H6.08a2.5,2.5,0,0,0,4.84,0H19a1,1,0,0,0,0-2h-.5a2.5,2.5,0,0,0-2.42-2H21a1,1,0,0,0,0-2ZM8.5,14.5a.5.5,0,1,1,.5-.5A.5.5,0,0,1,8.5,14.5ZM17,16.5a2.5,2.5,0,0,0-2.42,2H3a1,1,0,0,0,0,2H14.58a2.5,2.5,0,0,0,4.84,0A2.5,2.5,0,0,0,17,16.5Zm0,3a.5.5,0,1,1,.5-.5A.5.5,0,0,1,17,19.5Z"/></svg>'}
             };
+
             const fishTypes = {
                 largemouth: { name: 'Largemouth', imageSrc: 'images/largemouthbass.png' },
                 smallmouth: { name: 'Smallmouth', imageSrc: 'images/smallmouthbass.png' },
@@ -223,15 +174,18 @@
                 pike:    { name: 'Pike',    imageSrc: 'images/pike.png' },
                 panfish: { name: 'Panfish', imageSrc: 'images/panfish.png' }
             };
+
             const clarityTypes = {
                 clear: { name: 'Clear' },
                 stained: { name: 'Stained' },
                 muddy: { name: 'Muddy' }
             };
+
             const tempTypes = {
                 cool: { name: 'Cool' },
                 warm: { name: 'Warm' }
             };
+
             const colorMap = {
                 'Green Pumpkin': '#4B5320', 'Watermelon': '#75A850', 'White': '#FFFFFF', 'Chartreuse': '#DFFF00', 
                 'Black': '#000000', 'Blue': '#0000FF', 'Purple': '#800080', 'Silver': '#C0C0C0', 'Gold': '#FFD700',
@@ -240,6 +194,8 @@
                 'Loon': '#333333', 'Firetiger': '#F3B700', 'Rainbow Trout': '#B5E6B5', 'Natural Shad': '#B6C0C3',
                 'Chrome': '#E8E8E8', 'Crawfish': '#C84A33'
             };
+
+            // --- Fully Populated Recommendation Database ---
             const recommendations = {
                 largemouth: {
                     sunny: {
@@ -299,27 +255,318 @@
                         }
                     }
                 },
-                 smallmouth: { /* ... full data ... */ },
-                 trout: { /* ... full data ... */ },
-                 walleye: { /* ... full data ... */ },
-                 pike: { /* ... full data ... */ },
-                 panfish: { /* ... full data ... */ }
+                 smallmouth: {
+                    sunny: {
+                        clear: {
+                            warm: { bait: 'Drop Shot, Ned Rig', color: 'Goby, Green Pumpkin', tip: [{title: 'Fish Deep', description: 'Smallmouth will be on deep offshore structure like rock piles and humps.'},{title: 'Light Line is Crucial', description: 'Use a 6-8lb fluorocarbon leader for more bites in clear water.'}, {title: 'Subtle Action', description: 'Don\'t overwork the bait. Let the gentle rocking of the boat provide the action.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Jerkbait, Tube Jig', color: 'Natural Shad, Smoke', tip: [{title: 'Suspend Over Deep Water', description: 'Jerkbaits are perfect for targeting fish suspended off of points.'},{title: 'Drag the Tube', description: 'A slow drag with a tube jig mimics a crawfish, a key cool water forage.'}, {title: 'Long Pauses are Key', description: 'Let your jerkbait sit motionless for 10-20 seconds between twitches.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Swimbait, Topwater Spook', color: 'Perch, Bone White', tip: [{title: 'Target Mid-depth Rock', description: 'Look for rock piles in 8-15 feet of water.'},{title: 'Walk the Dog', description: 'A topwater walking bait can call fish from a long way in stained water.'}, {title: 'Steady Retrieve', description: 'Keep a steady pace with your swimbait to imitate a cruising baitfish.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Spinnerbait, Crankbait', color: 'Chartreuse, Firetiger', tip: [{title: 'Cover Water', description: 'Use reaction baits to search for aggressive, feeding smallmouth.'},{title: 'Bounce off Rocks', description: 'Deflecting crankbaits off of rocks is a classic smallmouth trigger.'}, {title: 'Use a trailer hook', description: 'Add a trailer hook to your spinnerbait to catch short-striking fish.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Chatterbait, Big Spinnerbait', color: 'Black/Blue, Chartreuse', tip: [{title: 'Vibration is Everything', description: 'In muddy water, smallmouth rely on their lateral line to find prey.'},{title: 'Fish Shallow and Slow', description: 'They will push up into shallow cover to find food.'}, {title: 'Go Big', description: 'Use a larger profile bait to be more easily found.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Lipless Crankbait, Jig', color: 'Red/Crawfish, Black', tip: [{title: 'Yo-Yo Retrieve', description: 'Rip a lipless crankbait off the bottom to trigger reaction bites.'},{title: 'Scented Jigs', description: 'Add scent to your jig to help fish find it in low visibility.'}, {title: 'Fish Hard Bottom', description: 'Find any rock or gravel bottom that will hold heat.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        }
+                    },
+                    cloudy: {
+                        clear: {
+                            warm: { bait: 'Topwater Spook, Swimbait', color: 'Bone White, Shad', tip: [{title: 'Fish are Roaming Flats', description: 'Cloud cover makes smallmouth move up and feed on shallow flats.'},{title: 'Match the Hatch', description: 'Use realistic swimbait colors to mimic local baitfish.'}, {title: 'Vary Cadence', description: 'Experiment with your retrieve speed until you get a bite.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Jerkbait, A-Rig', color: 'Perch, Silver', tip: [{title: 'Prime Time Feeding', description: 'Cloudy and cool is a perfect storm for active smallmouth. Fish fast.'},{title: 'Find the Bait', description: 'Use your electronics to locate schools of baitfish; the smallmouth will be nearby.'}, {title: 'Aggressive Cadence', description: 'Use faster, more aggressive rips with your jerkbait.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Spinnerbait, Squarebill', color: 'White/Chartreuse, Firetiger', tip: [{title: 'Power Fishing Paradise', description: 'This is the time to cover as much water as possible with moving baits.'},{title: 'Target Current', description: 'Smallmouth will use current seams around points and islands to ambush prey.'}, {title: 'Burn the Spinnerbait', description: 'A fast retrieve right under the surface often triggers strikes.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Chatterbait, Crankbait', color: 'Green Pumpkin, Shad', tip: [{title: 'Keep it Moving', description: 'Don\'t let the bait sit still. A steady retrieve is often best.'},{title: 'Sweeping Hookset', description: 'With moving baits, use a long sweeping hookset to drive the hooks home.'}, {title: 'Make Contact', description: 'Try to bump your crankbait into the bottom or cover.'}, {title: 'Check Your Hooks', description: 'Fishing around rock will dull your hooks. Check them often.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Big Spinnerbait, Jig', color: 'Chartreuse, Black/Blue', tip: [{title: 'Go Big and Bright', description: 'Use a large profile bait with bright colors to be seen.'},{title: 'Fish Tight to Wood', description: 'Smallmouth will use laydowns as ambush points in muddy water.'}, {title: 'Rattles Help', description: 'Add a rattle to your jig for extra noise.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Chatterbait, Lipless Crankbait', color: 'Black, Red', tip: [{title: 'Rattles are Key', description: 'Use lures that make a lot of noise.'},{title: 'Slow Your Retrieve', description: 'Give fish time to find your lure in the dirty water.'}, {title: 'Find the Warmest Water', description: 'The north side of the lake or a shallow bay will be warmest.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        }
+                    },
+                     rainy: {
+                        clear: {
+                            warm: { bait: 'Topwater Plopper, Jerkbait', color: 'Black, Natural Shad', tip: [{title: 'Rain Ignites Topwater', description: 'The surface disturbance from rain makes for an incredible topwater bite.'},{title: 'Wait for the Weight', description: 'Don\'t set the hook on the splash; wait to feel the fish.'}, {title: 'Vary Topwater Speed', description: 'Try different retrieve speeds with your plopper-style bait.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Tube Jig, Blade Bait', color: 'Smoke, Silver', tip: [{title: 'Current is Your Friend', description: 'Rain creates current. Fish the downstream side of any structure.'},{title: 'Stay Vertical', description: 'A blade bait fished vertically is deadly in rainy conditions.'}, {title: 'Feel for the "Thump"', description: 'The bite on a tube will feel like a soft thump or just weight.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Spinnerbait, Chatterbait', color: 'White, Black/Blue', tip: [{title: 'Loud Baits', description: 'Rain and stained water call for baits that make a commotion.'},{title: 'Fish the Edges', description: 'Focus on weed edges and drop-offs.'}, {title: 'Keep Moving', description: 'This is not the time to fish slow. Cover water to find active fish.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Squarebill, Spinnerbait', color: 'Chartreuse, Firetiger', tip: [{title: 'Reaction Bites', description: 'Fish are in a neutral mood. Trigger them with a deflecting crankbait.'},{title: 'Keep Contact', description: 'Use a sensitive rod to feel the subtle bites.'}, {title: 'Fish the Windy Side', description: 'Rain plus wind is a great combination. Fish the windy bank.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Jig, Big Spinnerbait', color: 'Black, Chartreuse', tip: [{title: 'Dark Silhouette', description: 'A black jig presents the most visible profile in muddy water.'},{title: 'Use Scent', description: 'Add a scented trailer to your jig.'}, {title: 'Fish Current Seams', description: 'Look for where muddy and slightly clearer water meet.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Lipless Crankbait, Chatterbait', color: 'Red, Black/Blue', tip: [{title: 'Fish the Cleanest Water', description: 'Any incoming creek or river might bring in slightly clearer water.'},{title: 'Make Multiple Casts', description: 'It may take several casts for a fish to find your lure.'}, {title: 'Use Loud Rattles', description: 'The more noise your lure makes, the better.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        }
+                    },
+                    windy: {
+                        clear: {
+                            warm: { bait: 'Drop Shot, Tube Jig', color: 'Goby, Green Pumpkin', tip: [{title: 'Use the Wind to Drift', description: 'Set up a drift over deep flats and points.'},{title: 'Heavy Weight', description: 'Use a heavy enough drop shot weight to maintain contact with the bottom.'}, {title: 'Watch Your Line', description: 'You will often see the bite before you feel it. Watch for your line to jump.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Jerkbait, A-Rig', color: 'Natural Shad, White', tip: [{title: 'Wind Breaks up Surface', description: 'The wind provides cover, making jerkbaits more effective.'},{title: 'Count it Down', description: 'Let your jerkbait sink to the desired depth before starting your retrieve.'}, {title: 'Use a Drift Sock', description: 'A drift sock will slow your boat down for a more thorough presentation.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Spinnerbait, Lipless Crankbait', color: 'White, Chrome', tip: [{title: 'Fish the Windy Bank', description: 'Wind concentrates baitfish on wind-blown shorelines.'},{title: 'Burn it', description: 'A fast retrieve is often key to getting bites in the wind.'}, {title: 'Low Stretch Line', description: 'Use fluorocarbon line to feel bites better in the wind.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Blade Bait, Crankbait', color: 'Gold, Firetiger', tip: [{title: 'Feel the Vibration', description: 'A bite will often just feel like the vibration stopped.'},{title: 'Low Stretch Line', description: 'Use fluorocarbon to better detect bites in the wind.'}, {title: 'Vertical Jigging', description: 'If you mark fish, a blade bait is perfect for vertical jigging.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Big Spinnerbait, Chatterbait', color: 'Chartreuse, White', tip: [{title: 'Maximum Vibration', description: 'Use a big Colorado blade spinnerbait for a heavy thump.'},{title: 'Stay in the Strike Zone', description: 'Keep your bait in the 1-5 foot depth range along windy banks.'}, {title: 'Fish Bright Colors', description: 'Bright, flashy colors are easier for fish to see.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] },
+                            cool: { bait: 'Lipless Crankbait, Big Jig', color: 'Red, Black', tip: [{title: 'Target Hard Cover', description: 'Fish will tuck in behind rocks and logs to get out of the current.'},{title: 'Be Persistent', description: 'Windy and muddy is tough, but the fish are often concentrated in small areas.'}, {title: 'Go Slow', description: 'Even with reaction baits, a slower retrieve can be better.'}, {title: 'Sweeping Hookset', description: 'When you feel the bite, reel down and pull firmly to the side, rather than a sharp upward snap.'}] }
+                        }
+                    }
+                },
+                trout: {
+                   sunny: {
+                        clear: {
+                            warm: { bait: 'Live Worms, Small Spinners', color: 'Gold, Silver', tip: [{title: 'Fish Deep Pools', description: 'Trout will seek the coldest, most oxygenated water in deep pools.'},{title: 'Go Natural', description: 'A simple worm drifted under a float is hard to beat.'}, {title: 'Light Leader', description: 'Use a 2-4lb fluorocarbon leader as it is nearly invisible.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Inline Spinners, Small Spoons', color: 'Silver, Rainbow Trout', tip: [{title: 'Cast Upstream', description: 'Cast upstream and retrieve just fast enough to make the blade spin.'},{title: 'Gentle Hookset', description: 'Trout have soft mouths. A gentle lift of the rod is all you need.'}, {title: 'Vary Retrieve Speed', description: 'Experiment with different retrieve speeds until you find what the trout want.'}, {title: 'Polarized Glasses', description: 'Good polarized sunglasses will help you spot fish and structure.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'PowerBait, Scented Baits', color: 'Pink, Chartreuse', tip: [{title: 'Scent is Key', description: 'In stained water, trout rely on smell to find food.'},{title: 'Fish Current Seams', description: 'Trout will sit in slack water and wait for food to drift by.'}, {title: 'Stay on the Bottom', description: 'Use enough weight to keep your bait near the bottom.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Spoons, Small Crankbaits', color: 'Gold, Firetiger', tip: [{title: 'Brighter Colors', description: 'Use brighter, flashier lures in stained water to get noticed.'},{title: 'Vary Your Retrieve', description: 'Try a stop-and-go retrieve to trigger strikes.'}, {title: 'Add a Swivel', description: 'Using a small swivel will prevent line twist with spoons and spinners.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Live Worms, Scented Dough', color: 'Orange, Pink', tip: [{title: 'Stationary is Best', description: 'Let your bait sit on the bottom where fish can find it by scent.'},{title: 'Find Inflows', description: 'Any small stream or pipe bringing in clearer water will attract trout.'}, {title: 'Use a Bell', description: 'Attach a small bell to your rod tip to detect bites.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Live Minnows, Large Spinners', color: 'Chartreuse, White', tip: [{title: 'Bigger Profile', description: 'Use a larger lure that displaces more water.'},{title: 'Fish Slow', description: 'Give trout time to find your offering in the dirty water.'}, {title: 'Look for Breaks', description: 'Fish any current break, like a log or a big rock.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        }
+                    },
+                    cloudy: {
+                        clear: {
+                            warm: { bait: 'Small Jerkbaits, Spoons', color: 'Rainbow Trout, Silver', tip: [{title: 'Fish are Cruising', description: 'Cloud cover makes trout less wary and more willing to chase.'},{title: 'Erratic Action', description: 'An erratic retrieve with a jerkbait mimics a wounded minnow.'}, {title: 'Fish the Shallows', description: 'Trout will move into shallower water to feed under cloud cover.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Inline Spinners, Small Swimbaits', color: 'Gold, Perch', tip: [{title: 'Cover the Water Column', description: 'Try different depths until you find where the fish are holding.'},{title: 'Match the Hatch', description: 'Look for what insects or minnows are in the water and match your lure color.'}, {title: 'Steady Retrieve', description: 'A slow and steady retrieve is often best.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Spoons, Bright Spinners', color: 'Firetiger, Chartreuse', tip: [{title: 'Flash and Vibration', description: 'Use lures that put off a lot of flash to attract attention.'},{title: 'Fish the Tailouts', description: 'Trout will often feed at the tail end of pools in these conditions.'}, {title: 'Go Brighter', description: 'Don\'t be afraid to use bright, unnatural colors.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Small Crankbaits, Spoons', color: 'Gold, Orange', tip: [{title: 'Reaction Strikes', description: 'A crankbait can trigger bites from non-feeding fish.'},{title: 'Stay Persistent', description: 'Keep covering water to find active fish.'}, {title: 'Change Lures Often', description: 'If a lure isn\'t working, switch it out for a different color or style.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        },
+                        muddy: {
+                             warm: { bait: 'Live Worms, PowerBait', color: 'Pink, Orange', tip: [{title: 'Focus on Scent', description: 'In muddy water, scent is the primary way trout will find your bait.'},{title: 'Fish Eddies', description: 'Trout will hold in calm eddies to escape the main current.'}, {title: 'Carolina Rig', description: 'A Carolina rig can keep your bait just off the bottom.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Live Minnows, Scented Jigs', color: 'Chartreuse, White', tip: [{title: 'Add a "Tidbit"', description: 'Tip your jig with a piece of worm or a minnow head.'},{title: 'Fish the Edges', description: 'Fish will often be right on the bank in muddy water.'}, {title: 'Bobber Down', description: 'A slip bobber rig is great for detecting light bites.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        }
+                    },
+                    rainy: {
+                        clear: {
+                            warm: { bait: 'Live Worms, Inline Spinners', color: 'Silver, Gold', tip: [{title: 'Rain Triggers Feeding', description: 'Rain washes food into the water, putting trout on the bite.'},{title: 'Target Current Seams', description: 'Fish the line where fast and slow water meet.'}, {title: 'Top of the Water Column', description: 'Trout will look up for food during a rain.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Spoons, Small Jerkbaits', color: 'Rainbow Trout, Silver', tip: [{title: 'Don\'t Be Afraid of a Ripple', description: 'The disturbed surface makes trout less spooky.'},{title: 'Stay Mobile', description: 'Move around to find where the fish are concentrated.'}, {title: 'Try a Tandem Rig', description: 'Tie on a second, smaller fly or jig 18 inches above your main lure.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        },
+                        stained: {
+                             warm: { bait: 'PowerBait, Live Worms', color: 'Pink, Chartreuse', tip: [{title: 'Bright is Right', description: 'Use brightly colored baits that are easy to see.'},{title: 'Fish Behind Rocks', description: 'Trout will use rocks as a current break.'}, {title: 'Stay on the Bottom', description: 'Fish will be holding close to the bottom.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Bright Spoons, Spinners', color: 'Orange, Firetiger', tip: [{title: 'Bigger Lures', description: 'Use a slightly larger lure than you would in clear water.'},{title: 'Slow it Down', description: 'A slower retrieve can be more effective in stained, cool water.'}, {title: 'Look for Pockets', description: 'Find any small pocket of calmer water.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Live Worms, Scented Dough Bait', color: 'Orange, Pink', tip: [{title: 'Bottom Fishing', description: 'The most effective technique is to fish a scented bait right on the bottom.'},{title: 'Patience is a Virtue', description: 'It may take time for fish to find your bait.'}, {title: 'Use a Bait Holder Hook', description: 'These hooks have small barbs on the shank to hold your bait on better.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Live Minnows, Big Spinners', color: 'Chartreuse, White', tip: [{title: 'Fish the Calmest Water', description: 'Look for any area that is out of the main, muddy flow.'},{title: 'Go Big or Go Home', description: 'Use a large, vibrating lure to call fish in.'}, {title: 'Stay Safe', description: 'Be aware of rising water levels during heavy rain.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        }
+                    },
+                    windy: {
+                        clear: {
+                            warm: { bait: 'Kastmasters, Weighted Spinners', color: 'Silver, Blue', tip: [{title: 'Casting Distance', description: 'Use heavy lures that can cut through the wind.'},{title: 'Fish the "Chop"', description: 'The wind-blown side of the lake will have a "trout chop" that provides cover.'}, {title: 'Keep Line Tight', description: 'Reel up slack quickly to detect bites.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Spoons, Small Crankbaits', color: 'Gold, Silver', tip: [{title: 'Let it Sink', description: 'After casting, let your spoon flutter down through the water column.'},{title: 'Keep a Bow in Your Line', description: 'A slight bow in your line will help you detect subtle bites.'}, {title: 'Point Your Rod Tip Down', description: 'This helps keep your lure in the water.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Bright Spoons, Kastmasters', color: 'Firetiger, Chartreuse', tip: [{title: 'Flashy Lures', description: 'The combination of wind and stained water requires a very flashy lure.'},{title: 'Fish the Windy Shore', description: 'The wind will concentrate food, and trout, on the downwind shoreline.'}, {title: 'Heavier Lures', description: 'Heavier lures cast better and sink faster in the wind.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Crankbaits, Bright Spoons', color: 'Orange, Gold', tip: [{title: 'Steady Retrieve', description: 'A simple, steady retrieve is often the most effective.'},{title: 'Use Heavier Line', description: 'A slightly heavier line will help with casting in the wind.'}, {title: 'Look for Seams', description: 'Even in a lake, wind can create current seams around points.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        },
+                        muddy: {
+                           warm: { bait: 'Live Worms, Scented Baits', color: 'Pink, Orange', tip: [{title: 'Fish the Calm Side', description: 'In muddy water, it\'s often better to find the side of the lake protected from the wind.'},{title: 'Stay Put', description: 'Find a likely spot and let your scented bait do the work.'}, {title: 'Use Multiple Rods', description: 'Where legal, use multiple rods to present different baits.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] },
+                            cool: { bait: 'Live Minnows, Large Spinners', color: 'Chartreuse, White', tip: [{title: 'Find Structure', description: 'Even in muddy water, trout will relate to points and drop-offs.'},{title: 'Be Patient', description: 'These are tough conditions, but can produce big fish.'}, {title: 'Go Big and Bright', description: 'Use the largest and brightest lure you have.'}, {title: 'Gentle Hookset', description: 'Trout have very soft mouths. Simply lift the rod tip firmly or reel down quickly until the rod is bent.'}] }
+                        }
+                    }
+                },
+                walleye: {
+                    sunny: {
+                        clear: {
+                            warm: { bait: 'Bottom Bouncer with Worm Harness', color: 'Chartreuse, Orange', tip: [{title: 'Go Deep', description: 'Walleye will be on the deepest structure they can find. Look for deep humps and points.'},{title: 'Slow Trolling', description: 'Troll your bottom bouncer just fast enough to make the blades spin.'}, {title: 'Use Your Electronics', description: 'This is not the time for casting; use your fish finder to locate deep schools.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Jig with a Minnow, Lindy Rig', color: 'White, Silver', tip: [{title: 'Vertical Jigging', description: 'Position your boat directly over fish and jig vertically.'},{title: 'Subtle Bites', description: 'Walleye bites can be very light. Use a sensitive rod and watch your line.'}, {title: 'Stay Vertical', description: 'Keep your line as close to a 90-degree angle as possible.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Crankbaits, Worm Harness', color: 'Firetiger, Perch', tip: [{title: 'Troll the Weedlines', description: 'Walleye will relate to the deep edge of weed beds.'},{title: 'Match the Hatch', description: 'Use crankbait colors that mimic the local forage like perch or shad.'}, {title: 'Use Planer Boards', description: 'Planer boards get your lures away from the boat and cover more water.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Jig with Plastic, Rippin\' Rap', color: 'Chartreuse, Gold', tip: [{title: 'Find the Greenest Weeds', description: 'The healthiest weeds will hold the most oxygen and baitfish.'},{title: 'Reaction Strikes', description: 'A loud, vibrating lure can trigger bites from inactive fish.'}, {title: 'Add a Stinger Hook', description: 'Add a small treble hook to your jig to catch light-biting fish.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Jig with a Large Minnow', color: 'Black, Orange', tip: [{title: 'Big and Smelly', description: 'Use the largest minnow you can find and hook it lightly to keep it lively.'},{title: 'Fish Tight to Cover', description: 'Walleye will use any available wood or rock as an ambush point.'}, {title: 'Go Slow and Deliberate', description: 'Pick apart cover slowly and methodically.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Blade Bait, Rippin\' Rap', color: 'Gold, Chartreuse', tip: [{title: 'Loud and Proud', description: 'Vibration is the only way fish will find your lure in these conditions.'},{title: 'Fish the Hard Bottom', description: 'Gravel and rock will hold heat and attract walleye.'}, {title: 'Sharp Rips', description: 'Use an aggressive, sharp rip of the rod to make the lure vibrate.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        }
+                    },
+                    cloudy: {
+                        clear: {
+                            warm: { bait: 'Swimbait, Jerkbait', color: 'Shad, Perch', tip: [{title: 'Fish are Hunting', description: 'Cloudy skies make walleye more aggressive. They will suspend and chase baits.'},{title: 'Erratic Retrieve', description: 'Use a jerk-jerk-pause retrieve to mimic a dying baitfish.'}, {title: 'Target Suspended Fish', description: 'Use your electronics to find fish suspended off of structure.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Jig with a Minnow, Swimbait', color: 'White, Chartreuse', tip: [{title: 'Prime Time', description: 'This is the best time to be walleye fishing. They will be shallower and actively feeding.'},{title: 'Cast to Structure', description: 'Cast your jig and swimbait to rock piles and points instead of just fishing vertically.'}, {title: 'Slow Roll the Swimbait', description: 'A slow and steady retrieve is best for the swimbait.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Crankbaits, Spinner Rigs', color: 'Firetiger, Chartreuse', tip: [{title: 'Cover Water', description: 'Trolling is a great way to cover water and find active schools of fish.'},{title: 'Vary Your Speed', description: 'Sometimes speeding up or slowing down your troll can trigger bites.'}, {title: 'S-Turns', description: 'Make S-turns with your boat to vary the speed of your lures.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Jig and Plastic, Blade Bait', color: 'Orange, Gold', tip: [{title: 'Thump is Key', description: 'Use a paddle tail plastic on your jig that creates a lot of vibration.'},{title: 'Stay in Contact', description: 'Use a no-stretch braided line to feel the subtle bites.'}, {title: 'Sharpen Your Hooks', description: 'Make sure your hooks are razor sharp to penetrate their bony mouths.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Jig and Minnow, Crankbait', color: 'Chartreuse, Orange', tip: [{title: 'Bright Colors', description: 'Use the brightest, most obnoxious colors you have.'},{title: 'Fish the Inflows', description: 'Any incoming water will be clearing up the water and bringing in food.'}, {title: 'Add a Rattle', description: 'Use the loudest crankbait you can find.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Rippin\' Rap, Blade Bait', color: 'Gold, Firetiger', tip: [{title: 'Make Some Noise', description: 'Rattling lures are essential for calling fish in.'},{title: 'Fish Slower', description: 'Slow your retrieve down to give fish a chance to find your lure.'}, {title: 'Target Current', description: 'Find any current from wind or inflows.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        }
+                    },
+                    rainy: {
+                        clear: {
+                            warm: { bait: 'Jerkbait, Slip Bobber with Leech', color: 'Shad, Black', tip: [{title: 'Rain Activates Them', description: 'Rain often triggers a hot walleye bite, especially in the evening.'},{title: 'Fish the Shallows', description: 'Walleye will move surprisingly shallow to feed in the rain.'}, {title: 'Stay Quiet', description: 'Shallow walleye are spooky. Avoid making noise in the boat.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Jig with Minnow, Lindy Rig', color: 'White, Chartreuse', tip: [{title: 'Live Bait is King', description: 'In cool, rainy conditions, it\'s hard to beat a live minnow or leech.'},{title: 'Drift and Jig', description: 'Use the wind to slowly drift over flats while jigging.'}, {title: 'Let Them Take It', description: 'With a Lindy rig, give the fish a few seconds to eat the bait before setting the hook.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Crankbait, Worm Harness', color: 'Firetiger, Perch', tip: [{title: 'Trolling Bite is On', description: 'The rain and clouds will keep the trolling bite going all day.'},{title: 'Fish the Edges', description: 'Focus on the edges of flats and weed beds.'}, {title: 'Check for Debris', description: 'Rain can wash grass and leaves into the water. Check your lures often.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Jig and Plastic, Crankbait', color: 'Orange, Chartreuse', tip: [{title: 'Go Brighter', description: 'The combination of rain and stained water calls for very bright colors.'},{title: 'Slow and Steady', description: 'A slow, steady retrieve with a crankbait can be deadly.'}, {title: 'Tip Your Jig', description: 'Add a minnow head to your plastic for extra scent.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Jig and Minnow', color: 'Black, Chartreuse', tip: [{title: 'Fish the Current', description: 'Rain creates current. Find any bottleneck or point where current is concentrated.'},{title: 'Big Minnows', description: 'Use a large minnow to present a bigger target.'}, {title: 'Stay Stationary', description: 'Anchor your boat and let the fish come to you.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Blade Bait, Rippin\' Rap', color: 'Gold, Orange', tip: [{title: 'Vertical Jigging', description: 'Position your boat over structure and jig vertically with a loud lure.'},{title: 'Be Patient', description: 'Bites will be few and far between, but they are often big fish.'}, {title: 'Find the Cleanest Water', description: 'Even a small area of slightly clearer water can hold all the fish.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        }
+                    },
+                    windy: {
+                        clear: {
+                            warm: { bait: 'Slip Bobber with Leech, Jig', color: 'Black, White', tip: [{title: '"Walleye Chop"', description: 'The wind-rippled surface is perfect for walleye fishing.'},{title: 'Drift the Flats', description: 'Use a drift sock to slow your drift across large flats.'}, {title: 'Long Leaders', description: 'Use a long leader with your slip bobber to keep the bait looking natural.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Jig and Minnow, Lindy Rig', color: 'Chartreuse, White', tip: [{title: 'Anchor and Jig', description: 'If you find a school, anchor upwind and cast jigs to them.'},{title: 'Heavier Jigs', description: 'Use a heavier jig than normal to maintain bottom contact in the wind.'}, {title: 'Braided Line', description: 'Braid will help you feel bites and cut through the wind.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Crankbaits, Worm Harness', color: 'Perch, Firetiger', tip: [{title: 'Fish the Windy Shore', description: 'The wind pushes baitfish and warmer water to the downwind shore.'},{title: 'Use Planer Boards', description: 'Planer boards help get your crankbaits away from the boat and cover more water.'}, {title: 'Adjust Your Weight', description: 'Use snap weights to get your crankbaits to the desired depth.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Jig and Plastic, Crankbait', color: 'Orange, Chartreuse', tip: [{title: 'Stay on the Move', description: 'Windy conditions scatter fish. Keep moving until you find a concentration of them.'},{title: 'Braided Line', description: 'Braid will help you feel bites and cut through the wind for better casting.'}, {title: 'Target Wind Blown Points', description: 'The tips of points will concentrate fish.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Jig and Minnow, Crankbait', color: 'Chartreuse, Orange', tip: [{title: 'Target Shallow Structure', description: 'Fish will be surprisingly shallow on windy, muddy days. Target rock piles and points in 5-10 feet.'},{title: 'Loud Crankbaits', description: 'Use a crankbait with a loud rattle that also has a wide wobble.'}, {title: 'Slow Down', description: 'Even though it\'s windy, a slow presentation is key.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] },
+                            cool: { bait: 'Rippin\' Rap, Blade Bait', color: 'Gold, Firetiger', tip: [{title: 'Find the Warmest Water', description: 'The wind-blown side of the lake will have slightly warmer water.'},{title: 'Sharp Rips', description: 'Use a sharp upward rip of your rod to make your lure vibrate intensely.'}, {title: 'Heavy Lures', description: 'Use the heaviest lure you can get away with to maintain contact.'}, {title: 'Reel-and-Sweep Hookset', description: 'When you feel a "tick" or weight, reel down until you feel the fish, then use a long, firm sweeping motion to set the hook.'}] }
+                        }
+                    }
+                },
+                pike: {
+                    sunny: {
+                        clear: {
+                            warm: { bait: 'Large Spoons, Bucktails', color: 'Silver, White', tip: [{title: 'Look for Sunbathers', description: 'Pike will often sun themselves in shallow, calm bays.'},{title: 'Use a Wire Leader', description: 'Absolutely essential for pike. Their teeth will cut any other line.'}, {title: 'Fast Retrieve', description: 'A fast, burning retrieve will often trigger strikes.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Jerkbait, Large Minnow Lures', color: 'Perch, Shad', tip: [{title: 'Fish the First Drop-off', description: 'Pike will sit on the edge of the first drop-off, waiting to ambush prey.'},{title: 'Long Pauses', description: 'A suspending jerkbait paused for several seconds can be irresistible.'}, {title: 'Watch for Followers', description: 'Pike will often follow your lure to the boat. Do a figure-eight.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Large Spinnerbaits, Spoons', color: 'Chartreuse, Red/White', tip: [{title: 'Bulge it Under the Surface', description: 'Retrieve your spinnerbait just fast enough that it creates a "bulge" or wake on the surface.'},{title: 'Hard, Firm Hookset', description: 'Pike have bony mouths. Drive the hooks home.'}, {title: 'Target Cabbage Weeds', description: 'Find the thickest, greenest weed beds.'}, {title: 'Use a Trailer Hook', description: 'Add a trailer hook to your spinnerbait to catch short-striking fish.'}] },
+                            cool: { bait: 'Crankbaits, Large Swimbaits', color: 'Firetiger, Sucker', tip: [{title: 'Troll the Weedlines', description: 'Trolling is an effective way to cover water and find active pike.'},{title: 'Figure Eight', description: 'At the end of every cast, trace a figure eight with your lure at the side of the boat.'}, {title: 'Heavy Gear', description: 'Use a heavy-action rod and strong braided line.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Large Spinnerbaits, Noisy Topwater', color: 'Black, Chartreuse', tip: [{title: 'Vibration and Noise', description: 'Use the biggest, loudest, most obnoxious lure in your box.'},{title: 'Fish Very Shallow', description: 'Pike will push into extremely shallow water looking for food.'}, {title: 'Use a Wire Leader!', description: 'Do not forget this! Pike will bite you off every time.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Chatterbaits, Rattling Lipless Cranks', color: 'White, Red', tip: [{title: 'Slow and Loud', description: 'Retrieve your lure slowly while still making as much noise as possible.'},{title: 'Target Hard Cover', description: 'Pike will use logs and rocks as current breaks and ambush points.'}, {title: 'Make Multiple Casts', description: 'It might take 10 casts to the same spot to get a bite.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        }
+                    },
+                    cloudy: {
+                        clear: {
+                            warm: { bait: 'Glide Baits, Large Swimbaits', color: 'Sucker, Perch', tip: [{title: 'Big Baits for Big Fish', description: 'Cloudy weather gives big, wary pike the confidence to eat a large meal.'},{title: 'Slow and Steady', description: 'Use a slow, methodical retrieve to make your bait look like an easy meal.'}, {title: 'Sharp Hooks are a Must', description: 'Make sure your hooks are sticky sharp to penetrate their bony mouths.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Bucktails, Large Minnow Lures', color: 'Black, Silver', tip: [{title: 'Speed Kills', description: 'A fast, burning retrieve with a bucktail can trigger explosive strikes.'},{title: 'Fish the Cabbage', description: 'Find the healthiest, greenest weed beds.'}, {title: 'Figure Eight Every Cast', description: 'Make it a habit. It will get you more fish.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Spinnerbaits, Whopper Ploppers', color: 'Chartreuse, Black', tip: [{title: 'Cover Water', description: 'This is prime time for power fishing. Keep moving and casting.'},{title: 'Steady Topwater Retrieve', description: 'Unlike bass fishing, a steady retrieve is often best for pike on topwater.'}, {title: 'Use Heavy Braid', description: 'Use at least 50lb braided line to pull fish out of cover.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Spoons, Large Crankbaits', color: 'Orange, Firetiger', tip: [{title: 'Erratic Action', description: 'Snap your rod tip to make your spoon dart and flutter.'},{title: 'Heavy Gear', description: 'Use a heavy action rod to handle these powerful fish.'}, {title: 'Check Your Leader', description: 'Check your wire leader for kinks or frays after every fish.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Large Spinnerbaits, Chatterbaits', color: 'Chartreuse/White, Black/Blue', tip: [{title: 'Double Colorado Blades', description: 'Use a spinnerbait with two Colorado blades for maximum thump.'},{title: 'Fish Tight to Weeds', description: 'Pike will bury themselves in the thickest weeds available.'}, {title: 'Go Big', description: 'This is the time for your largest lures.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Rattling Lipless Cranks, Big Jigs', color: 'Red, Black', tip: [{title: 'Make a Ruckus', description: 'Use the loudest lure you have.'},{title: 'Find the Bait', description: 'If you can find schools of baitfish, the pike will be there too.'}, {title: 'Slow it Down', description: 'A slower retrieve is key in cool, muddy water.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        }
+                    },
+                    rainy: {
+                        clear: {
+                            warm: { bait: 'Whopper Ploppers, Large Spooks', color: 'Loon, Bone White', tip: [{title: 'Topwater Excitement', description: 'Rain often puts pike in the mood to crush topwater baits.'},{title: 'Violent Strikes', description: 'Be prepared for some of the most exciting strikes in freshwater.'}, {title: 'Wait to Set the Hook', description: 'Wait until you feel the weight of the fish before setting the hook on a topwater bite.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Large Swimbaits, Spoons', color: 'Perch, Silver', tip: [{title: 'Match the Forage', description: 'Use lures that look like the local food source, whether it\'s perch, suckers, or shad.'},{title: 'Let it Fall', description: 'After casting a spoon, let it flutter down. Many strikes happen on the fall.'}, {title: 'Target Points', description: 'Pike will use points to ambush schools of bait.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Spinnerbaits, Buzzbaits', color: 'Chartreuse, Black', tip: [{title: 'Go Loud', description: 'A loud buzzbait or spinnerbait is perfect for calling in fish in these conditions.'},{title: 'Fish the Edges', description: 'Focus on the edges of weed beds, lily pads, and drop-offs.'}, {title: 'Keep Your Speed Up', description: 'A fast retrieve triggers reaction strikes.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Large Crankbaits, Spoons', color: 'Firetiger, Orange', tip: [{title: 'Bright and Flashy', description: 'Use the most eye-catching lure you have.'},{title: 'Stay Ready', description: 'Pike often follow a lure for a long time before striking.'}, {title: 'Cover Water', description: 'Don\'t spend too much time in one spot.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Large Spinnerbaits, Noisy Topwater', color: 'Black/Chartreuse, White', tip: [{title: 'Go Big', description: 'Use the largest profile lure you can cast effectively.'},{title: 'Fish Slow', description: 'A slow, steady retrieve helps fish track your lure.'}, {title: 'Use Scent', description: 'Add scent to your lures to help fish find them.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Chatterbaits, Rattling Lipless Cranks', color: 'Red, Black/Blue', tip: [{title: 'Find the Inflows', description: 'Rain will create current, and pike will use it to their advantage.'},{title: 'Be Patient', description: 'This is a low-percentage game, but the reward can be huge.'}, {title: 'Target Structure', description: 'Fish will hold tight to any available cover.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        }
+                    },
+                    windy: {
+                        clear: {
+                            warm: { bait: 'Large Spoons, Heavy Spinners', color: 'Silver, White', tip: [{title: 'Cast with the Wind', description: 'Use the wind to your advantage to make extra-long casts.'},{title: 'Fish the Windy Points', description: 'Wind concentrates baitfish on points, and pike will be there to eat them.'}, {title: 'Let it Flutter', description: 'Let your spoon flutter in the wind-driven current.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Large Jerkbaits, Swimbaits', color: 'Perch, Sucker', tip: [{title: 'Suspending Baits', description: 'The wind and waves will impart a natural action on a suspending jerkbait.'},{title: 'Heavy is Better', description: 'Use a heavy swimbait to get down in the water column and maintain contact.'}, {title: 'Use Your Rod Tip', description: 'Use your rod tip to work the bait, not the reel.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Spinnerbaits, Lipless Cranks', color: 'Chartreuse, White', tip: [{title: 'Fish the "Walleye Chop"', description: 'The choppy water provides cover and makes pike more aggressive.'},{title: 'Burn it Back', description: 'A very fast retrieve can trigger reaction strikes.'}, {title: 'Braided Line', description: 'Braid will help you feel bites and cut through the wind.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Large Crankbaits, Spoons', color: 'Firetiger, Orange', tip: [{title: 'Trolling for Giants', description: 'Trolling allows you to cover water and present your lure at a consistent depth.'},{title: 'Braided Line is a Must', description: 'Braid has no stretch, which is essential for driving hooks home on a long line.'}, {title: 'Use a Line Counter Reel', description: 'This helps you repeat the exact presentation when you get a bite.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Giant Spinnerbaits, Chatterbaits', color: 'Chartreuse, Black', tip: [{title: 'Fish the Windy Bank', description: 'This is where the most active fish will be.'},{title: 'Maximum Vibration', description: 'Use a lure that you can feel thumping in your rod tip.'}, {title: 'Keep it Shallow', description: 'Focus your efforts on the 1-5 foot depth range.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] },
+                            cool: { bait: 'Rattling Lipless Cranks', color: 'Red, Gold', tip: [{title: 'Target Shallow Bays', description: 'The wind will push warmer water into shallow bays, and pike will follow.'},{title: 'Repetitive Casting', description: 'Make dozens of casts to a likely-looking spot.'}, {title: 'Go Loud and Slow', description: 'The perfect combination for these conditions.'}, {title: 'Hard, Firm Hookset', description: 'Pike have extremely bony mouths. Use a powerful, decisive hookset to drive the hooks in.'}] }
+                        }
+                    }
+                },
+                 panfish: {
+                    sunny: {
+                        clear: {
+                            warm: { bait: 'Small Jigs under a Bobber', color: 'White, Pink', tip: [{title: 'Find the Shade', description: 'Panfish will be tightly packed into any available shade, especially under docks and overhanging trees.'},{title: 'Set the Depth', description: 'Adjust your bobber stop until you find the exact depth the fish are holding.'}, {title: 'Light Line', description: 'Use 2-4lb line for a more natural presentation.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Wax Worms, Small Minnows', color: 'Chartreuse, White', tip: [{title: 'Fish the Sunny Side', description: 'Panfish will move to the sunny side of cover to warm up.'},{title: 'Slow, Slow, Slow', description: 'Use a very slow presentation. Sometimes no movement at all is best.'}, {title: 'Use a Spring Bobber', description: 'A spring bobber on your rod tip can help detect the lightest bites.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Beetle Spins, Small Jigs', color: 'Yellow, Chartreuse', tip: [{title: 'Target Weed Edges', description: 'Crappie and bluegill will hold on the edges of submerged vegetation.'},{title: '"Tip" Your Jig', description: 'Add a small piece of worm or a crappie nibble to your jig for extra scent.'}, {title: 'Keep it Moving', description: 'A slow, steady retrieve is often best.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Small Minnows, Crappie Tubes', color: 'Pink, White', tip: [{title: 'Find the Wood', description: 'Submerged brush piles and laydowns are panfish magnets.'},{title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}, {title: 'Vertical Jigging', description: 'Position your boat directly over the brush pile and jig vertically.'}, {title: 'Use a Crappie Rig', description: 'A two-hook crappie rig allows you to test two different colors at once.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Live Worms, Crappie Minnows', color: 'Chartreuse, Orange', tip: [{title: 'Scent is Everything', description: 'In muddy water, live bait is by far the most effective.'},{title: 'Stay Put', description: 'Find a likely spot and give the fish time to find your bait by smell.'}, {title: 'Use a Bait Feeder', description: 'A bait feeder style reel can help you detect bites.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Bright Jigs with Scent', color: 'Pink, Chartreuse', tip: [{title: 'Fish Right on the Bank', description: 'Panfish will often be in less than two feet of water.'},{title: 'Use a High-Vis Bobber', description: 'A bright bobber will help you detect the subtle bites.'}, {title: 'Go Slow', description: 'The slower the presentation, the better.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        }
+                    },
+                    cloudy: {
+                        clear: {
+                            warm: { bait: 'Small Spinners, Beetle Spins', color: 'White, Yellow', tip: [{title: 'Fish are Roaming', description: 'Cloud cover makes panfish spread out and roam shallow flats.'},{title: 'Cover Water', description: 'Use a small spinner to cast and retrieve and find where the schools are.'}, {title: 'Fan Cast', description: 'Make casts in a fan pattern to cover all the water in front of you.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Small Jigs, Crappie Tubes', color: 'Black, Blue', tip: [{title: 'Cast and Retrieve Slowly', description: 'A slow, swimming retrieve with a small jig can be deadly.'},{title: 'Watch Your Line', description: 'Often you won\'t feel the bite, but you will see your line jump or move sideways.'}, {title: 'Use a Loop Knot', description: 'A loop knot will give your jig more freedom of movement.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Beetle Spins, Small Spinners', color: 'Chartreuse, White', tip: [{title: 'Shallow and Active', description: 'This is prime time to find active panfish in shallow water.'},{title: 'Fan Cast', description: 'Make casts in a fan pattern to cover all the water in front of you.'}, {title: 'Add a Swivel', description: 'A small swivel will prevent your line from twisting.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Small Minnows, Jigs', color: 'Pink, Orange', tip: [{title: 'Under a Bobber', description: 'Suspending a minnow or jig under a bobber is a classic for a reason.'},{title: 'Find the Greenest Weeds', description: 'The healthiest weeds will hold the most fish.'}, {title: 'Vary the Depth', description: 'Keep adjusting your bobber until you find the fish.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Live Worms, Minnows', color: 'Chartreuse, Pink', tip: [{title: 'Fish the Inflows', description: 'Any source of clearer water will concentrate panfish.'},{title: 'Use a Small Hook', description: 'Don\'t use a hook that is too large for their small mouths.'}, {title: 'Go Bright', description: 'Use a brightly colored jig head with your live bait.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Bright Jigs, Scented Baits', color: 'Orange, Chartreuse', tip: [{title: 'Slow it Down', description: 'A very slow presentation is key in cool, muddy water.'},{title: 'Stay Shallow', description: 'Even in these conditions, panfish will often be surprisingly shallow.'}, {title: 'Add a Crappie Nibble', description: 'The extra scent can make a big difference.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        }
+                    },
+                     rainy: {
+                        clear: {
+                            warm: { bait: 'Live Worms, Small Jigs', color: 'Black, White', tip: [{title: 'Rain Means Food', description: 'Rain washes insects into the water, and panfish go on a feeding frenzy.'},{title: 'Fish Right on the Bank', description: 'Cast right up to the water\'s edge.'}, {title: 'Use a Float', description: 'A small float will help you detect bites.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Small Minnows, Wax Worms', color: 'Pink, Chartreuse', tip: [{title: 'Find Current Breaks', description: 'Fish will sit behind rocks or logs to get out of the current.'},{title: 'Drift with the Current', description: 'Drift your bait under a bobber naturally with the current.'}, {title: 'Stay Mobile', description: 'If you don\'t get a bite in a few minutes, move.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Beetle Spins, Small Jigs', color: 'Chartreuse, White', tip: [{title: 'Active Bite', description: 'Rain and stained water often mean a very active panfish bite.'},{title: 'Keep Moving', description: 'Don\'t stay in one spot for too long. Find the most aggressive fish.'}, {title: 'Cast Past Your Target', description: 'Cast beyond the cover and retrieve your lure past it.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Minnows, Scented Jigs', color: 'Orange, Pink', tip: [{title: 'Bright Colors', description: 'Use bright, easy-to-see colors.'},{title: 'Vertical Jigging', description: 'If you find a school in a brush pile, jigging vertically is most effective.'}, {title: 'Use a Camera', description: 'An underwater camera can help you find brush piles.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Live Worms, Minnows', color: 'Chartreuse, Orange', tip: [{title: 'Scent is King', description: 'In muddy, rainy conditions, live bait is your best and only option.'},{title: 'Fish the Calmest Water', description: 'Find a cove or area protected from the main flow.'}, {title: 'Bottom Fishing', description: 'Let your bait sit right on the bottom.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Scented Jigs, Live Bait', color: 'Pink, Chartreuse', tip: [{title: 'Patience', description: 'These are tough conditions. You have to be patient and let the fish find your bait.'},{title: 'Use a Light', description: 'At night, a small submersible light can attract baitfish, and then panfish.'}, {title: 'Keep it Simple', description: 'A hook, a sinker, and a worm is all you need.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        }
+                    },
+                    windy: {
+                        clear: {
+                            warm: { bait: 'Drop Shot, Slip Bobber', color: 'White, Pink', tip: [{title: 'Use the Wind to Drift', description: 'A controlled drift with a slip bobber is a great way to cover water.'},{title: 'Heavier Weight', description: 'Use a heavier sinker or jig to maintain contact in the wind.'}, {title: 'Long Rod', description: 'A long crappie rod will help you control your line in the wind.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Small Minnows, Jigs', color: 'Chartreuse, White', tip: [{title: 'Find the Windy Side', description: 'The wind will concentrate food on the downwind shore.'},{title: 'Anchor Upwind', description: 'Anchor your boat upwind of a school and cast to them.'}, {title: 'Use a Heavier Jig', description: 'A 1/16 or 1/8 oz jig will help you feel bites.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Beetle Spins, Small Spinners', color: 'Chartreuse, White', tip: [{title: 'Cast with the Wind', description: 'Use the wind to make long casts and cover water.'},{title: 'Braided Line', description: 'Light braided line will help you cast farther and feel bites better.'}, {title: 'Faster Retrieve', description: 'A slightly faster retrieve can trigger bites in the wind.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Minnows, Jigs', color: 'Orange, Pink', tip: [{title: 'Find a Current Break', description: 'Fish will stack up behind points, islands, or reefs to get out of the wind.'},{title: 'Stay Vertical', description: 'It can be easier to control your bait by fishing vertically under the boat.'}, {title: 'Use Your Trolling Motor', description: 'Use your trolling motor to control your drift speed.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Live Minnows, Worms', color: 'Chartreuse, Orange', tip: [{title: 'Fish the Calm Pockets', description: 'Find any small area that is protected from the main wind.'},{title: 'Heavy Bobber', description: 'Use a heavy bobber that won\'t get blown around as much.'}, {title: 'Use a Bait Injector', description: 'Injecting air into a worm can help it float off the bottom.'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] },
+                            cool: { bait: 'Scented Jigs, Live Bait', color: 'Pink, Chartreuse', tip: [{title: 'Tough Conditions', description: 'This is the toughest combination. Focus on finding the warmest, calmest, clearest water you can.'},{title: 'Go Slow', description: 'A dead-stick presentation is often best.'}, {title: 'Stay Home', description: 'Sometimes, the best fishing trip is the one you don\'t take!'}, {title: 'Flick of the Wrist Hookset', description: 'Panfish have delicate mouths. A gentle flick is all that is needed to set the hook.'}] }
+                        }
+                    }
+                }
             };
-             
+
             // --- Render Functions ---
+            
             function createSelectionButtons(container, data, getSelectedValue, onSelectCallback, dataKey) {
                 container.innerHTML = '';
                 for (const key in data) {
                     const item = data[key];
                     const button = document.createElement('button');
                     button.className = 'selection-btn text-center p-3 bg-gray-700 border-2 border-gray-600 rounded-lg text-gray-300 hover:border-blue-500 hover:text-white';
-                    if (key === getSelectedValue()) { button.classList.add('active'); }
+                    if (key === getSelectedValue()) {
+                        button.classList.add('active');
+                    }
                     button.dataset[dataKey] = key;
+                    
                     let innerHTML = '';
                     if (item.svg) innerHTML += item.svg;
                     if (item.imageSrc) innerHTML += `<img src="${item.imageSrc}" alt="${item.name}" class="w-8 h-8 mx-auto mb-1 object-contain">`;
+                    
                     innerHTML += `<span class="text-sm font-medium">${item.name}</span>`;
                     button.innerHTML = innerHTML;
+
                     button.addEventListener('click', () => {
                         onSelectCallback(key);
                         container.querySelectorAll('.selection-btn').forEach(btn => btn.classList.remove('active'));
@@ -333,22 +580,44 @@
                 if (!hex.startsWith('#')) return false;
                 try {
                     const rgb = parseInt(hex.substring(1), 16);
-                    const r = (rgb >> 16) & 0xff, g = (rgb >> 8) & 0xff, b = (rgb >> 0) & 0xff;
-                    return ((r * 299) + (g * 587) + (b * 114)) / 1000 < 128;
-                } catch(e) { return false; }
+                    const r = (rgb >> 16) & 0xff;
+                    const g = (rgb >> 8) & 0xff;
+                    const b = (rgb >> 0) & 0xff;
+                    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+                    return yiq < 128;
+                } catch(e) {
+                    return false;
+                }
+            }
+
+            function renderBaitButtons(baitString) {
+                baitResult.innerHTML = '';
+                const baits = baitString.split(/ or |, /);
+                baits.forEach(baitName => {
+                    baitName = baitName.trim();
+                    if (baitName) {
+                        const button = document.createElement('button');
+                        button.className = 'rec-button bg-gray-700';
+                        button.textContent = baitName;
+                        baitResult.appendChild(button);
+                    }
+                });
             }
 
             function renderColorButtons(colorString) {
                 colorResult.innerHTML = '';
                 const colors = colorString.split(/, | and /);
+
                 colors.forEach(colorName => {
                     colorName = colorName.trim();
                     let hexCode = colorMap[colorName] || '#808080';
+
                     const button = document.createElement('button');
                     button.className = 'rec-button';
                     button.textContent = colorName;
                     button.style.backgroundColor = hexCode;
                     button.style.color = isColorDark(hexCode) ? '#FFFFFF' : '#000000';
+                    
                     colorResult.appendChild(button);
                 });
             }
@@ -357,188 +626,50 @@
                 tipResult.innerHTML = '';
                 const container = document.createElement('div');
                 container.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 mt-2';
+
                 tipArray.forEach(tip => {
                     const tipBox = document.createElement('div');
                     tipBox.className = 'bg-gray-800/50 p-3 rounded-lg border border-gray-700 flex flex-col';
+
                     const title = document.createElement('h4');
                     title.className = 'font-bold text-blue-300';
                     title.textContent = tip.title;
+
                     const description = document.createElement('p');
                     description.className = 'text-gray-400 mt-1';
                     description.textContent = tip.description;
+
                     tipBox.appendChild(title);
                     tipBox.appendChild(description);
                     container.appendChild(tipBox);
                 });
+
                 tipResult.appendChild(container);
             }
 
-            // --- Rating & Bait Rendering Functions ---
-            function getConditionKey() {
-                return `${selectedFish}-${selectedWeather}-${selectedClarity}-${selectedTemp}`;
-            }
-
-            function renderBaitButtons(baitString) {
-                baitResult.innerHTML = '';
-                const baits = baitString.split(/, | or /);
-                baits.forEach(baitName => {
-                    baitName = baitName.trim();
-                    if (!baitName) return;
-
-                    const card = document.createElement('div');
-                    card.className = 'bait-card';
-                    card.dataset.bait = baitName;
-
-                    const nameEl = document.createElement('span');
-                    nameEl.className = 'font-semibold text-white';
-                    nameEl.textContent = baitName;
-                    
-                    const starContainer = document.createElement('div');
-                    starContainer.className = 'star-rating flex flex-row-reverse justify-center mt-2';
-                    starContainer.dataset.bait = baitName;
-
-                    for (let i = 5; i >= 1; i--) {
-                        const starSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                        starSVG.setAttribute('viewBox', '0 0 24 24');
-                        starSVG.setAttribute('fill', 'currentColor');
-                        starSVG.innerHTML = `<path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z" />`;
-                        starSVG.dataset.value = i;
-                        starContainer.appendChild(starSVG);
-                    }
-
-                    card.appendChild(nameEl);
-                    card.appendChild(starContainer);
-                    baitResult.appendChild(card);
-
-                    starContainer.addEventListener('mouseover', handleStarHover);
-                    starContainer.addEventListener('mouseout', handleStarMouseOut);
-                    starContainer.addEventListener('click', handleStarClick);
-                });
-                updateBaitCardRatings();
-            }
-
-            function handleStarHover(e) {
-                if (e.target.tagName !== 'svg' && e.target.tagName !== 'path') return;
-                const starValue = e.target.closest('svg').dataset.value;
-                const stars = e.currentTarget.querySelectorAll('svg');
-                stars.forEach(star => {
-                    star.classList.toggle('hovered', star.dataset.value <= starValue);
-                });
-            }
-
-            function handleStarMouseOut(e) {
-                e.currentTarget.querySelectorAll('svg').forEach(star => star.classList.remove('hovered'));
-            }
-            
-            async function handleStarClick(e) {
-                if (!db) return;
-                if (e.target.tagName !== 'svg' && e.target.tagName !== 'path') return;
-                const starContainer = e.currentTarget;
-                const bait = starContainer.dataset.bait;
-                const rating = parseInt(e.target.closest('svg').dataset.value, 10);
-                
-                starContainer.style.pointerEvents = 'none';
-                starContainer.parentElement.style.opacity = '0.5';
-
-                try {
-                    await addDoc(collection(db, "ratings"), {
-                        conditionKey: getConditionKey(),
-                        bait: bait,
-                        rating: rating,
-                        timestamp: new Date()
-                    });
-                } catch (err) {
-                    console.error("Error saving rating: ", err);
-                    starContainer.style.pointerEvents = 'auto';
-                    starContainer.parentElement.style.opacity = '1';
-                }
-            }
-            
-            function updateBaitCardRatings() {
-                const baitCards = baitResult.querySelectorAll('.bait-card');
-                baitCards.forEach(card => {
-                    const baitName = card.dataset.bait;
-                    const ratingData = allRatings[baitName];
-                    const oldRatingText = card.querySelector('.rating-text');
-                    if (oldRatingText) oldRatingText.remove();
-
-                    if (ratingData) {
-                        const ratingText = document.createElement('div');
-                        ratingText.className = 'rating-text text-xs text-gray-400 mt-1';
-                        ratingText.textContent = `Avg: ${ratingData.average.toFixed(1)} (${ratingData.count} votes)`;
-                        card.appendChild(ratingText);
-                    }
-                });
-            }
-
-            function renderCommunityLeaderboard(ratings) {
-                logbookRatingsDisplay.innerHTML = '';
-                if (Object.keys(ratings).length === 0) {
-                    logbookRatingsDisplay.innerHTML = `<p class="text-gray-500 text-sm italic text-center">No community ratings yet for these conditions.</p>`;
-                    return;
-                }
-                const sortedBaits = Object.entries(ratings).sort(([,a],[,b]) => b.average - a.average);
-                sortedBaits.forEach(([bait, data]) => {
-                    const ratingDiv = document.createElement('div');
-                    ratingDiv.className = 'flex justify-between items-center text-sm';
-                    const average = data.average.toFixed(1);
-                    const starsHTML = Array.from({length: 5}, (_, i) => 
-                        `<svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 ${i < Math.round(data.average) ? '' : 'inactive-star'}"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z" /></svg>`
-                    ).join('');
-
-                    ratingDiv.innerHTML = `
-                        <span class="font-medium text-white">${bait}</span>
-                        <div class="flex items-center gap-2">
-                            <div class="flex rating-display-stars">${starsHTML}</div>
-                            <span class="text-gray-400">(${average})</span>
-                            <span class="text-xs text-gray-500 w-12 text-right">(${data.count} ${data.count === 1 ? 'vote' : 'votes'})</span>
-                        </div>
-                    `;
-                    logbookRatingsDisplay.appendChild(ratingDiv);
-                });
-            }
-
-            function listenForRatings() {
-                if (!db) return;
-                if (currentRatingsUnsubscribe) currentRatingsUnsubscribe();
-                const q = query(collection(db, "ratings"), where("conditionKey", "==", getConditionKey()));
-                currentRatingsUnsubscribe = onSnapshot(q, (querySnapshot) => {
-                    const baitRatings = {};
-                    querySnapshot.forEach((doc) => {
-                        const { bait, rating } = doc.data();
-                        if (!baitRatings[bait]) {
-                            baitRatings[bait] = { total: 0, count: 0 };
-                        }
-                        baitRatings[bait].total += rating;
-                        baitRatings[bait].count++;
-                    });
-                    for (const bait in baitRatings) {
-                        baitRatings[bait].average = baitRatings[bait].total / baitRatings[bait].count;
-                    }
-                    allRatings = baitRatings;
-                    updateBaitCardRatings();
-                    renderCommunityLeaderboard(baitRatings);
-                });
-            }
-
-            // --- Event Listeners & Initial Calls ---
+            // --- Event Listener for Main Button ---
             getRecommendationBtn.addEventListener('click', () => {
                 const rec = recommendations[selectedFish]?.[selectedWeather]?.[selectedClarity]?.[selectedTemp];
+
                 if (rec && rec.bait) {
                     renderBaitButtons(rec.bait);
                     renderColorButtons(rec.color);
                     renderProTips(rec.tip);
-                    if (db) {
-                        listenForRatings();
-                    }
+                    
                     resultsDiv.classList.remove('hidden');
                     setTimeout(() => { 
                         resultsDiv.classList.add('visible');
                     }, 10);
                     resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                } else {
+                    resultsDiv.classList.add('hidden');
+                    resultsDiv.classList.remove('visible');
+                    // This alert should ideally not be triggered now that data is complete.
+                    alert('Sorry, an error occurred while fetching the recommendation.');
                 }
             });
             
+            // --- Initial Render Calls ---
             createSelectionButtons(fishSelector, fishTypes, () => selectedFish, (key) => selectedFish = key, 'fish');
             createSelectionButtons(weatherSelector, weatherTypes, () => selectedWeather, (key) => selectedWeather = key, 'weather');
             createSelectionButtons(claritySelector, clarityTypes, () => selectedClarity, (key) => selectedClarity = key, 'clarity');
@@ -547,4 +678,3 @@
     </script>
 </body>
 </html>
-
