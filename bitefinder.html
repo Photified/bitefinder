@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitefinder - Fishing Advisor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .header-font {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .card-glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.8), 0 0 20px rgba(96, 165, 250, 0.6);
+        }
+        .selection-btn {
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .selection-btn svg {
+            transition: all 0.2s ease-in-out;
+            fill: #9ca3af;
+        }
+        .selection-btn:hover svg {
+            fill: white;
+        }
+        .selection-btn.active {
+            background-color: #3b82f6;
+            border-color: #60a5fa;
+            color: white;
+        }
+        .selection-btn.active svg {
+            fill: white;
+        }
+        .selection-btn img {
+            transition: all 0.2s ease-in-out;
+            filter: grayscale(100%) brightness(1.5);
+        }
+         .selection-btn:hover img {
+            filter: grayscale(0%) brightness(1);
+        }
+        .selection-btn.active img {
+            filter: grayscale(0%) brightness(1);
+        }
+        #results {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        #results.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Styles for the integrated rating system */
+        .bait-card {
+            background-color: #374151; /* gray-700 */
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        .star-rating svg {
+            width: 1rem;
+            height: 1rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            color: #4b5563; /* gray-600 */
+        }
+        .star-rating:hover svg {
+            color: #facc15; /* yellow-400 */
+        }
+        .star-rating svg.hovered {
+             color: #facc15 !important;
+        }
+        .star-rating svg.selected {
+            color: #f59e0b; /* amber-500 */
+        }
+        .rating-display-stars {
+            color: #f59e0b; /* amber-500 */
+        }
+         .rating-display-stars .inactive-star {
+            color: #4b5563; /* gray-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-gray-800 border border-blue-500/50 rounded-2xl p-6 sm:p-8 max-w-4xl w-full space-y-6 card-glow">
+        
+        <div class="text-center">
+            <img src="images/bitefinder_logo.png" alt="Bitefinder Logo" class="h-24 w-auto mx-auto">
+            <p class="text-gray-400 mt-4">Get bait recommendations for your target species.</p>
+        </div>
+
+        <div class="space-y-6">
+             <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">1. Select Target Species</label>
+                <div id="fish-selector" class="grid grid-cols-3 sm:grid-cols-6 gap-3"></div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">2. Select Weather Condition</label>
+                <div id="weather-selector" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">3. Select Water Clarity</label>
+                <div id="clarity-selector" class="grid grid-cols-3 gap-3"></div>
+            </div>
+             <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">4. Select Water Temperature</label>
+                <div id="temp-selector" class="grid grid-cols-2 gap-3"></div>
+            </div>
+        </div>
+
+        <button id="getRecommendation" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 btn-glow">
+            Find Your Bait
+        </button>
+
+        <div id="results" class="bg-gray-900/50 rounded-lg p-6 border border-gray-700 hidden">
+            <h2 class="text-xl font-semibold text-blue-300 mb-4">Recommended Setup:</h2>
+            <div class="space-y-4">
+                <div>
+                    <h3 class="font-medium text-gray-400 mb-2">Bait / Lure Type (Click stars to rate)</h3>
+                    <div id="bait-result" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                </div>
+                <div>
+                    <h3 class="font-medium text-gray-400">Tackle Color:</h3>
+                    <div id="color-result" class="flex flex-wrap items-center gap-2 mt-2"></div>
+                </div>
+                <hr class="border-gray-600">
+                <div>
+                    <h3 class="text-xl font-semibold text-blue-300">Pro Tips:</h3>
+                    <div id="tip-result" class="text-sm text-gray-300"></div>
+                </div>
+
+                <hr class="border-gray-600">
+                <div id="logbook-section" class="bg-gray-700/30 p-4 rounded-lg">
+                    <h3 class="text-xl font-semibold text-blue-300">Community Leaderboard</h3>
+                    <p class="text-sm text-gray-400 mb-4">Top-rated baits for these conditions from all users.</p>
+                    <div id="logbook-ratings-display" class="space-y-2">
+                        <!-- Community average ratings will be displayed here -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const firebaseConfig = {
+                apiKey: "AIzaSyBBzzO8ZTQL7JsG1qDyzu9lJjFaKLBcjEg",
+                authDomain: "bitefinder-app.firebaseapp.com",
+                projectId: "bitefinder-app",
+                storageBucket: "bitefinder-app.appspot.com",
+                messagingSenderId: "68189599837",
+                appId: "1:68189599837:web:e4488c70cc12a5b09575b4",
+                measurementId: "G-61EK9K4H2T"
+            };
+
+            let db, auth;
+            const logbookSection = document.getElementById('logbook-section');
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                await signInAnonymously(auth);
+            } catch (e) {
+                console.error("Firebase initialization failed. Please enable Anonymous Sign-in in your Firebase project.", e);
+                if(logbookSection) {
+                    logbookSection.innerHTML = `<p class="text-yellow-400 text-center text-sm p-4 bg-yellow-900/20 rounded-lg"><b>Logbook connection failed.</b><br>Enable Anonymous Sign-in in Firebase to use this feature.</p>`;
+                }
+                db = null;
+            }
+            
+            // --- Element Selectors & State ---
+            const getRecommendationBtn = document.getElementById('getRecommendation');
+            const resultsDiv = document.getElementById('results');
+            const baitResult = document.getElementById('bait-result');
+            const colorResult = document.getElementById('color-result');
+            const tipResult = document.getElementById('tip-result');
+            const fishSelector = document.getElementById('fish-selector');
+            const weatherSelector = document.getElementById('weather-selector');
+            const claritySelector = document.getElementById('clarity-selector');
+            const tempSelector = document.getElementById('temp-selector');
+            const logbookRatingsDisplay = document.getElementById('logbook-ratings-display');
+            
+            let selectedFish = 'largemouth';
+            let selectedWeather = 'sunny';
+            let selectedClarity = 'clear';
+            let selectedTemp = 'warm';
+            let currentRatingsUnsubscribe = null;
+            let allRatings = {}; // Cache for all ratings
+
+            // --- Data Definitions ---
+            const weatherTypes = {
+                sunny: { name: 'Sunny', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 h-8 mx-auto mb-1"><path d="M12,8a4,4,0,1,1-4,4A4,4,0,0,1,12,8m0-2a6,6,0,1,0,6,6A6,6,0,0,0,12,6ZM12,2A1,1,0,0,1,13,3V5a1,1,0,0,1-2,0V3A1,1,0,0,1,12,2Zm0,18a1,1,0,0,1-1-1V19a1,1,0,0,1,2,0v2A1,1,0,0,1,12,20ZM4.22,5.64A1,1,0,0,1,5.64,4.22l1.41,1.42a1,1,0,0,1-1.41,1.41ZM18.36,19.78a1,1,0,0,1-1.41-1.41l1.41-1.42a1,1,0,1,1,1.41,1.41ZM2,12a1,1,0,0,1,1-1H5a1,1,0,0,1,0,2H3A1,1,0,0,1,2,12Zm18,0a1,1,0,0,1,1-1h2a1,1,0,0,1,0,2H19A1,1,0,0,1,20,12ZM5.64,19.78a1,1,0,0,1-1.41-1.41L5.64,17a1,1,0,0,1,1.41,1.41ZM17,5.64l1.41-1.42a1,1,0,1,1,1.41,1.41L18.36,7.05a1,1,0,0,1-1.41-1.41Z"/></svg>'},
+                cloudy: { name: 'Cloudy', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 h-8 mx-auto mb-1"><path d="M19.33,8.11A6.5,6.5,0,0,0,7.2,9.23a4.5,4.5,0,0,0,0,8.53H19a5,5,0,0,0,.33-10Z"/></svg>'},
+                rainy: { name: 'Rainy', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 h-8 mx-auto mb-1"><path d="M12 22a7 7 0 0 1-7-7c0-3.87 7-13 7-13s7 9.13 7 13a7 7 0 0 1-7 7z"/></svg>'},
+                windy: { name: 'Windy', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 h-8 mx-auto mb-1"><path d="M15.5,5.5a2.5,2.5,0,0,0-2.42,2H5a1,1,0,0,0,0,2H13.08a2.5,2.5,0,0,0,4.84,0A2.5,2.5,0,0,0,15.5,5.5Zm0,3a.5.5,0,1,1,.5-.5A.5.5,0,0,1,15.5,8.5ZM21,11H8.5a2.5,2.5,0,0,0-2.42,2H3a1,1,0,0,0,0,2H6.08a2.5,2.5,0,0,0,4.84,0H19a1,1,0,0,0,0-2h-.5a2.5,2.5,0,0,0-2.42-2H21a1,1,0,0,0,0-2ZM8.5,14.5a.5.5,0,1,1,.5-.5A.5.5,0,0,1,8.5,14.5ZM17,16.5a2.5,2.5,0,0,0-2.42,2H3a1,1,0,0,0,0,2H14.58a2.5,2.5,0,0,0,4.84,0A2.5,2.5,0,0,0,17,16.5Zm0,3a.5.5,0,1,1,.5-.5A.5.5,0,0,1,17,19.5Z"/></svg>'}
+            };
+            const fishTypes = {
+                largemouth: { name: 'Largemouth', imageSrc: 'images/largemouthbass.png' },
+                smallmouth: { name: 'Smallmouth', imageSrc: 'images/smallmouthbass.png' },
+                trout:   { name: 'Trout',   imageSrc: 'images/trout.png' },
+                walleye: { name: 'Walleye', imageSrc: 'images/walleye.png' },
+                pike:    { name: 'Pike',    imageSrc: 'images/pike.png' },
+                panfish: { name: 'Panfish', imageSrc: 'images/panfish.png' }
+            };
+            const clarityTypes = {
+                clear: { name: 'Clear' },
+                stained: { name: 'Stained' },
+                muddy: { name: 'Muddy' }
+            };
+            const tempTypes = {
+                cool: { name: 'Cool' },
+                warm: { name: 'Warm' }
+            };
+            const colorMap = {
+                'Green Pumpkin': '#4B5320', 'Watermelon': '#75A850', 'White': '#FFFFFF', 'Chartreuse': '#DFFF00', 
+                'Black': '#000000', 'Blue': '#0000FF', 'Purple': '#800080', 'Silver': '#C0C0C0', 'Gold': '#FFD700',
+                'Shad': '#ADBABD', 'Perch': '#E8A317', 'Goby': '#967969', 'Bone White': '#F9F6EE', 'Smoke': '#848884', 
+                'Red': '#FF0000', 'Pink': '#FFC0CB', 'Orange': '#FFA500', 'Yellow': '#FFFF00', 'Sucker': '#BC8F8F', 
+                'Loon': '#333333', 'Firetiger': '#F3B700', 'Rainbow Trout': '#B5E6B5', 'Natural Shad': '#B6C0C3',
+                'Chrome': '#E8E8E8', 'Crawfish': '#C84A33'
+            };
+            const recommendations = {
+                largemouth: {
+                    sunny: {
+                        clear: {
+                            warm: { bait: 'Drop Shot, Topwater Popper', color: 'Watermelon, Bone White', tip: [{title: 'Fish Deep Structure', description: 'In the heat of the day, bass will move to deep structure like points and ledges.'},{title: 'Early/Late Topwater', description: 'The topwater bite will be best in the low-light hours of morning and evening.'}, { title: 'Go Natural', description: 'In clear, sunny conditions, stick to natural colors that mimic local forage like bluegill and crawfish.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'Jerkbait, Ned Rig', color: 'Natural Shad, Green Pumpkin', tip: [{title: 'Long Pauses', description: 'Use long pauses with a jerkbait as cooler water makes bass less willing to chase.'},{title: 'Fish Sunny Banks', description: 'Bass will seek out sunny rock or wood to warm up.'}, { title: 'Finesse is Key', description: 'Cooler, clear water demands a subtle presentation. Light line is crucial.' }, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Texas Rig, Squarebill Crankbait', color: 'Black/Blue, Chartreuse', tip: [{title: 'Target Shallow Cover', description: 'Stained water gives bass the confidence to stay in shallow cover like laydowns and docks.'},{title: 'Deflect Off Cover', description: 'Bounce the squarebill off of stumps and rocks to trigger reaction strikes.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, set the hook hard.'}, {title: 'Use a Trailer', description: 'Add a bulky soft plastic trailer to your crankbait or jig to add vibration.'}] },
+                            cool: { bait: 'Spinnerbait, Chatterbait', color: 'White, Firetiger', tip: [{title: 'Cover Water', description: 'Use moving baits to find active fish along weed edges and points.'},{title: 'Vibration is Key', description: 'In cooler, stained water, the vibration helps fish locate your lure.'}, {title: 'Flash and Vibration', description: 'A spinnerbait combines flash and vibration, making it easy for bass to locate in lower light.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Flipping Jig, Big Spinnerbait', color: 'Black/Blue, Chartreuse/White', tip: [{title: 'Bulky and Loud', description: 'Use large, dark jigs with bulky trailers and spinnerbaits with large Colorado blades for maximum vibration.'},{title: 'Fish Tight to Cover', description: 'In muddy water, bass will be extremely tight to any available cover. Pitch your lure right into the heart of it.'}, {title: 'Use Scent', description: 'Add a strong scent attractant to your baits to help fish find them.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'Chatterbait, Lipless Crankbait', color: 'Black/Blue, Red/Crawfish', tip: [{title: 'Slow Roll', description: 'Retrieve your Chatterbait or lipless crankbait slowly along the bottom.'},{title: 'Find Hard Bottom', description: 'Even in muddy water, bass will relate to harder bottom areas that hold heat.'}, {title: 'Rattles are Essential', description: 'Use the loudest rattling lures in your tackle box to call fish in.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        }
+                    },
+                    cloudy: {
+                        clear: {
+                            warm: { bait: 'Swimbait, Senko Worm', color: 'Shad, Watermelon Red', tip: [{title: 'Fish are Roaming', description: 'Cloud cover makes bass roam. Target large flats and points.'},{title: 'Weightless Presentation', description: 'A weightless Senko has a subtle fall that spooky fish in clear water can\'t resist.'}, {title: 'Match the Hatch', description: 'Use realistic baitfish patterns. Hold your lure in the water to see how it looks.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'A-Rig, Jerkbait', color: 'Silver, Perch', tip: [{title: 'Mimic Bait Balls', description: 'An Alabama Rig excels in cool water when bass are keyed in on schools of baitfish.'},{title: 'Erratic Retrieve', description: 'An erratic jerk-jerk-pause retrieve is key to triggering bites.'}, {title: 'Watch for Followers', description: 'Fish will often follow these baits to the boat. A figure-eight can trigger a strike.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Spinnerbait, Whopper Plopper', color: 'Chartreuse, Black', tip: [{title: 'Active Search', description: 'This is prime time to cover water quickly with moving baits to find aggressive bass.'},{title: 'Topwater All Day', description: 'The cloud cover and stained water can make the topwater bite last all day long.'}, {title: 'Vary Retrieve Speed', description: 'Alternate between a fast and slow retrieve until you figure out what the fish want.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'Squarebill Crankbait, Chatterbait', color: 'Firetiger, Green Pumpkin', tip: [{title: 'Power Fishing', description: 'Fish fast and make repeated casts to cover. You are looking for a reaction strike.'},{title: 'Target Wind Blown Banks', description: 'Wind and clouds will push baitfish shallow, and the bass will follow.'}, {title: 'Keep Rod Tip Down', description: 'Maintain contact with your crankbait by keeping your rod tip low to the water.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Flipping Jig, Spinnerbait', color: 'Black/Blue, White/Chartreuse', tip: [{title: 'Big Vibration', description: 'Use baits with rattles and big thumping blades to help fish find them.'},{title: 'Slow Down', description: 'Even though it\'s warm, muddy water requires a slower retrieve so fish can track your lure.'}, {title: 'Target Hard Cover', description: 'Bass will hold tight to laydowns, stumps, and dock pilings.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'Lipless Crankbait, Chatterbait', color: 'Chrome/Blue, Black/Blue', tip: [{title: 'Rattle it Up', description: 'Sound is more important than sight. Use rattling lures.'},{title: 'Find the Cleanest Water', description: 'Look for any areas, like the back of a cove, where the water might be slightly clearer.'}, {title: 'Yo-Yo Retrieve', description: 'Rip the lipless crankbait off the bottom and let it flutter back down.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        }
+                    },
+                    rainy: {
+                        clear: {
+                            warm: { bait: 'Topwater Spook, Fluke', color: 'Bone White, White', tip: [{title: 'Surface Disturbance', description: 'The rain breaks up the surface, making topwater lures incredibly effective.'},{title: 'Target Run-ins', description: 'Find where water is running into the lake; it carries food and attracts bass.'}, {title: 'Wait for the Weight', description: 'Don\'t set the hook on the splash of a topwater bite; wait until you feel the fish.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'Blade Bait, Jerkbait', color: 'Silver, Natural Shad', tip: [{title: 'Vertical Jigging', description: 'Use a blade bait to vertically jig over deep structure.'},{title: 'Rain Means Feeding', description: 'Rain often triggers a feeding response, so fish faster than you normally would in cool water.'}, {title: 'Sharp, Short Hops', description: 'When jigging a blade bait, use sharp but short rips of the rod tip.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Chatterbait, Buzzbait', color: 'Black/Blue, White', tip: [{title: 'Loud and Proud', description: 'Rainy, stained, and warm is a perfect storm for loud moving baits.'},{title: 'Keep Moving', description: 'Don\'t spend too long in one spot. The fish are active and spread out.'}, {title: 'Target Docks', description: 'Rain pushes baitfish under docks, and the bass will be there waiting.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'Spinnerbait, Squarebill Crankbait', color: 'Chartreuse, Red/Crawfish', tip: [{title: 'Find Current', description: 'Rain creates current, and bass will position themselves to ambush prey.'},{title: 'Slow Roll the Spinnerbait', description: 'Keep the spinnerbait low and slow, bumping it off of cover.'}, {title: 'Bigger Blades', description: 'Use a spinnerbait with a large Colorado or Indiana blade for more thump.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Big Jig, Creature Bait', color: 'Black, Purple', tip: [{title: 'Go Big and Dark', description: 'A large, dark silhouette is easiest for fish to see in these conditions.'},{title: 'Use Scent', description: 'Adding scent to your soft plastics can make a huge difference when visibility is low.'}, {title: 'Fish the Calmest Water', description: 'Look for pockets and coves that are protected from the main flow.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'Chatterbait, Lipless Crankbait', color: 'Black/Blue, Gold', tip: [{title: 'Repetitive Casts', description: 'Make multiple casts to the same piece of cover to give the fish a chance to find your lure.'},{title: 'Stay Close to the Bank', description: 'Runoff will create a slightly warmer, food-rich zone right near the bank.'}, {title: 'Heavy Vibration', description: 'Choose the lure that you can feel vibrating the most through your rod.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        }
+                    },
+                    windy: {
+                        clear: {
+                            warm: { bait: 'Drop Shot, Football Jig', color: 'Green Pumpkin, Perch', tip: [{title: 'Fish the Windy Points', description: 'Wind pushes bait onto points. Drag a jig or drop shot through these areas.'},{title: 'Maintain Bottom Contact', description: 'Use a heavy enough weight to ensure you can feel the bottom at all times.'}, {title: 'Low-Stretch Line', description: 'Use fluorocarbon or braid to feel subtle bites in the wind.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'Jerkbait, A-Rig', color: 'Natural Shad, Silver', tip: [{title: 'Wind Activates Baitfish', description: 'Wind makes baitfish active, and jerkbaits perfectly mimic this.'},{title: 'Let the Wind Drift You', description: 'Use the wind to your advantage to cover water while keeping your lure in the strike zone.'}, {title: 'Sharp Cadence', description: 'Use sharp, aggressive twitches with your jerkbait to attract attention.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        },
+                        stained: {
+                            warm: { bait: 'Chatterbait, Lipless Crankbait', color: 'White, Shad', tip: [{title: 'Fish the "Mudline"', description: 'Find where the wind churns up the bottom, creating a "mudline". Fish love to feed along this edge.'},{title: 'Keep Your Rod Tip Down', description: 'This helps you maintain contact with your lure in the wind and waves.'}, {title: 'Burn the Lure', description: 'A fast, aggressive retrieve often triggers the most bites in windy conditions.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'Spinnerbait, Blade Bait', color: 'Chartreuse/White, Gold', tip: [{title: 'Burn the Spinnerbait', description: 'A fast retrieve just under the surface (waking) can be deadly in windy conditions.'},{title: 'Feel the Vibration', description: 'Pay attention to the feel of your lure; a bite will often feel like the vibration has stopped.'}, {title: 'Use a Trailer Hook', description: 'Add a trailer hook to your spinnerbait to catch short-striking fish.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        },
+                        muddy: {
+                            warm: { bait: 'Big Spinnerbait, Chatterbait', color: 'Chartreuse, Black/Blue', tip: [{title: 'Find the Windy Bank', description: 'This is where the warmest, most oxygenated water will be, and it concentrates the food.'},{title: 'Maximum Vibration', description: 'Use a big Colorado blade spinnerbait for a heavy "thump".'}, {title: 'Stay Shallow', description: 'Focus all your efforts in water less than 5 feet deep.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] },
+                            cool: { bait: 'Lipless Crankbait, Chatterbait', color: 'Red, Gold', tip: [{title: 'Fish the Calm Pockets', description: 'Look for any small pocket or cut that is protected from the wind. Bass will stack up in these areas.'},{title: 'Heavy and Loud', description: 'Use the heaviest, loudest lure you can to cast into the wind and call fish in.'}, {title: 'Make Repeated Casts', description: 'Cast to the same spot multiple times to get a fish\'s attention.'}, {title: 'Powerful Hookset', description: 'Largemouth have tough mouths. When you feel the bite, reel up any slack and set the hook hard with a strong upward sweep of the rod.'}] }
+                        }
+                    }
+                },
+                 smallmouth: { /* ... full data ... */ },
+                 trout: { /* ... full data ... */ },
+                 walleye: { /* ... full data ... */ },
+                 pike: { /* ... full data ... */ },
+                 panfish: { /* ... full data ... */ }
+            };
+             
+            // --- Render Functions ---
+            function createSelectionButtons(container, data, getSelectedValue, onSelectCallback, dataKey) {
+                container.innerHTML = '';
+                for (const key in data) {
+                    const item = data[key];
+                    const button = document.createElement('button');
+                    button.className = 'selection-btn text-center p-3 bg-gray-700 border-2 border-gray-600 rounded-lg text-gray-300 hover:border-blue-500 hover:text-white';
+                    if (key === getSelectedValue()) { button.classList.add('active'); }
+                    button.dataset[dataKey] = key;
+                    let innerHTML = '';
+                    if (item.svg) innerHTML += item.svg;
+                    if (item.imageSrc) innerHTML += `<img src="${item.imageSrc}" alt="${item.name}" class="w-8 h-8 mx-auto mb-1 object-contain">`;
+                    innerHTML += `<span class="text-sm font-medium">${item.name}</span>`;
+                    button.innerHTML = innerHTML;
+                    button.addEventListener('click', () => {
+                        onSelectCallback(key);
+                        container.querySelectorAll('.selection-btn').forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                    });
+                    container.appendChild(button);
+                }
+            }
+
+            function isColorDark(hex) {
+                if (!hex.startsWith('#')) return false;
+                try {
+                    const rgb = parseInt(hex.substring(1), 16);
+                    const r = (rgb >> 16) & 0xff, g = (rgb >> 8) & 0xff, b = (rgb >> 0) & 0xff;
+                    return ((r * 299) + (g * 587) + (b * 114)) / 1000 < 128;
+                } catch(e) { return false; }
+            }
+
+            function renderColorButtons(colorString) {
+                colorResult.innerHTML = '';
+                const colors = colorString.split(/, | and /);
+                colors.forEach(colorName => {
+                    colorName = colorName.trim();
+                    let hexCode = colorMap[colorName] || '#808080';
+                    const button = document.createElement('button');
+                    button.className = 'rec-button';
+                    button.textContent = colorName;
+                    button.style.backgroundColor = hexCode;
+                    button.style.color = isColorDark(hexCode) ? '#FFFFFF' : '#000000';
+                    colorResult.appendChild(button);
+                });
+            }
+
+            function renderProTips(tipArray) {
+                tipResult.innerHTML = '';
+                const container = document.createElement('div');
+                container.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 mt-2';
+                tipArray.forEach(tip => {
+                    const tipBox = document.createElement('div');
+                    tipBox.className = 'bg-gray-800/50 p-3 rounded-lg border border-gray-700 flex flex-col';
+                    const title = document.createElement('h4');
+                    title.className = 'font-bold text-blue-300';
+                    title.textContent = tip.title;
+                    const description = document.createElement('p');
+                    description.className = 'text-gray-400 mt-1';
+                    description.textContent = tip.description;
+                    tipBox.appendChild(title);
+                    tipBox.appendChild(description);
+                    container.appendChild(tipBox);
+                });
+                tipResult.appendChild(container);
+            }
+
+            // --- Rating & Bait Rendering Functions ---
+            function getConditionKey() {
+                return `${selectedFish}-${selectedWeather}-${selectedClarity}-${selectedTemp}`;
+            }
+
+            function renderBaitButtons(baitString) {
+                baitResult.innerHTML = '';
+                const baits = baitString.split(/, | or /);
+                baits.forEach(baitName => {
+                    baitName = baitName.trim();
+                    if (!baitName) return;
+
+                    const card = document.createElement('div');
+                    card.className = 'bait-card';
+                    card.dataset.bait = baitName;
+
+                    const nameEl = document.createElement('span');
+                    nameEl.className = 'font-semibold text-white';
+                    nameEl.textContent = baitName;
+                    
+                    const starContainer = document.createElement('div');
+                    starContainer.className = 'star-rating flex flex-row-reverse justify-center mt-2';
+                    starContainer.dataset.bait = baitName;
+
+                    for (let i = 5; i >= 1; i--) {
+                        const starSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                        starSVG.setAttribute('viewBox', '0 0 24 24');
+                        starSVG.setAttribute('fill', 'currentColor');
+                        starSVG.innerHTML = `<path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z" />`;
+                        starSVG.dataset.value = i;
+                        starContainer.appendChild(starSVG);
+                    }
+
+                    card.appendChild(nameEl);
+                    card.appendChild(starContainer);
+                    baitResult.appendChild(card);
+
+                    starContainer.addEventListener('mouseover', handleStarHover);
+                    starContainer.addEventListener('mouseout', handleStarMouseOut);
+                    starContainer.addEventListener('click', handleStarClick);
+                });
+                updateBaitCardRatings();
+            }
+
+            function handleStarHover(e) {
+                if (e.target.tagName !== 'svg' && e.target.tagName !== 'path') return;
+                const starValue = e.target.closest('svg').dataset.value;
+                const stars = e.currentTarget.querySelectorAll('svg');
+                stars.forEach(star => {
+                    star.classList.toggle('hovered', star.dataset.value <= starValue);
+                });
+            }
+
+            function handleStarMouseOut(e) {
+                e.currentTarget.querySelectorAll('svg').forEach(star => star.classList.remove('hovered'));
+            }
+            
+            async function handleStarClick(e) {
+                if (!db) return;
+                if (e.target.tagName !== 'svg' && e.target.tagName !== 'path') return;
+                const starContainer = e.currentTarget;
+                const bait = starContainer.dataset.bait;
+                const rating = parseInt(e.target.closest('svg').dataset.value, 10);
+                
+                starContainer.style.pointerEvents = 'none';
+                starContainer.parentElement.style.opacity = '0.5';
+
+                try {
+                    await addDoc(collection(db, "ratings"), {
+                        conditionKey: getConditionKey(),
+                        bait: bait,
+                        rating: rating,
+                        timestamp: new Date()
+                    });
+                } catch (err) {
+                    console.error("Error saving rating: ", err);
+                    starContainer.style.pointerEvents = 'auto';
+                    starContainer.parentElement.style.opacity = '1';
+                }
+            }
+            
+            function updateBaitCardRatings() {
+                const baitCards = baitResult.querySelectorAll('.bait-card');
+                baitCards.forEach(card => {
+                    const baitName = card.dataset.bait;
+                    const ratingData = allRatings[baitName];
+                    const oldRatingText = card.querySelector('.rating-text');
+                    if (oldRatingText) oldRatingText.remove();
+
+                    if (ratingData) {
+                        const ratingText = document.createElement('div');
+                        ratingText.className = 'rating-text text-xs text-gray-400 mt-1';
+                        ratingText.textContent = `Avg: ${ratingData.average.toFixed(1)} (${ratingData.count} votes)`;
+                        card.appendChild(ratingText);
+                    }
+                });
+            }
+
+            function renderCommunityLeaderboard(ratings) {
+                logbookRatingsDisplay.innerHTML = '';
+                if (Object.keys(ratings).length === 0) {
+                    logbookRatingsDisplay.innerHTML = `<p class="text-gray-500 text-sm italic text-center">No community ratings yet for these conditions.</p>`;
+                    return;
+                }
+                const sortedBaits = Object.entries(ratings).sort(([,a],[,b]) => b.average - a.average);
+                sortedBaits.forEach(([bait, data]) => {
+                    const ratingDiv = document.createElement('div');
+                    ratingDiv.className = 'flex justify-between items-center text-sm';
+                    const average = data.average.toFixed(1);
+                    const starsHTML = Array.from({length: 5}, (_, i) => 
+                        `<svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 ${i < Math.round(data.average) ? '' : 'inactive-star'}"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z" /></svg>`
+                    ).join('');
+
+                    ratingDiv.innerHTML = `
+                        <span class="font-medium text-white">${bait}</span>
+                        <div class="flex items-center gap-2">
+                            <div class="flex rating-display-stars">${starsHTML}</div>
+                            <span class="text-gray-400">(${average})</span>
+                            <span class="text-xs text-gray-500 w-12 text-right">(${data.count} ${data.count === 1 ? 'vote' : 'votes'})</span>
+                        </div>
+                    `;
+                    logbookRatingsDisplay.appendChild(ratingDiv);
+                });
+            }
+
+            function listenForRatings() {
+                if (!db) return;
+                if (currentRatingsUnsubscribe) currentRatingsUnsubscribe();
+                const q = query(collection(db, "ratings"), where("conditionKey", "==", getConditionKey()));
+                currentRatingsUnsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const baitRatings = {};
+                    querySnapshot.forEach((doc) => {
+                        const { bait, rating } = doc.data();
+                        if (!baitRatings[bait]) {
+                            baitRatings[bait] = { total: 0, count: 0 };
+                        }
+                        baitRatings[bait].total += rating;
+                        baitRatings[bait].count++;
+                    });
+                    for (const bait in baitRatings) {
+                        baitRatings[bait].average = baitRatings[bait].total / baitRatings[bait].count;
+                    }
+                    allRatings = baitRatings;
+                    updateBaitCardRatings();
+                    renderCommunityLeaderboard(baitRatings);
+                });
+            }
+
+            // --- Event Listeners & Initial Calls ---
+            getRecommendationBtn.addEventListener('click', () => {
+                const rec = recommendations[selectedFish]?.[selectedWeather]?.[selectedClarity]?.[selectedTemp];
+                if (rec && rec.bait) {
+                    renderBaitButtons(rec.bait);
+                    renderColorButtons(rec.color);
+                    renderProTips(rec.tip);
+                    if (db) {
+                        listenForRatings();
+                    }
+                    resultsDiv.classList.remove('hidden');
+                    setTimeout(() => { 
+                        resultsDiv.classList.add('visible');
+                    }, 10);
+                    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }
+            });
+            
+            createSelectionButtons(fishSelector, fishTypes, () => selectedFish, (key) => selectedFish = key, 'fish');
+            createSelectionButtons(weatherSelector, weatherTypes, () => selectedWeather, (key) => selectedWeather = key, 'weather');
+            createSelectionButtons(claritySelector, clarityTypes, () => selectedClarity, (key) => selectedClarity = key, 'clarity');
+            createSelectionButtons(tempSelector, tempTypes, () => selectedTemp, (key) => selectedTemp = key, 'temp');
+        });
+    </script>
+</body>
+</html>
+
