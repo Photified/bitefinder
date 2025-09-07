@@ -101,7 +101,8 @@
         }
         .fish-selector-scroll > button { /* Target buttons inside the new class */
             flex: 0 0 auto; /* Prevents buttons from shrinking */
-            width: 100px; /* Give buttons a fixed width */
+            width: 120px; /* Give buttons a fixed width */
+            height: 120px; /* Give buttons a fixed height */
         }
     </style>
 </head>
@@ -827,7 +828,7 @@
                     
                     let innerHTML = '';
                     if (item.svg) innerHTML += item.svg;
-                    if (item.imageSrc) innerHTML += `<img src="${item.imageSrc}" alt="${item.name}" class="w-8 h-8 mx-auto mb-1 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/32x32/1E293B/FFFFFF?text=?';">`;
+                    if (item.imageSrc) innerHTML += `<img src="${item.imageSrc}" alt="${item.name}" class="w-24 h-24 mx-auto mb-1 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/96x96/1E293B/FFFFFF?text=?';">`;
                     
                     innerHTML += `<span class="text-sm font-medium">${item.name}</span>`;
                     button.innerHTML = innerHTML;
