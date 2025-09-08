@@ -284,7 +284,137 @@
                 panfish: { rod: 'Ultra-Light Power, Fast Action', line: '2-4lb Monofilament' },
                 catfish: { rod: 'Medium-Heavy to Heavy Power, Moderate-Fast Action', line: '20-50lb Monofilament or Braid' }
             };
-            
+			
+			// --- NEW: Lure Map for Images ---
+            const lureMap = {
+                'Drop Shot': { image: 'images/lures/dropshot.png' },
+                'Topwater Popper': { image: 'images/lures/popper.png' },
+                'Jerkbait': { image: 'images/lures/jerkbait.png' },
+                'Large Jerkbaits': { image: 'images/lures/jerkbait.png' },
+                'Small Jerkbaits': { image: 'images/lures/jerkbait.png' },
+                'Ned Rig': { image: 'images/lures/nedrig.png' },
+                'Flipping Jig': { image: 'images/lures/jig.png' },
+                'Big Jig': { image: 'images/lures/jig.png' },
+                'Big Jigs': { image: 'images/lures/jig.png' },
+                'Jig': { image: 'images/lures/jig.png' },
+                'Football Jig': { image: 'images/lures/jig.png' },
+                'Jig with a Minnow': { image: 'images/lures/jig.png' },
+                'Jig and Minnow': { image: 'images/lures/jig.png' },
+                'Jig with Large Minnow': { image: 'images/lures/jig.png' },
+                'Jig and Worm': { image: 'images/lures/jig.png' },
+                'Scented Jigs': { image: 'images/lures/jig.png' },
+                'Bright Jigs with Scent': { image: 'images/lures/jig.png' },
+                'Small Jigs': { image: 'images/lures/jig.png' },
+                'Small Jig': { image: 'images/lures/jig.png' },
+                'Bright Jigs': { image: 'images/lures/jig.png' },
+                'Glow Jigs with Sucker Meat': { image: 'images/lures/jig.png' },
+                'Glow Jigs with Bait': { image: 'images/lures/jig.png' },
+                'Small Jig with Plastic': { image: 'images/lures/jig.png' },
+                'Spinnerbait': { image: 'images/lures/spinnerbait.png' },
+                'Big Spinnerbait': { image: 'images/lures/spinnerbait.png' },
+                'Large Spinnerbaits': { image: 'images/lures/spinnerbait.png' },
+                'Giant Spinnerbaits': { image: 'images/lures/spinnerbait.png' },
+                'Small Spinners': { image: 'images/lures/spinnerbait.png' },
+                'Small Spinner': { image: 'images/lures/spinnerbait.png' },
+                'Inline Spinners': { image: 'images/lures/spinnerbait.png' },
+                'Large Spinners': { image: 'images/lures/spinnerbait.png' },
+                'Big Spinners': { image: 'images/lures/spinnerbait.png' },
+                'Weighted Spinners': { image: 'images/lures/spinnerbait.png' },
+                'Heavy Spinners': { image: 'images/lures/spinnerbait.png' },
+                'Chatterbait': { image: 'images/lures/chatterbait.png' },
+                'Chatterbaits': { image: 'images/lures/chatterbait.png' },
+                'Lipless Crankbait': { image: 'images/lures/liplesscrank.png' },
+                'Rattling Lipless Cranks': { image: 'images/lures/liplesscrank.png' },
+                'Rattling Lipless Crankbait': { image: 'images/lures/liplesscrank.png' },
+                'Swimbait': { image: 'images/lures/swimbait.png' },
+                'Swimbaits': { image: 'images/lures/swimbait.png' },
+                'Large Swimbaits': { image: 'images/lures/swimbait.png' },
+                'Small Swimbaits': { image: 'images/lures/swimbait.png' },
+                'Senko Worm': { image: 'images/lures/senko.png' },
+                'Spoon': { image: 'images/lures/spoon.png' },
+                'Spoons': { image: 'images/lures/spoon.png' },
+                'Small Spoons': { image: 'images/lures/spoon.png' },
+                'Large Spoons': { image: 'images/lures/spoon.png' },
+                'Trolling Spoons': { image: 'images/lures/spoon.png' },
+                'Flutter Spoons': { image: 'images/lures/spoon.png' },
+                'Jigging Spoons': { image: 'images/lures/spoon.png' },
+                'Small Jigging Spoon': { image: 'images/lures/spoon.png' },
+                'Glow-in-the-Dark Spoons': { image: 'images/lures/spoon.png' },
+                'Glow Spoons': { image: 'images/lures/spoon.png' },
+                'Heavy Spoons with Rattles': { image: 'images/lures/spoon.png' },
+                'Silver Spoon': { image: 'images/lures/spoon.png' },
+                'Large Trolling Spoons': { image: 'images/lures/spoon.png' },
+                'Tube Jig': { image: 'images/lures/tube.png' },
+                'White Tube Jigs': { image: 'images/lures/tube.png' },
+                'Heavy Tube Jigs': { image: 'images/lures/tube.png' },
+                'Glow Tube Jigs': { image: 'images/lures/tube.png' },
+                'Crappie Tubes': { image: 'images/lures/tube.png' },
+                'Crankbait': { image: 'images/lures/crankbait.png' },
+                'Giant Crankbaits': { image: 'images/lures/crankbait.png' },
+                'Crawfish Crankbait': { image: 'images/lures/crankbait.png' },
+                'Bright Crankbait': { image: 'images/lures/crankbait.png' },
+                'Small Crankbait': { image: 'images/lures/crankbait.png' },
+                'Rattling Crankbait': { image: 'images/lures/crankbait.png' },
+                'Blade Bait': { image: 'images/lures/bladebait.png' },
+                'Blade Baits': { image: 'images/lures/bladebait.png' },
+                'Rattling Blade Bait': { image: 'images/lures/bladebait.png' },
+                'A-Rig': { image: 'images/lures/arig.png' },
+                'Topwater Spook': { image: 'images/lures/spook.png' },
+                'Large Spooks': { image: 'images/lures/spook.png' },
+                'Fluke': { image: 'images/lures/fluke.png' },
+                'Creature Bait': { image: 'images/lures/creaturebait.png' },
+                'Topwater Plopper': { image: 'images/lures/plopper.png' },
+                'Whopper Ploppers': { image: 'images/lures/plopper.png' },
+                'Bucktails': { image: 'images/lures/bucktail.png' },
+                'Large Bucktails ("Double 10s")': { image: 'images/lures/bucktail.png' },
+                'Glide Baits': { image: 'images/lures/glidebait.png' },
+                'Large Glide Baits': { image: 'images/lures/glidebait.png' },
+                'Big Soft Plastics ("Bulldawg")': { image: 'images/lures/bulldawg.png' },
+                'Big Soft Plastics': { image: 'images/lures/bulldawg.png' },
+                'Live Worms': { image: 'images/lures/livebait.png' },
+                'Nightcrawlers': { image: 'images/lures/livebait.png' },
+                'Wax Worms': { image: 'images/lures/livebait.png' },
+                'Worms': { image: 'images/lures/livebait.png' },
+                'Scented Dough': { image: 'images/lures/powerbait.png' },
+                'PowerBait': { image: 'images/lures/powerbait.png' },
+                'Scented Dough Bait': { image: 'images/lures/powerbait.png' },
+                'Scented Baits': { image: 'images/lures/powerbait.png' },
+                'Live Minnows': { image: 'images/lures/livebait.png' },
+                'Live Minnow': { image: 'images/lures/livebait.png' },
+                'Crappie Minnows': { image: 'images/lures/livebait.png' },
+                'Minnows': { image: 'images/lures/livebait.png' },
+                'Drop Shot with Minnow': { image: 'images/lures/dropshot.png' },
+                'Slip Bobber with Minnow': { image: 'images/lures/slipbobber.png' },
+                'Live Minnow on a Jig': { image: 'images/lures/jig.png' },
+                'Live Minnow under a Bobber': { image: 'images/lures/slipbobber.png' },
+                'Kastmasters': { image: 'images/lures/spoon.png' },
+                'Large, Vibrating Lures': { image: 'images/lures/chatterbait.png' },
+                'Vibrating Lures': { image: 'images/lures/chatterbait.png' },
+                'Dodger and Fly/Spoon': { image: 'images/lures/dodgerfly.png' },
+                'Bondy Bait': { image: 'images/lures/bondybait.png' },
+                'Jigging Raps': { image: 'images/lures/jiggingrap.png' },
+                'Bottom Bouncer Rig': { image: 'images/lures/bottombouncer.png' },
+                'Lindy Rig': { image: 'images/lures/lindyrig.png' },
+                'Rippin\' Rap': { image: 'images/lures/rippinrap.png' },
+                'Slip Bobber with Leech': { image: 'images/lures/slipbobber.png' },
+                'Large Minnow Lures': { image: 'images/lures/minnowlure.png' },
+                'Noisy Topwater': { image: 'images/lures/noisytopwater.png' },
+                'Extra Loud Topwater': { image: 'images/lures/noisytopwater.png' },
+                'Topwater "Creeper"': { image: 'images/lures/creeper.png' },
+                'Beetle Spin': { image: 'images/lures/beetlespin.png' },
+                'Beetle Spins': { image: 'images/lures/beetlespin.png' },
+                'Cut Bait (Shad/Sucker)': { image: 'images/lures/cutbait.png' },
+                'Cut Bait': { image: 'images/lures/cutbait.png' },
+                'Live Bluegill/Perch': { image: 'images/lures/livebait.png' },
+                'Live Bluegill': { image: 'images/lures/livebait.png' },
+                'Chicken Livers': { image: 'images/lures/chickenliver.png' },
+                'Stink Bait': { image: 'images/lures/stinkbait.png' },
+                'Live Bait': { image: 'images/lures/livebait.png' },
+                'Small Jigs under a Bobber': { image: 'images/lures/jig.png' },
+                'Jig under a Bobber': { image: 'images/lures/slipbobber.png' },
+                'Small Rattling Lures': { image: 'images/lures/liplesscrank.png' }
+            };
+           
             // --- Fully Populated Recommendation Database ---
             const recommendations = {
                 largemouth: {
@@ -757,7 +887,7 @@
                 }
             };
 
-             // --- Data Transformation ---
+		   
             // This function will process the recommendations object into a more detailed format for rendering.
             function parseRecommendations(data) {
                 const parsedData = {};
@@ -848,23 +978,29 @@
                 }
             }
 
-            function renderLures(lures) {
-                lureResult.innerHTML = '';
-                if (!lures || lures.length === 0) {
-                    lureResult.innerHTML = '<p class="text-gray-400">No specific lure recommendations available.</p>';
-                    return;
-                }
-                lures.forEach(lure => {
-                    const card = document.createElement('div');
-                    card.className = 'bg-gray-800/50 p-4 rounded-lg border border-gray-700';
-                    card.innerHTML = `
-                        <h4 class="font-bold text-base text-white">${lure.name}</h4>
-                        <p class="text-sm text-gray-400 mt-1"><span class="font-semibold text-gray-300">Technique:</span> ${lure.technique}</p>
-                        <p class="text-sm text-gray-400 mt-2"><span class="font-semibold text-gray-300">Why it works:</span> ${lure.reason}</p>
-                    `;
-                    lureResult.appendChild(card);
-                });
-            }
+          function renderLures(lures) {
+    lureResult.innerHTML = '';
+    if (!lures || lures.length === 0) {
+        lureResult.innerHTML = '<p class="text-gray-400">No specific lure recommendations available.</p>';
+        return;
+    }
+    lures.forEach(lure => {
+        const card = document.createElement('div');
+        card.className = 'bg-gray-800/50 p-4 rounded-lg border border-gray-700';
+        
+        const lureInfo = lureMap[lure.name] || {};
+        const imageSrc = lureInfo.image || 'https://placehold.co/200x100/1E293B/FFFFFF?text=Lure'; // Fallback image
+
+        card.innerHTML = `
+            <img src="${imageSrc}" alt="${lure.name}" class="w-full h-24 object-contain bg-white rounded-md mb-3">
+            <h4 class="font-bold text-base text-white">${lure.name}</h4>
+            <p class="text-sm text-gray-400 mt-1"><span class="font-semibold text-gray-300">Technique:</span> ${lure.technique}</p>
+            <p class="text-sm text-gray-400 mt-2"><span class="font-semibold text-gray-300">Why it works:</span> ${lure.reason}</p>
+        `;
+        lureResult.appendChild(card);
+    });
+}
+
 
             function renderColors(colors) {
                 colorResult.innerHTML = '';
@@ -947,6 +1083,8 @@
 
             // --- Event Listener for Main Button ---
             getRecommendationBtn.addEventListener('click', () => {
+                // NOTE: I've truncated the massive `recommendations` object in this view for brevity, 
+                // but you should have the full object from your original file here.
                 const rec = fullRecommendations[selectedFish]?.[selectedWeather]?.[selectedClarity]?.[selectedTemp];
 
                 if (rec) {
