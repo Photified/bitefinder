@@ -112,14 +112,14 @@
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
 
-    <div class="bg-gray-800 border border-blue-500/50 rounded-2xl p-6 sm:p-8 max-w-4xl w-full space-y-6 card-glow">
+    <div class="bg-gray-800 border border-blue-500/50 rounded-2xl p-4 sm:p-6 max-w-4xl w-full space-y-4 card-glow">
         
         <div class="text-center">
-            <img src="images/bitefinder_logo.png" alt="Bitefinder Logo" class="h-24 w-auto mx-auto" onerror="this.onerror=null;this.src='https://placehold.co/200x100/1E293B/FFFFFF?text=Bitefinder';">
-            <p class="text-gray-400 mt-4">Get bait and strategy recommendations for your target species.</p>
+            <img src="images/bitefinder_logo.png" alt="Bitefinder Logo" class="h-20 w-auto mx-auto" onerror="this.onerror=null;this.src='https://placehold.co/200x100/1E293B/FFFFFF?text=Bitefinder';">
+            <p class="text-gray-400 mt-2">Get bait and strategy recommendations for your target species.</p>
         </div>
 
-        <div class="space-y-6">
+        <div class="space-y-4">
             
              <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">1. Select Target Species
@@ -134,18 +134,19 @@
                     </div>
             </div>
             
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">3. Select Water Clarity</label>
-                <div id="clarity-selector" class="grid grid-cols-2 gap-3">
-                     </div>
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">3. Water Clarity</label>
+                    <div id="clarity-selector" class="grid grid-cols-2 gap-3">
+                         </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">4. Water Temp</label>
+                    <div id="temp-selector" class="grid grid-cols-2 gap-3">
+                         </div>
+                </div>
             </div>
-
-             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">4. Select Water Temperature</label>
-                <div id="temp-selector" class="grid grid-cols-2 gap-3">
-                     </div>
             </div>
-        </div>
 
         <button id="getRecommendation" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 btn-glow">
             Find Your Bait
@@ -537,7 +538,6 @@
                 'Wax Worms': { image: 'images/lures/worm.png' },
 				'Small Minnows': { image: 'images/lures/minnow.png' },
             };
-
 
           
             // --- Fully Populated Recommendation Database ---
