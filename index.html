@@ -115,17 +115,13 @@
             <p class="text-gray-400 mt-4">Get bait and strategy recommendations for your target species.</p>
         </div>
 
-        <div class="space-y-6"><div class="bg-gray-700/50 p-3 rounded-lg text-center border border-gray-600">
-    <p class="text-gray-300 text-sm">
-        Not sure which species are in your area?<br>
-        <a href="https://www.lioapplications.lrc.gov.on.ca/fishonline/index.html?viewer=fishonline.fishonline" target="_blank" class="text-blue-400 hover:text-blue-300 font-semibold underline">
-            Use Ontario Fish ON-Line to find out!
-        </a> 
-       
-    </p>
-</div>
+        <div class="space-y-6">
+            
              <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">1. Select Target Species</label>
+                <label class="block text-sm font-medium text-gray-300 mb-2">1. Select Target Species
+                    <!-- Subtle link to open the modal -->
+                    <a href="#" id="openProvinceModal" class="text-blue-400 hover:underline text-xs font-normal ml-2">[Find local species]</a>
+                </label>
                 <div id="fish-selector" class="fish-selector-scroll gap-3">
                     </div>
             </div>
@@ -152,6 +148,7 @@
             Find Your Bait
         </button>
 
+        <!-- THIS IS THE CORRECTED RESULTS SECTION -->
         <div id="results" class="bg-gray-900/50 rounded-lg p-6 border border-gray-700 hidden">
             <div class="flex border-b border-gray-700 mb-4">
                 <button id="setupTab" class="tab-btn active flex-1 py-2 px-4 font-semibold rounded-t-lg">Recommended Setup</button>
@@ -187,7 +184,37 @@
         
     </div>
 
+    <!-- Province Selector Modal HTML (initially hidden) -->
+    <div id="provinceModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-600 max-w-md w-full">
+            <h3 class="text-lg font-semibold text-white mb-4">Find Local Regulations & Species</h3>
+            <p class="text-gray-400 text-sm mb-4">Select your province or territory to open the official local fishing guide in a new tab.</p>
+            <select id="provinceSelect" class="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <option value="https://www.lioapplications.lrc.gov.on.ca/fishonline/index.html?viewer=fishonline.fishonline" selected>Ontario</option>
+                <option value="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/ecosystems/habitatwizard">British Columbia</option>
+                <option value="https://peche.faune.gouv.qc.ca/?lang=en">Québec</option>
+                <option value="https://www.albertaregulations.ca/fishingregs/">Alberta</option>
+                <option value="https://saskborder.com/fishing">Saskatchewan</option>
+                <option value="https://experience.arcgis.com/experience/2557cda82dcc4a348fbb71304cedcf6d">Manitoba</option>
+                <option value="https://www2.gnb.ca/content/gnb/en/departments/erd/fish-and-wildlife/content/go-fishing.html">New Brunswick</option>
+                <option value="https://www.fishnovascotia.ca/places">Nova Scotia</option>
+                <option value="https://www.princeedwardisland.ca/en/information/environment-energy-and-climate-action/angling-resources-and-information-centre">Prince Edward Island</option>
+                <option value="https://www.nfl.dfo-mpo.gc.ca/en/NL/AG/anglersguide">Newfoundland & Labrador</option>
+                <option value="https://yukon.ca/en/fishing">Yukon</option>
+                <option value="https://www.enr.gov.nt.ca/en/services/fishing/angling-guide">Northwest Territories</option>
+                <option value="https://www.gov.nu.ca/environment/information/fisheries-and-sealing">Nunavut</option>
+            </select>
+            <div class="flex items-center justify-end gap-4 mt-6">
+                <button id="closeProvinceModal" class="text-gray-400 hover:text-white text-sm">Close</button>
+                <button id="goToProvinceSite" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg btn-glow text-sm">Go to Site</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Paste the rest of your original script here, starting from:
+        // document.addEventListener('DOMContentLoaded', () => { ...
+        // Everything below this line is the same as your original full file.
         document.addEventListener('DOMContentLoaded', () => {
             // --- Element Selectors ---
             const getRecommendationBtn = document.getElementById('getRecommendation');
@@ -199,6 +226,10 @@
             const gearResult = document.getElementById('gear-result');
             const locationResult = document.getElementById('location-result');
             const tipResult = document.getElementById('tip-result');
+            const setupTab = document.getElementById('setupTab');
+            const strategyTab = document.getElementById('strategyTab');
+            const setupContent = document.getElementById('setupContent');
+            const strategyContent = document.getElementById('strategyContent');
 
             // Input selectors
             const fishSelector = document.getElementById('fish-selector');
@@ -206,11 +237,37 @@
             const claritySelector = document.getElementById('clarity-selector');
             const tempSelector = document.getElementById('temp-selector');
 
-            // Tabs
-            const setupTab = document.getElementById('setupTab');
-            const strategyTab = document.getElementById('strategyTab');
-            const setupContent = document.getElementById('setupContent');
-            const strategyContent = document.getElementById('strategyContent');
+            // --- START: Province Modal Logic ---
+            const provinceModal = document.getElementById('provinceModal');
+            const openProvinceModalBtn = document.getElementById('openProvinceModal');
+            const closeProvinceModalBtn = document.getElementById('closeProvinceModal');
+            const provinceSelect = document.getElementById('provinceSelect');
+            const goToProvinceSiteBtn = document.getElementById('goToProvinceSite');
+
+            openProvinceModalBtn.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevents link from jumping to top of page
+                provinceModal.classList.remove('hidden');
+            });
+
+            closeProvinceModalBtn.addEventListener('click', () => {
+                provinceModal.classList.add('hidden');
+            });
+            
+            // Also close modal if clicking on the background overlay
+            provinceModal.addEventListener('click', (e) => {
+                if (e.target === provinceModal) {
+                    provinceModal.classList.add('hidden');
+                }
+            });
+
+            goToProvinceSiteBtn.addEventListener('click', () => {
+                const selectedUrl = provinceSelect.value;
+                if (selectedUrl) {
+                    window.open(selectedUrl, '_blank');
+                }
+                provinceModal.classList.add('hidden');
+            });
+            // --- END: Province Modal Logic ---
             
             // --- State Variables ---
             let selectedFish = 'largemouth';
@@ -247,8 +304,6 @@
                 bluegill: { name: 'Bluegill', imageSrc: 'images/bluegill.png' },
 				lakewhitefish: { name: 'Lake Whitefish', imageSrc: 'images/lakewhitefish.png' },
 				carp: { name: 'Common Carp', imageSrc: 'images/carp.png' }
-
-
             };
 
             const clarityTypes = {
