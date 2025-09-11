@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Interactive Tacklebox - Bitefinder</title>
+    <title>My Tacklebox - Bitefinder</title>
 	<link rel="icon" type="image/x-icon" href="images/icon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,28 +40,26 @@
 </head>
 <body class="bg-gray-900 text-white p-4">
 
-    <div class="max-w-6xl w-full mx-auto mb-6">
-        <div class="flex justify-between items-center">
-            <div class="flex-1">
-                 <img src="images/bitefinder_logo.png" alt="Bitefinder Logo" class="h-12 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/150x50/111827/FFFFFF?text=Bitefinder';">
-            </div>
-            <div class="flex-1 text-center">
-                <h1 class="header-font text-2xl md:text-3xl font-bold text-white">My Tacklebox</h1>
-                <p class="text-gray-400 text-xs md:text-sm mt-1">Add, edit, and organize your lure trays.</p>
-            </div>
-            <div class="flex-1 flex justify-end">
-                <a href="index.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 btn-glow text-sm whitespace-nowrap">
-                    &larr; Back to App
-                </a>
-            </div>
+<div class="bg-gray-800 border border-blue-500/50 rounded-2xl p-4 sm:p-6 max-w-6xl w-full space-y-4 card-glow mx-auto">
+    
+    <div class="flex justify-between items-center">
+        <div>
+             <img src="/images/bitefindertacklebox_logo.png" alt="Bitefinder Tacklebox Logo" class="h-14 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/250x50/1f2937/FFFFFF?text=Tacklebox';">
+        </div>
+        <div>
+            <a href="index.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 btn-glow text-sm whitespace-nowrap">
+                &larr; Back to App
+            </a>
         </div>
     </div>
 
-    <div id="tray-tabs-container" class="max-w-6xl w-full mx-auto mb-4 border-b-2 border-gray-700">
+    <div id="tray-tabs-container" class="w-full">
         <div id="tray-tabs" class="tray-tabs space-x-2"></div>
     </div>
 
-    <div id="tacklebox-container" class="max-w-6xl w-full mx-auto grid grid-cols-2 md:grid-cols-5 gap-4"></div>
+    <div id="tacklebox-container" class="w-full grid grid-cols-2 md:grid-cols-5 gap-4"></div>
+
+</div>
 
     <div id="lureModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
         <div class="bg-gray-800 rounded-lg p-6 border border-gray-600 max-w-lg w-full card-glow flex flex-col max-h-[90vh]">
@@ -73,7 +71,6 @@
             <div class="flex-shrink-0 flex items-center justify-end gap-4 mt-6 pt-4 border-t border-gray-700"><button id="closeModalBtn" class="text-gray-400 hover:text-white text-sm">Cancel</button><button id="saveLureBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg btn-glow text-sm">Save to Box</button></div>
         </div>
     </div>
-
     <div id="confirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
         <div class="bg-gray-800 rounded-lg p-6 border border-red-500/50 max-w-sm w-full card-glow">
             <h3 id="confirmTitle" class="text-lg font-semibold text-white mb-2">Confirm Action</h3>
@@ -140,7 +137,7 @@
                 trayTabs.innerHTML = '';
                 tacklebagState.forEach((tray, index) => {
                     const tabContainer = document.createElement('div');
-                    tabContainer.className = 'tray-tab flex items-center p-2 px-4 border-2 border-gray-700 text-gray-400 font-semibold text-sm rounded-t-lg hover:bg-gray-700 hover:text-white';
+                    tabContainer.className = `tray-tab flex items-center p-2 px-4 border-2 border-transparent text-gray-400 font-semibold text-sm rounded-lg hover:bg-gray-700 hover:text-white`;
                     if (index === activeTrayIndex) tabContainer.classList.add('active');
                     
                     const tabLabel = document.createElement('span');
@@ -151,7 +148,7 @@
 
                     if (tacklebagState.length > 1) {
                         const deleteBtn = document.createElement('button');
-                        deleteBtn.className = 'ml-2 text-red-500 hover:text-red-400';
+                        deleteBtn.className = 'ml-2 text-red-500 hover:text-red-400 text-lg font-bold';
                         deleteBtn.innerHTML = '&times;';
                         deleteBtn.dataset.index = index;
                         deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); showDeleteTrayConfirm(index); });
@@ -262,5 +259,4 @@
         });
     </script>
 </body>
-
 </html>
