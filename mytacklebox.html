@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Interactive Tacklebox - Bitefinder</title>
+	<link rel="icon" type="image/x-icon" href="images/icon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .header-font { font-family: 'Montserrat', sans-serif; }
+        .card-glow { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.3); }
+        .btn-glow:hover { box-shadow: 0 0 10px rgba(96, 165, 250, 0.8), 0 0 20px rgba(96, 165, 250, 0.6); }
+
+        .tacklebox-slot { perspective: 1000px; background-color: transparent; }
+        .flip-card { position: relative; width: 100%; height: 100%; transition: transform 0.7s; transform-style: preserve-3d; }
+        .tacklebox-slot.is-flipped .flip-card { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; border: 2px solid #4b5563; }
+        .flip-card-front { background-color: #374151; }
+        .flip-card-back { background-color: #1f2937; transform: rotateY(180deg); flex-direction: column; padding: 0.75rem; justify-content: space-between; }
+        
+        .lure-select-row { border: 2px solid transparent; transition: all 0.2s ease-in-out; cursor: pointer; }
+        .lure-select-row:hover { background-color: #374151; }
+        .lure-select-row.selected { border-color: #60a5fa; background-color: #1e40af; }
+        .category-header { position: sticky; top: -8px; background-color: #111827; z-index: 10; }
+
+        .tray-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 0.5rem; scrollbar-width: none; }
+        .tray-tabs::-webkit-scrollbar { display: none; }
+        .tray-tab { transition: all 0.2s ease-in-out; flex-shrink: 0; }
+        .tray-tab.active { background-color: #3b82f6; color: white; border-color: #60a5fa; }
+
+        .custom-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: #4a5568 #2d3748; }
+        .custom-scroll::-webkit-scrollbar { width: 8px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #2d3748; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background-color: #4a5568; border-radius: 10px; border: 2px solid #2d3748; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white p-4">
+
+    <div class="max-w-6xl w-full mx-auto mb-6">
+        <div class="flex justify-between items-center">
+            <div class="flex-1">
+                 <img src="images/bitefinder_logo.png" alt="Bitefinder Logo" class="h-12 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/150x50/111827/FFFFFF?text=Bitefinder';">
+            </div>
+            <div class="flex-1 text-center">
+                <h1 class="header-font text-2xl md:text-3xl font-bold text-white">My Tacklebox</h1>
+                <p class="text-gray-400 text-xs md:text-sm mt-1">Add, edit, and organize your lure trays.</p>
+            </div>
+            <div class="flex-1 flex justify-end">
+                <a href="bitefinder_SEPT10GOOD.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 btn-glow text-sm whitespace-nowrap">
+                    &larr; Back to App
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="tray-tabs-container" class="max-w-6xl w-full mx-auto mb-4 border-b-2 border-gray-700">
+        <div id="tray-tabs" class="tray-tabs space-x-2"></div>
+    </div>
+
+    <div id="tacklebox-container" class="max-w-6xl w-full mx-auto grid grid-cols-2 md:grid-cols-5 gap-4"></div>
+
+    <div id="lureModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-600 max-w-lg w-full card-glow flex flex-col max-h-[90vh]">
+            <h3 id="modalTitle" class="text-lg font-semibold text-white mb-4 flex-shrink-0">Add Lure to Box</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow min-h-0">
+                <div class="flex flex-col min-h-0"><label class="block text-sm font-medium text-gray-300 mb-1 flex-shrink-0">1. Choose Lure</label><div id="lureListSelect" class="border border-gray-600 rounded-lg bg-gray-900 custom-scroll flex-grow"></div></div>
+                <div class="flex flex-col space-y-4 min-h-0"><div class="flex-shrink-0"><label for="lureQuantity" class="block text-sm font-medium text-gray-300 mb-1">2. Set Quantity</label><input type="number" id="lureQuantity" value="1" min="1" class="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"></div><div class="flex flex-col flex-grow min-h-0"><label class="block text-sm font-medium text-gray-300 mb-1 flex-shrink-0">3. Select Your Colors</label><div id="colorSelect" class="border border-gray-600 rounded-lg bg-gray-900 custom-scroll flex-grow p-2"></div></div></div>
+            </div>
+            <div class="flex-shrink-0 flex items-center justify-end gap-4 mt-6 pt-4 border-t border-gray-700"><button id="closeModalBtn" class="text-gray-400 hover:text-white text-sm">Cancel</button><button id="saveLureBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg btn-glow text-sm">Save to Box</button></div>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-gray-800 rounded-lg p-6 border border-red-500/50 max-w-sm w-full card-glow">
+            <h3 id="confirmTitle" class="text-lg font-semibold text-white mb-2">Confirm Action</h3>
+            <p id="confirmMessage" class="text-gray-400 text-sm mb-6">Are you sure?</p>
+            <div class="flex items-center justify-end gap-4"><button id="confirmCancelBtn" class="text-gray-400 hover:text-white text-sm font-medium py-2 px-4">Cancel</button><button id="confirmOkBtn" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg btn-glow text-sm">Confirm</button></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const lureMap = { 'Drop Shot': { image: 'images/lures/dropshot.png' }, 'Topwater Popper': { image: 'images/lures/popper.png' }, 'Jerkbait': { image: 'images/lures/jerkbait.png' }, 'Ned Rig': { image: 'images/lures/nedrig.png' }, 'Jig': { image: 'images/lures/jig.png' }, 'Spinnerbait': { image: 'images/lures/spinnerbait.png' }, 'Inline Spinner': { image: 'images/lures/inlinespinner.png' }, 'Chatterbait': { image: 'images/lures/chatterbait.png' }, 'Lipless Crankbait': { image: 'images/lures/liplesscrank.png' }, 'Swimbait': { image: 'images/lures/swimbait.png' }, 'Senko Worm': { image: 'images/lures/senko.png' }, 'Spoon': { image: 'images/lures/spoon.png' }, 'Tube Jig': { image: 'images/lures/tube.png' }, 'Crankbait': { image: 'images/lures/crankbait.png' }, 'Blade Bait': { image: 'images/lures/bladebait.png' }, 'A-Rig': { image: 'images/lures/arig.png' }, 'Topwater Spook': { image: 'images/lures/spook.png' }, 'Fluke': { image: 'images/lures/fluke.png' }, 'Creature Bait': { image: 'images/lures/creaturebait.png' }, 'Topwater Plopper': { image: 'images/lures/plopper.png' }, 'Bucktail': { image: 'images/lures/bucktail.png' }, 'Glide Bait': { image: 'images/lures/glidebait.png' }, 'Bulldawg': { image: 'images/lures/bulldawg.png' }, 'Live Worm': { image: 'images/lures/worm.png' }, 'Scented Dough Bait': { image: 'images/lures/powerbait.png' }, 'Live Minnow': { image: 'images/lures/minnow.png' }, 'Slip Bobber Rig': { image: 'images/lures/slipbobber.png' }, 'Dodger/Flasher Rig': { image: 'images/lures/dodgerfly.png' }, 'Bondy Bait': { image: 'images/lures/bondybait.png' }, 'Jigging Rap': { image: 'images/lures/jiggingrap.png' }, 'Bottom Bouncer': { image: 'images/lures/bottombouncer.png' }, 'Lindy Rig': { image: 'images/lures/lindyrig.png' }, 'Topwater Creeper': { image: 'images/lures/creeper.png' }, 'Beetle Spin': { image: 'images/lures/beetlespin.png' }, 'Cut Bait': { image: 'images/lures/cutbait.png' }, 'Chicken Livers': { image: 'images/lures/chickenliver.png' }, 'Stink Bait': { image: 'images/lures/stinkbait.png' }, 'Boilies': { image: 'images/lures/boilies.png' }, 'Pack Bait': { image: 'images/lures/packbait.png' }, 'Method Feeder': { image: 'images/lures/methodfeeder.png' }, 'Dough Ball': { image: 'images/lures/doughball.png' }, 'Zig Rig': { image: 'images/lures/zigrig.png' }, 'Bread': { image: 'images/lures/bread.png' }, 'Pop-up Corn': { image: 'images/lures/popupcorn.png' } };
+            const colorMap = { 'Green Pumpkin': { hex: '#4B5320'}, 'Watermelon': { hex: '#75A850'}, 'Bone White': { hex: '#F9F6EE'}, 'Crawfish': { hex: '#C84A33'}, 'Goby': { hex: '#967969'}, 'Sucker': { hex: '#BC8F8F'}, 'Loon': { hex: '#333333'}, 'Walleye': { hex: '#D4AF37'}, 'Rainbow Trout': { hex: '#B5E6B5'}, 'Smelt': { hex: '#A7B4B5'}, 'Hot Pink': { hex: '#FF69B4'}, 'Shock Pink': { hex: '#FC0FC0'}, 'Carp Yellow': { hex: '#FFD700'}, 'Hi-Vis Orange': { hex: '#FFA500'}, 'White': { hex: '#FFFFFF'}, 'Chartreuse': { hex: '#DFFF00'}, 'Black': { hex: '#000000'}, 'Blue': { hex: '#0000FF'}, 'Silver': { hex: '#C0C0C0'}, 'Gold': { hex: '#FFD700'}, 'Perch': { hex: '#E8A317'}, 'Firetiger': { hex: '#F3B700'}, 'Natural Shad': { hex: '#B6C0C3'}, 'Chrome': { hex: '#E8E8E8'}, 'Red': { hex: '#FF0000'}, 'Orange': { hex: '#FFA500'}, 'Yellow': { hex: '#FFFF00'}, 'Purple': { hex: '#800080'}, 'Smoke': { hex: '#848884'}, 'Glow': { hex: '#E0FFD6'} };
+            const displayLures = { "Hard Baits": ["Jerkbait", "Crankbait", "Lipless Crankbait", "Glide Bait"], "Topwater": ["Topwater Popper", "Topwater Spook", "Topwater Plopper", "Topwater Creeper"], "Soft Baits": ["Swimbait", "Senko Worm", "Fluke", "Creature Bait", "Bulldawg"], "Jigs & Rigs": ["Jig", "Drop Shot", "Ned Rig", "Tube Jig", "A-Rig", "Jigging Rap", "Bondy Bait"], "Spoons & Spinners": ["Spoon", "Inline Spinner", "Spinnerbait", "Bucktail", "Beetle Spin"], "Bladed & Vibrating": ["Chatterbait", "Blade Bait"], "Terminal Rigs": ["Slip Bobber Rig", "Bottom Bouncer", "Lindy Rig", "Dodger/Flasher Rig"], "Live & Scented Bait": ["Live Minnow", "Live Worm", "Cut Bait", "Chicken Livers", "Stink Bait", "Scented Dough Bait"], "Carp Baits": ["Boilies", "Pack Bait", "Method Feeder", "Dough Ball", "Zig Rig", "Bread", "Pop-up Corn"] };
+
+            const tackleboxContainer = document.getElementById('tacklebox-container');
+            const trayTabs = document.getElementById('tray-tabs');
+            const lureModal = document.getElementById('lureModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const lureListSelect = document.getElementById('lureListSelect');
+            const lureQuantity = document.getElementById('lureQuantity');
+            const colorSelectContainer = document.getElementById('colorSelect');
+            const saveLureBtn = document.getElementById('saveLureBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const confirmModal = document.getElementById('confirmModal');
+            const confirmTitle = document.getElementById('confirmTitle');
+            const confirmMessage = document.getElementById('confirmMessage');
+            const confirmOkBtn = document.getElementById('confirmOkBtn');
+            const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+
+            let currentEditingSlot = null, slotToRemove = null, trayToRemove = null;
+            let activeTrayIndex = 0;
+            let tacklebagState = [new Array(10).fill(null)];
+
+            function saveStateToLocalStorage() { localStorage.setItem('myTacklebag', JSON.stringify(tacklebagState)); }
+            function loadStateFromLocalStorage() { const s = localStorage.getItem('myTacklebag'); if (s) { tacklebagState = JSON.parse(s); } if (!tacklebagState || tacklebagState.length === 0) { tacklebagState = [new Array(10).fill(null)]; } }
+            
+            function updateSlotUI(slotIndex, data) {
+                const slot = document.querySelector(`.tacklebox-slot[data-index='${slotIndex}']`);
+                if (!slot) return;
+                const backFace = slot.querySelector('.flip-card-back');
+                if (data) {
+                    const lureInfo = lureMap[data.lure];
+                    const imageSrc = lureInfo ? lureInfo.image : 'https://placehold.co/100x64/1F2937/4B5563?text=?';
+                    const colorsHTML = data.colors.map(c => `<span class="w-4 h-4 rounded-full border border-gray-500" title="${c}" style="background-color: ${colorMap[c]?.hex||'#808080'};"></span>`).join('');
+                    backFace.innerHTML = `<div class="w-full text-center"><img src="${imageSrc}" alt="${data.lure}" class="w-full h-16 object-contain bg-white rounded-md mb-2" onerror="this.onerror=null;this.src='https://placehold.co/100x64/1F2937/4B5563?text=?';"><h4 class="font-bold text-sm text-white truncate">${data.lure}</h4></div><div class="w-full flex justify-between items-center text-xs text-gray-400 mt-2"><span>Qty: <span class="font-semibold text-gray-200">${data.quantity}</span></span><div class="flex items-center gap-1 flex-wrap justify-end">${colorsHTML}</div></div><div class="w-full flex justify-between items-center mt-2"><button class="remove-lure-btn text-xs text-red-400 hover:text-red-300">&times; Remove</button><button class="edit-lure-btn text-xs text-blue-400 hover:text-blue-300">Edit</button></div>`;
+                    slot.classList.add('is-flipped');
+                } else { slot.classList.remove('is-flipped'); }
+            }
+            
+            function renderSlots() {
+                tackleboxContainer.innerHTML = '';
+                const activeTray = tacklebagState[activeTrayIndex];
+                for (let i = 0; i < 10; i++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'tacklebox-slot h-48 rounded-lg';
+                    slot.dataset.index = i;
+                    slot.innerHTML = `<div class="flip-card"><div class="flip-card-front"><button class="add-lure-btn text-gray-400 hover:text-white transition-colors"><svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m8-8H4" /></svg></button></div><div class="flip-card-back"></div></div>`;
+                    tackleboxContainer.appendChild(slot);
+                    if (activeTray) updateSlotUI(i, activeTray[i]);
+                }
+            }
+
+            function renderTabs() {
+                trayTabs.innerHTML = '';
+                tacklebagState.forEach((tray, index) => {
+                    const tabContainer = document.createElement('div');
+                    tabContainer.className = 'tray-tab flex items-center p-2 px-4 border-2 border-gray-700 text-gray-400 font-semibold text-sm rounded-t-lg hover:bg-gray-700 hover:text-white';
+                    if (index === activeTrayIndex) tabContainer.classList.add('active');
+                    
+                    const tabLabel = document.createElement('span');
+                    tabLabel.textContent = `Tray ${index + 1}`;
+                    tabLabel.className = 'cursor-pointer';
+                    tabLabel.addEventListener('click', () => { activeTrayIndex = index; renderTabs(); renderSlots(); });
+                    tabContainer.appendChild(tabLabel);
+
+                    if (tacklebagState.length > 1) {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'ml-2 text-red-500 hover:text-red-400';
+                        deleteBtn.innerHTML = '&times;';
+                        deleteBtn.dataset.index = index;
+                        deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); showDeleteTrayConfirm(index); });
+                        tabContainer.appendChild(deleteBtn);
+                    }
+                    trayTabs.appendChild(tabContainer);
+                });
+                
+                const addTrayBtn = document.createElement('button');
+                addTrayBtn.className = 'p-2 px-4 text-emerald-400 hover:text-emerald-300 font-semibold text-sm flex-shrink-0';
+                addTrayBtn.textContent = '+ Add Tray';
+                addTrayBtn.addEventListener('click', () => {
+                    tacklebagState.push(new Array(10).fill(null));
+                    activeTrayIndex = tacklebagState.length - 1;
+                    saveStateToLocalStorage();
+                    renderTabs();
+                    renderSlots();
+                });
+                trayTabs.appendChild(addTrayBtn);
+            }
+            
+            function openModal(slotIndex, existingData = null) {
+                currentEditingSlot = slotIndex;
+                lureQuantity.value = existingData ? existingData.quantity : 1;
+                document.querySelectorAll('#colorSelect input[type="checkbox"]').forEach(cb => cb.checked = existingData ? existingData.colors.includes(cb.value) : false);
+                document.querySelectorAll('.lure-select-row').forEach(card => card.classList.remove('selected'));
+                let lureToSelect = existingData ? existingData.lure : displayLures[Object.keys(displayLures)[0]][0];
+                const cardToSelect = document.querySelector(`.lure-select-row[data-lure-name="${lureToSelect}"]`);
+                if (cardToSelect) { cardToSelect.classList.add('selected'); cardToSelect.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                modalTitle.textContent = `Edit Lure in Slot ${slotIndex + 1}`;
+                lureModal.classList.remove('hidden');
+            }
+
+            function closeModal() { lureModal.classList.add('hidden'); currentEditingSlot = null; }
+
+            function showConfirmModal(slotIndex) {
+                slotToRemove = slotIndex;
+                const lureName = tacklebagState[activeTrayIndex][slotIndex]?.lure || 'this lure';
+                confirmTitle.textContent = 'Confirm Lure Removal';
+                confirmMessage.innerHTML = `Are you sure you want to remove <strong class="text-white">${lureName}</strong> from Tray ${activeTrayIndex + 1}?`;
+                confirmOkBtn.textContent = 'Remove Lure';
+                confirmOkBtn.onclick = removeLure;
+                confirmModal.classList.remove('hidden');
+            }
+
+            function showDeleteTrayConfirm(index) {
+                trayToRemove = index;
+                confirmTitle.textContent = 'Confirm Tray Deletion';
+                confirmMessage.innerHTML = `Are you sure you want to permanently delete <strong class="text-white">Tray ${index + 1}</strong>? This action cannot be undone.`;
+                confirmOkBtn.textContent = 'Delete Tray';
+                confirmOkBtn.onclick = deleteTray;
+                confirmModal.classList.remove('hidden');
+            }
+
+            function hideConfirmModal() { confirmModal.classList.add('hidden'); slotToRemove = null; trayToRemove = null; confirmOkBtn.onclick = null; }
+            function removeLure() {
+                if (slotToRemove !== null) {
+                    tacklebagState[activeTrayIndex][slotToRemove] = null;
+                    renderSlots(); saveStateToLocalStorage(); hideConfirmModal();
+                }
+            }
+            function deleteTray() {
+                if (trayToRemove !== null && tacklebagState.length > 1) {
+                    tacklebagState.splice(trayToRemove, 1);
+                    if (activeTrayIndex >= trayToRemove) { activeTrayIndex = Math.max(0, activeTrayIndex - 1); }
+                    renderTabs(); renderSlots(); saveStateToLocalStorage(); hideConfirmModal();
+                }
+            }
+
+            lureListSelect.addEventListener('click', (e) => { const r = e.target.closest('.lure-select-row'); if (r) { document.querySelectorAll('.lure-select-row').forEach(x=>x.classList.remove('selected')); r.classList.add('selected'); } });
+            saveLureBtn.addEventListener('click', () => {
+                if (currentEditingSlot === null) return;
+                const s = lureListSelect.querySelector('.selected'); if (!s) { alert('Please select a lure.'); return; }
+                const c = Array.from(document.querySelectorAll('#colorSelect input:checked')).map(cb => cb.value);
+                tacklebagState[activeTrayIndex][currentEditingSlot] = { lure: s.dataset.lureName, quantity: parseInt(lureQuantity.value, 10), colors: c };
+                updateSlotUI(currentEditingSlot, tacklebagState[activeTrayIndex][currentEditingSlot]);
+                saveStateToLocalStorage();
+                closeModal();
+            });
+            closeModalBtn.addEventListener('click', closeModal);
+            lureModal.addEventListener('click', (e) => { if (e.target === lureModal) closeModal(); });
+            confirmCancelBtn.addEventListener('click', hideConfirmModal);
+            confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) hideConfirmModal(); });
+            tackleboxContainer.addEventListener('click', (e) => {
+                const s = e.target.closest('.tacklebox-slot'); if (!s) return;
+                const i = parseInt(s.dataset.index, 10);
+                if (e.target.closest('.add-lure-btn')) openModal(i);
+                else if (e.target.closest('.edit-lure-btn')) openModal(i, tacklebagState[activeTrayIndex][i]);
+                else if (e.target.closest('.remove-lure-btn')) showConfirmModal(i);
+            });
+
+            function populateLureListSelect() {
+                lureListSelect.innerHTML = '';
+                for (const cat in displayLures) {
+                    const h = document.createElement('h4'); h.className = 'category-header font-bold text-sm text-blue-300 p-2 pt-3'; h.textContent = cat; lureListSelect.appendChild(h);
+                    displayLures[cat].forEach(ln => {
+                        const li = lureMap[ln]; if (!li) return;
+                        const r = document.createElement('button'); r.className = 'lure-select-row w-full p-2 rounded-lg flex flex-col items-center text-left'; r.dataset.lureName = ln;
+                        r.innerHTML = `<img src="${li.image}" alt="${ln}" class="h-16 w-full object-contain bg-white rounded-md mb-2" onerror="this.onerror=null;this.src='https://placehold.co/100x64/111827/4B5563?text=?';"><span class="text-sm font-medium text-white text-center">${ln}</span>`;
+                        lureListSelect.appendChild(r);
+                    });
+                }
+            }
+            function populateColorSelect() { colorSelectContainer.innerHTML = Object.keys(colorMap).sort().map(n=>`<label class="flex items-center space-x-2 p-1 hover:bg-gray-700 rounded-md cursor-pointer"><input type="checkbox" value="${n}" class="form-checkbox h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"><span class="w-4 h-4 rounded-full border border-gray-500" style="background-color:${colorMap[n].hex};"></span><span class="text-sm">${n}</span></label>`).join(''); }
+
+            function init() { loadStateFromLocalStorage(); populateLureListSelect(); populateColorSelect(); renderTabs(); renderSlots(); }
+            init();
+        });
+    </script>
+</body>
+</html>
