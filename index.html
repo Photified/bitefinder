@@ -1230,19 +1230,26 @@ bluegill: {
             setupTab.addEventListener('click', () => switchTab(setupTab, strategyTab, setupContent, strategyContent));
             strategyTab.addEventListener('click', () => switchTab(strategyTab, setupTab, strategyContent, setupContent));
 
-            getRecommendationBtn.addEventListener('click', () => {
-                const savedTacklebox = localStorage.getItem('myTacklebox');
+           getRecommendationBtn.addEventListener('click', () => {
+                // CORRECTED KEY IS USED HERE
+                const savedTacklebox = localStorage.getItem('myTacklebag'); 
                 let tackleboxContents = [];
                 if (savedTacklebox) {
                     try {
-                        const rawTackleboxLures = JSON.parse(savedTacklebox).filter(item => item !== null).map(item => item.lure);
+                        // Updated to handle the multi-tray array structure
+                        const rawTackleboxLures = JSON.parse(savedTacklebox)
+                                            .flat() // Flattens the array of arrays into a single array
+                                            .filter(item => item !== null)
+                                            .map(item => item.lure);
+                        
                         const baseTackleboxLures = rawTackleboxLures.map(lureName => lureBaseMap[lureName] || lureName);
-                        tackleboxContents = [...new Set(baseTackleboxLures)]; // Use unique base names
-                    } catch (e) { console.error("Could not parse tacklebox data from localStorage:", e); }
+                        tackleboxContents = [...new Set(baseTackleboxLures)];
+                    } catch (e) { 
+                        console.error("Could not parse tacklebox data from localStorage:", e); 
+                    }
                 }
 
                 const rec = fullRecommendations[selectedFish]?.[selectedWeather]?.[selectedClarity]?.[selectedTemp];
-
                 if (rec) {
                     renderLures(rec.lures, tackleboxContents);
                     renderColors(rec.colors);
@@ -1254,12 +1261,15 @@ bluegill: {
                     setTimeout(() => { resultsDiv.classList.add('visible'); }, 10);
                     resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
                 } else {
-                    resultsDiv.classList.remove('hidden');
-                    resultsDiv.classList.add('visible');
-                    setupContent.classList.add('active');
+                    resultsDiv.classList.remove('hidden'); 
+                    resultsDiv.classList.add('visible'); 
+                    setupContent.classList.add('active'); 
                     strategyContent.classList.remove('active');
                     lureResult.innerHTML = `<p class="text-gray-300 text-center col-span-1 md:col-span-2">Sorry, no recommendation found for this combination. Please try different selections.</p>`;
-                    colorResult.innerHTML = ''; gearResult.innerHTML = ''; locationResult.innerHTML = ''; tipResult.innerHTML = '';
+                    colorResult.innerHTML = ''; 
+                    gearResult.innerHTML = ''; 
+                    locationResult.innerHTML = ''; 
+                    tipResult.innerHTML = '';
                 }
             });
             
