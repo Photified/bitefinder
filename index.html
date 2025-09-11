@@ -259,7 +259,7 @@
             provinceModal.addEventListener('click', (e) => { if (e.target === provinceModal) { provinceModal.classList.add('hidden'); } });
             goToProvinceSiteBtn.addEventListener('click', () => { const url = provinceSelect.value; if (url) { window.open(url, '_blank'); } provinceModal.classList.add('hidden'); });
             
-            let selectedFish = 'largemouth', selectedWeather = 'sunny', selectedClarity = 'clear', selectedTemp = 'warm';
+            let selectedFish = 'largemouth', selectedWeather = 'sunny', selectedClarity = 'clear', selectedTemp = 'cool';
 
             // --- Data Definitions ---
             const weatherTypes = { sunny: { name: 'Sunny', imageSrc: 'images/sunny.png' }, cloudy: { name: 'Cloudy', imageSrc: 'images/cloudy.png' }, rainy: { name: 'Rainy', imageSrc: 'images/rain.png' }, windy: { name: 'Windy', imageSrc: 'images/windy.png' } };
@@ -1443,3 +1443,4 @@ bluegill: {
     </script>
 </body>
 </html>
+
