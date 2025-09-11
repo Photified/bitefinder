@@ -165,6 +165,10 @@
             Find Your Bait
         </button>
 
+        <a href="mytacklebox.html" class="block w-full text-center mt-3 bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold py-2 px-4 rounded-lg transition duration-300">
+            My Tacklebox
+        </a>
+
         <div id="results" class="bg-gray-900/50 rounded-lg p-6 border border-gray-700 hidden">
             <div class="flex border-b border-gray-700 mb-4">
                 <button id="setupTab" class="tab-btn active flex-1 py-2 px-4 font-semibold rounded-t-lg">Recommended Setup</button>
@@ -231,8 +235,6 @@
             // --- Element Selectors ---
             const getRecommendationBtn = document.getElementById('getRecommendation');
             const resultsDiv = document.getElementById('results');
-            
-            // Result content areas
             const lureResult = document.getElementById('lure-result');
             const colorResult = document.getElementById('color-result');
             const gearResult = document.getElementById('gear-result');
@@ -242,319 +244,37 @@
             const strategyTab = document.getElementById('strategyTab');
             const setupContent = document.getElementById('setupContent');
             const strategyContent = document.getElementById('strategyContent');
-
-            // Input selectors
             const fishSelector = document.getElementById('fish-selector');
             const weatherSelector = document.getElementById('weather-selector');
             const claritySelector = document.getElementById('clarity-selector');
             const tempSelector = document.getElementById('temp-selector');
-
-            // --- START: Province Modal Logic ---
             const provinceModal = document.getElementById('provinceModal');
             const openProvinceModalBtn = document.getElementById('openProvinceModal');
             const closeProvinceModalBtn = document.getElementById('closeProvinceModal');
             const provinceSelect = document.getElementById('provinceSelect');
             const goToProvinceSiteBtn = document.getElementById('goToProvinceSite');
 
-            openProvinceModalBtn.addEventListener('click', (e) => {
-                e.preventDefault(); // Prevents link from jumping to top of page
-                provinceModal.classList.remove('hidden');
-            });
-
-            closeProvinceModalBtn.addEventListener('click', () => {
-                provinceModal.classList.add('hidden');
-            });
+            openProvinceModalBtn.addEventListener('click', (e) => { e.preventDefault(); provinceModal.classList.remove('hidden'); });
+            closeProvinceModalBtn.addEventListener('click', () => { provinceModal.classList.add('hidden'); });
+            provinceModal.addEventListener('click', (e) => { if (e.target === provinceModal) { provinceModal.classList.add('hidden'); } });
+            goToProvinceSiteBtn.addEventListener('click', () => { const url = provinceSelect.value; if (url) { window.open(url, '_blank'); } provinceModal.classList.add('hidden'); });
             
-            // Also close modal if clicking on the background overlay
-            provinceModal.addEventListener('click', (e) => {
-                if (e.target === provinceModal) {
-                    provinceModal.classList.add('hidden');
-                }
-            });
-
-            goToProvinceSiteBtn.addEventListener('click', () => {
-                const selectedUrl = provinceSelect.value;
-                if (selectedUrl) {
-                    window.open(selectedUrl, '_blank');
-                }
-                provinceModal.classList.add('hidden');
-            });
-            // --- END: Province Modal Logic ---
-            
-            // --- State Variables ---
-            let selectedFish = 'largemouth';
-            let selectedWeather = 'sunny';
-            let selectedClarity = 'clear';
-            let selectedTemp = 'warm';
+            let selectedFish = 'largemouth', selectedWeather = 'sunny', selectedClarity = 'clear', selectedTemp = 'warm';
 
             // --- Data Definitions ---
-            const weatherTypes = {
-                sunny: { name: 'Sunny', imageSrc: 'images/sunny.png' },
-                cloudy: { name: 'Cloudy', imageSrc: 'images/cloudy.png' },
-                rainy: { name: 'Rainy', imageSrc: 'images/rain.png' },
-                windy: { name: 'Windy', imageSrc: 'images/windy.png' }
+            const weatherTypes = { sunny: { name: 'Sunny', imageSrc: 'images/sunny.png' }, cloudy: { name: 'Cloudy', imageSrc: 'images/cloudy.png' }, rainy: { name: 'Rainy', imageSrc: 'images/rain.png' }, windy: { name: 'Windy', imageSrc: 'images/windy.png' } };
+            const fishTypes = { largemouth: { name: 'Largemouth', imageSrc: 'images/largemouthbass.png' }, smallmouth: { name: 'Smallmouth', imageSrc: 'images/smallmouthbass.png' }, rainbowtrout:   { name: 'Rainbow Trout',   imageSrc: 'images/rainbowtrout.png' }, laketrout: { name: 'Lake Trout', imageSrc: 'images/laketrout.png' }, walleye: { name: 'Walleye', imageSrc: 'images/walleye.png' }, pike:    { name: 'Pike',    imageSrc: 'images/pike.png' }, muskie:   { name: 'Muskie',   imageSrc: 'images/muskie.png' }, perch: { name: 'Perch', imageSrc: 'images/perch.png' }, freshwaterdrum: { name: 'Freshwater Drum', imageSrc: 'images/freshwaterdrum.png' }, crappie: { name: 'Crappie', imageSrc: 'images/crappie.png' }, catfish: { name: 'Catfish', imageSrc: 'images/catfish.png' }, brooktrout: { name: 'Brook Trout', imageSrc: 'images/brooktrout.png' }, splake: { name: 'Splake', imageSrc: 'images/splake.png' }, browntrout: { name: 'Brown Trout', imageSrc: 'images/browntrout.png' }, chinooksalmon: { name: 'Chinook Salmon', imageSrc: 'images/chinooksalmon.png' }, cohosalmon: { name: 'Coho Salmon', imageSrc: 'images/cohosalmon.png' }, atlanticsalmon: { name: 'Atlantic Salmon', imageSrc: 'images/atlanticsalmon.png' }, bluegill: { name: 'Bluegill', imageSrc: 'images/bluegill.png' }, lakewhitefish: { name: 'Lake Whitefish', imageSrc: 'images/lakewhitefish.png' }, carp: { name: 'Common Carp', imageSrc: 'images/carp.png' } };
+            const clarityTypes = { clear: { name: 'Clear', imageSrc: 'images/clear.png' }, muddy: { name: 'Muddy', imageSrc: 'images/muddy.png' } };
+            const tempTypes = { cool: { name: 'Cool', imageSrc: 'images/cool.png' }, warm: { name: 'Warm', imageSrc: 'images/warm.png' } };
+            const colorMap = { 'Green Pumpkin': { hex: '#4B5320', reason: 'The most versatile bass color. Perfectly mimics crawfish, gobies, and bluegill in most water clarities.' }, 'Watermelon': { hex: '#75A850', reason: 'A translucent, natural green that excels in clear water, mimicking small fish and other forage.' }, 'Bone White': { hex: '#F9F6EE', reason: 'A solid, highly visible color for topwater lures that provides a strong silhouette against the sky.' }, 'Crawfish': { hex: '#C84A33', reason: 'Directly imitates crawfish, a primary food source for bass in rocky environments, especially in spring.' }, 'Goby': { hex: '#967969', reason: 'Crucial in the Great Lakes region. It specifically imitates the round goby, a key forage species.' }, 'Sucker': { hex: '#BC8F8F', reason: 'Imitates suckers, a large, high-protein forage fish targeted by apex predators like pike and muskie.' }, 'Loon': { hex: '#333333', reason: 'A dark, solid color for large topwater lures that provides a strong silhouette against the sky, mimicking birds or small mammals.' }, 'Walleye': { hex: '#D4AF37', reason: 'In many northern lakes, walleye are a primary food source for giant muskie. This pattern imitates that forage.' }, 'Rainbow Trout': { hex: '#B5E6B5', reason: 'Mimics rainbow trout, a common food source for larger predators like lake trout and brown trout in stocked waters.' }, 'Smelt': { hex: '#A7B4B5', reason: 'A silvery, almost translucent pattern that imitates smelt, a key open-water baitfish for salmon and trout.' }, 'Hot Pink': { hex: '#FF69B4', reason: 'A bright, high-visibility color used in stained water for salmon and trout, thought to imitate the color of eggs or trigger an aggressive response.' }, 'Shock Pink': { hex: '#FC0FC0', reason: 'A bright, shocking color that stands out and is highly effective for crappie and other panfish, especially in stained water.' }, 'Carp Yellow': { hex: '#FFD700', reason: 'A classic carp color that perfectly mimics corn, one of their absolute favorite foods.' }, 'Hi-Vis Orange': { hex: '#FFA500', reason: 'A high-visibility color that stands out well against a variety of dark lake bottoms, making it easy for carp to find.' }, 'White': { hex: '#FFFFFF', reason: 'A highly visible color that effectively mimics the flash and profile of baitfish like shad, shiners, and ciscoes.' }, 'Chartreuse': { hex: '#DFFF00', reason: 'An extremely bright, high-visibility color that excels in stained, muddy, or deep water for nearly all species.' }, 'Black': { hex: '#000000', reason: 'Provides the strongest possible silhouette, making it effective in very muddy water and at night for all predators.' }, 'Blue': { hex: '#0000FF', reason: 'Often combined with black for jigs and spinnerbaits, it provides a subtle contrast that is highly effective in both clear and stained water.' }, 'Silver': { hex: '#C0C0C0', reason: 'Provides a realistic flash that mimics the scales of many common baitfish species like shiners and alewife.' }, 'Gold': { hex: '#FFD700', reason: 'Effective in stained or tannic water, imitating the flash of species like perch or golden shiners.' }, 'Perch': { hex: '#E8A317', reason: 'Directly imitates yellow perch, one of the most common and important forage fish in all of Ontario.' }, 'Firetiger': { hex: '#F3B700', reason: 'A classic, aggressive pattern with bright green, chartreuse, and orange that is highly effective in stained water for all predator species.' }, 'Natural Shad': { hex: '#B6C0C3', reason: 'A realistic color pattern that imitates common open-water baitfish like shad and shiners.' }, 'Chrome': { hex: '#E8E8E8', reason: 'Provides the maximum possible flash, making it excellent on sunny days for triggering reaction strikes from aggressive predators.' }, 'Red': { hex: '#FF0000', reason: 'Can trigger reaction strikes, imitate the color of gills on injured baitfish, or mimic the color of crawfish.' }, 'Orange': { hex: '#FFA500', reason: 'A high-visibility color that works well in stained water, particularly effective for salmon, trout, and walleye.' }, 'Yellow': { hex: '#FFFF00', reason: 'A bright, simple color that can be effective for panfish, walleye, and pike in stained water conditions.' }, 'Purple': { hex: '#800080', reason: 'A dark, subtle color that works well in low light and clear water as an alternative to black, especially for walleye and smallmouth.' }, 'Smoke': { hex: '#848884', reason: 'A subtle, translucent color that is very effective in ultra-clear water for wary smallmouth and lake trout.' }, 'Glow': { hex: '#E0FFD6', reason: 'Essential for deep water species like lake trout and salmon, as it remains visible where other colors fade to gray.' } };
+            const gearMap = { largemouth: { rod: 'Medium to Medium-Heavy Power, Fast Action', line: '10-17lb Fluorocarbon or 30-50lb Braid' }, smallmouth: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or 10-20lb Braid with leader' }, rainbowtrout: { rod: 'Ultra-Light to Light Power, Moderate Action', line: '2-6lb Monofilament or Fluorocarbon' }, laketrout: { rod: 'Medium-Heavy Power, Moderate-Fast Action', line: '20-40lb Braid with Fluorocarbon Leader' }, walleye: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or 10-20lb Braid' }, pike: { rod: 'Medium-Heavy to Heavy Power, Fast Action', line: '40-65lb Braid with a steel leader' }, muskie: { rod: 'Heavy to Extra-Heavy Power, Fast Action', line: '80-100lb Braid with a 100-150lb Fluorocarbon or Wire Leader' }, perch: { rod: 'Light to Ultra-Light Power, Fast Action', line: '4-6lb Monofilament or Fluorocarbon' }, freshwaterdrum: { rod: 'Medium-Light to Medium Power, Fast Action', line: '8-12lb Monofilament or Fluorocarbon' }, crappie: { rod: 'Ultra-Light Power, Fast Action', line: '2-4lb Monofilament' }, catfish: { rod: 'Medium-Heavy to Heavy Power, Moderate-Fast Action', line: '20-50lb Monofilament or Braid' }, brooktrout: { rod: 'Ultra-Light to Light Power, Moderate Action', line: '2-6lb Monofilament or Fluorocarbon' }, splake: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or Braid' }, browntrout: { rod: 'Light to Medium-Light Power, Fast Action', line: '4-8lb Fluorocarbon' }, chinooksalmon: { rod: 'Medium-Heavy to Heavy Power, Moderate Action', line: '20-30lb Monofilament or 30-50lb Braid' }, cohosalmon: { rod: 'Medium Power, Moderate-Fast Action', line: '10-15lb Monofilament or 20-30lb Braid' }, atlanticsalmon: { rod: 'Medium Power, Fast Action', line: '8-12lb Monofilament or 15-30lb Braid' }, bluegill: { rod: 'Ultra-Light Power, Moderate Action', line: '2-4lb Monofilament' }, lakewhitefish: { rod: 'Medium-Light Power, Fast Action', line: '4-8lb Fluorocarbon or Braid with Leader' }, carp: { rod: '10-12ft Rod with a large capacity reel (Baitrunner style recommended)', line: '15-20lb Monofilament or 30-50lb Braid' } };
+            const lureMap = { 'Drop Shot': { image: 'images/lures/dropshot.png' }, 'Topwater Popper': { image: 'images/lures/popper.png' }, 'Jerkbait': { image: 'images/lures/jerkbait.png' }, 'Large Jerkbaits': { image: 'images/lures/jerkbait.png' }, 'Small Jerkbaits': { image: 'images/lures/jerkbait.png' }, 'Ned Rig': { image: 'images/lures/nedrig.png' }, 'Flipping Jig': { image: 'images/lures/jig.png' }, 'Big Jig': { image: 'images/lures/jig.png' }, 'Big Jigs': { image: 'images/lures/jig.png' }, 'Jig': { image: 'images/lures/jig.png' }, 'Football Jig': { image: 'images/lures/jig.png' }, 'Jig with a Minnow': { image: 'images/lures/jig.png' }, 'Jig and Minnow': { image: 'images/lures/jig.png' }, 'Jig with Large Minnow': { image: 'images/lures/jig.png' }, 'Jig and Worm': { image: 'images/lures/jig.png' }, 'Scented Jigs': { image: 'images/lures/jig.png' }, 'Bright Jigs with Scent': { image: 'images/lures/jig.png' }, 'Small Jigs': { image: 'images/lures/jig.png' }, 'Small Jig': { image: 'images/lures/jig.png' }, 'Bright Jigs': { image: 'images/lures/jig.png' }, 'Glow Jigs with Sucker Meat': { image: 'images/lures/jig.png' }, 'Glow Jigs with Bait': { image: 'images/lures/jig.png' }, 'Small Jig with Plastic': { image: 'images/lures/jig.png' }, 'Spinnerbait': { image: 'images/lures/spinnerbait.png' }, 'Big Spinnerbait': { image: 'images/lures/spinnerbait.png' }, 'Large Spinnerbaits': { image: 'images/lures/spinnerbait.png' }, 'Giant Spinnerbaits': { image: 'images/lures/spinnerbait.png' }, 'Small Spinners': { image: 'images/lures/inlinespinner.png' }, 'Small Spinner': { image: 'images/lures/inlinespinner.png' }, 'Inline Spinners': { image: 'images/lures/inlinespinner.png' }, 'Inline Spinner': { image: 'images/lures/inlinespinner.png' }, 'Small Inline Spinner': { image: 'images/lures/inlinespinner.png' }, 'Large Spinners': { image: 'images/lures/inlinespinner.png' }, 'Big Spinners': { image: 'images/lures/inlinespinner.png' }, 'Weighted Spinners': { image: 'images/lures/inlinespinner.png' }, 'Heavy Spinners': { image: 'images/lures/inlinespinner.png' }, 'Chatterbait': { image: 'images/lures/chatterbait.png' }, 'Chatterbaits': { image: 'images/lures/chatterbait.png' }, 'Lipless Crankbait': { image: 'images/lures/liplesscrank.png' }, 'Rattling Lipless Cranks': { image: 'images/lures/liplesscrank.png' }, 'Rattling Lipless Crankbait': { image: 'images/lures/liplesscrank.png' }, 'Swimbait': { image: 'images/lures/swimbait.png' }, 'Swimbaits': { image: 'images/lures/swimbait.png' }, 'Large Swimbaits': { image: 'images/lures/swimbait.png' }, 'Small Swimbaits': { image: 'images/lures/swimbait.png' }, 'Small Swimbait': { image: 'images/lures/swimbait.png' }, 'Senko Worm': { image: 'images/lures/senko.png' }, 'Spoon': { image: 'images/lures/spoon.png' }, 'Spoons': { image: 'images/lures/spoon.png' }, 'Small Spoons': { image: 'images/lures/spoon.png' }, 'Large Spoons': { image: 'images/lures/spoon.png' }, 'Trolling Spoons': { image: 'images/lures/spoon.png' }, 'Flutter Spoons': { image: 'images/lures/spoon.png' }, 'Jigging Spoons': { image: 'images/lures/spoon.png' }, 'Small Jigging Spoon': { image: 'images/lures/spoon.png' }, 'Glow-in-the-Dark Spoons': { image: 'images/lures/spoon.png' }, 'Glow Spoons': { image: 'images/lures/spoon.png' }, 'Heavy Spoons with Rattles': { image: 'images/lures/spoon.png' }, 'Silver Spoon': { image: 'images/lures/spoon.png' }, 'Large Trolling Spoons': { image: 'images/lures/spoon.png' }, 'Tube Jig': { image: 'images/lures/tube.png' }, 'White Tube Jigs': { image: 'images/lures/tube.png' }, 'Heavy Tube Jigs': { image: 'images/lures/tube.png' }, 'Glow Tube Jigs': { image: 'images/lures/tube.png' }, 'Crappie Tubes': { image: 'images/lures/tube.png' }, 'Crankbait': { image: 'images/lures/crankbait.png' }, 'Giant Crankbaits': { image: 'images/lures/crankbait.png' }, 'Crawfish Crankbait': { image: 'images/lures/crankbait.png' }, 'Bright Crankbait': { image: 'images/lures/crankbait.png' }, 'Small Crankbait': { image: 'images/lures/crankbait.png' }, 'Rattling Crankbait': { image: 'images/lures/crankbait.png' }, 'Blade Bait': { image: 'images/lures/bladebait.png' }, 'Blade Baits': { image: 'images/lures/bladebait.png' }, 'Rattling Blade Bait': { image: 'images/lures/bladebait.png' }, 'A-Rig': { image: 'images/lures/arig.png' }, 'Topwater Spook': { image: 'images/lures/spook.png' }, 'Large Spooks': { image: 'images/lures/spook.png' }, 'Fluke': { image: 'images/lures/fluke.png' }, 'Creature Bait': { image: 'images/lures/creaturebait.png' }, 'Topwater Plopper': { image: 'images/lures/plopper.png' }, 'Whopper Ploppers': { image: 'images/lures/plopper.png' }, 'Bucktails': { image: 'images/lures/bucktail.png' }, 'Bucktail': { image: 'images/lures/bucktail.png' }, 'Large Bucktails ("Double 10s")': { image: 'images/lures/bucktail.png' }, 'Glide Baits': { image: 'images/lures/glidebait.png' }, 'Glide Bait': { image: 'images/lures/glidebait.png' }, 'Large Glide Baits': { image: 'images/lures/glidebait.png' }, 'Bulldawg': { image: 'images/lures/bulldawg.png' }, 'Big Soft Plastics ("Bulldawg")': { image: 'images/lures/bulldawg.png' }, 'Big Soft Plastics': { image: 'images/lures/bulldawg.png' }, 'Live Worms': { image: 'images/lures/worm.png' }, 'Nightcrawlers': { image: 'images/lures/worm.png' }, 'Wax Worms': { image: 'images/lures/worm.png' }, 'Worms': { image: 'images/lures/worm.png' }, 'Scented Dough': { image: 'images/lures/powerbait.png' }, 'PowerBait': { image: 'images/lures/powerbait.png' }, 'Scented Dough Bait': { image: 'images/lures/powerbait.png' }, 'Scented Baits': { image: 'images/lures/powerbait.png' }, 'Live Minnows': { image: 'images/lures/minnow.png' }, 'Live Minnow': { image: 'images/lures/minnow.png' }, 'Crappie Minnows': { image: 'images/lures/minnow.png' }, 'Minnows': { image: 'images/lures/minnow.png' }, 'Small Minnows': { image: 'images/lures/minnow.png' }, 'Drop Shot with Minnow': { image: 'images/lures/dropshot.png' }, 'Slip Bobber with Minnow': { image: 'images/lures/slipbobber.png' }, 'Slip Bobber Rig': { image: 'images/lures/slipbobber.png' }, 'Live Minnow on a Jig': { image: 'images/lures/jig.png' }, 'Live Minnow under a Bobber': { image: 'images/lures/slipbobber.png' }, 'Kastmasters': { image: 'images/lures/spoon.png' }, 'Large, Vibrating Lures': { image: 'images/lures/chatterbait.png' }, 'Vibrating Lures': { image: 'images/lures/chatterbait.png' }, 'Dodger/Flasher Rig': { image: 'images/lures/dodgerfly.png' }, 'Dodger and Fly/Spoon': { image: 'images/lures/dodgerfly.png' }, 'Bondy Bait': { image: 'images/lures/bondybait.png' }, 'Jigging Raps': { image: 'images/lures/jiggingrap.png' }, 'Jigging Rap': { image: 'images/lures/jiggingrap.png' }, 'Bottom Bouncer Rig': { image: 'images/lures/bottombouncer.png' }, 'Bottom Bouncer': { image: 'images/lures/bottombouncer.png' }, 'Lindy Rig': { image: 'images/lures/lindyrig.png' }, 'Rippin\' Rap': { image: 'images/lures/rippinrap.png' }, 'Slip Bobber with Leech': { image: 'images/lures/slipbobber.png' }, 'Large Minnow Lures': { image: 'images/lures/minnowlure.png' }, 'Noisy Topwater': { image: 'images/lures/noisytopwater.png' }, 'Extra Loud Topwater': { image: 'images/lures/noisytopwater.png' }, 'Topwater "Creeper"': { image: 'images/lures/creeper.png' }, 'Topwater Creeper': { image: 'images/lures/creeper.png' }, 'Beetle Spin': { image: 'images/lures/beetlespin.png' }, 'Beetle Spins': { image: 'images/lures/beetlespin.png' }, 'Cut Bait (Shad/Sucker)': { image: 'images/lures/cutbait.png' }, 'Cut Bait': { image: 'images/lures/cutbait.png' }, 'Live Bluegill/Perch': { image: 'images/lures/livebait.png' }, 'Live Bluegill': { image: 'images/lures/livebait.png' }, 'Chicken Livers': { image: 'images/lures/chickenliver.png' }, 'Stink Bait': { image: 'images/lures/stinkbait.png' }, 'Live Bait': { image: 'images/lures/livebait.png' }, 'Small Jigs under a Bobber': { image: 'images/lures/jig.png' }, 'Jig under a Bobber': { image: 'images/lures/slipbobber.png' }, 'Small Rattling Lures': { image: 'images/lures/liplesscrank.png' }, 'Scented Glow Jigs': { image: 'images/lures/jig.png' }, 'Boilies': { image: 'images/lures/boilies.png' }, 'Corn or Boilies on a Hair Rig': { image: 'images/lures/boilies.png' }, 'Bright Pop-up Boilie': { image: 'images/lures/boilies.png' }, 'Pack Bait': { image: 'images/lures/packbait.png' }, 'Pack Bait with Corn/Boilies': { image: 'images/lures/packbait.png' }, 'Method Feeder': { image: 'images/lures/methodfeeder.png' }, 'Method Feeder with Pack Bait': { image: 'images/lures/methodfeeder.png' }, 'Large Dough Ball': { image: 'images/lures/doughball.png' }, 'Dough Ball': { image: 'images/lures/doughball.png' }, 'Zig Rig': { image: 'images/lures/zigrig.png' }, 'Bread': { image: 'images/lures/bread.png' }, 'Bright Pop-up Corn': { image: 'images/lures/popupcorn.png' }, 'Pop-up Corn': { image: 'images/lures/popupcorn.png' }, 'Spawn Sacs': { image: 'images/lures/spawnsac.png' } };
+            
+            // --- NEW: Lure Base Map for "Smarter" Highlighting ---
+            const lureBaseMap = {
+                'Large Jerkbaits': 'Jerkbait', 'Small Jerkbaits': 'Jerkbait', 'Flipping Jig': 'Jig', 'Big Jig': 'Jig', 'Big Jigs': 'Jig', 'Football Jig': 'Jig', 'Jig with a Minnow': 'Jig', 'Jig and Minnow': 'Jig', 'Jig with Large Minnow': 'Jig', 'Jig and Worm': 'Jig', 'Scented Jigs': 'Jig', 'Bright Jigs with Scent': 'Jig', 'Small Jigs': 'Jig', 'Small Jig': 'Jig', 'Bright Jigs': 'Jig', 'Glow Jigs with Sucker Meat': 'Jig', 'Glow Jigs with Bait': 'Jig', 'Small Jig with Plastic': 'Jig', 'Live Minnow on a Jig': 'Jig', 'Small Jigs under a Bobber': 'Jig', 'Jig under a Bobber': 'Jig', 'Scented Glow Jigs': 'Jig', 'Big Spinnerbait': 'Spinnerbait', 'Large Spinnerbaits': 'Spinnerbait', 'Giant Spinnerbaits': 'Spinnerbait', 'Small Spinners': 'Inline Spinner', 'Small Spinner': 'Inline Spinner', 'Inline Spinners': 'Inline Spinner', 'Small Inline Spinner': 'Inline Spinner', 'Large Spinners': 'Inline Spinner', 'Big Spinners': 'Inline Spinner', 'Weighted Spinners': 'Inline Spinner', 'Heavy Spinners': 'Inline Spinner', 'Chatterbaits': 'Chatterbait', 'Large, Vibrating Lures': 'Chatterbait', 'Vibrating Lures': 'Chatterbait', 'Rattling Lipless Cranks': 'Lipless Crankbait', 'Rattling Lipless Crankbait': 'Lipless Crankbait', 'Small Rattling Lures': 'Lipless Crankbait', 'Swimbaits': 'Swimbait', 'Large Swimbaits': 'Swimbait', 'Small Swimbaits': 'Swimbait', 'Small Swimbait': 'Swimbait', 'Spoons': 'Spoon', 'Small Spoons': 'Spoon', 'Large Spoons': 'Spoon', 'Trolling Spoons': 'Spoon', 'Flutter Spoons': 'Spoon', 'Jigging Spoons': 'Spoon', 'Small Jigging Spoon': 'Spoon', 'Glow-in-the-Dark Spoons': 'Spoon', 'Glow Spoons': 'Spoon', 'Heavy Spoons with Rattles': 'Spoon', 'Silver Spoon': 'Spoon', 'Large Trolling Spoons': 'Spoon', 'Kastmasters': 'Spoon', 'White Tube Jigs': 'Tube Jig', 'Heavy Tube Jigs': 'Tube Jig', 'Glow Tube Jigs': 'Tube Jig', 'Crappie Tubes': 'Tube Jig', 'Giant Crankbaits': 'Crankbait', 'Crawfish Crankbait': 'Crankbait', 'Bright Crankbait': 'Crankbait', 'Small Crankbait': 'Crankbait', 'Rattling Crankbait': 'Crankbait', 'Blade Baits': 'Blade Bait', 'Rattling Blade Bait': 'Blade Bait', 'Large Spooks': 'Topwater Spook', 'Whopper Ploppers': 'Topwater Plopper', 'Bucktails': 'Bucktail', 'Large Bucktails ("Double 10s")': 'Bucktail', 'Glide Baits': 'Glide Bait', 'Large Glide Baits': 'Glide Bait', 'Big Soft Plastics ("Bulldawg")': 'Bulldawg', 'Big Soft Plastics': 'Bulldawg', 'Nightcrawlers': 'Live Worms', 'Wax Worms': 'Live Worms', 'Worms': 'Live Worms', 'PowerBait': 'Scented Dough Bait', 'Scented Dough': 'Scented Dough Bait', 'Scented Baits': 'Scented Dough Bait', 'Live Minnows': 'Live Minnow', 'Crappie Minnows': 'Live Minnow', 'Minnows': 'Live Minnow', 'Small Minnows': 'Live Minnow', 'Drop Shot with Minnow': 'Drop Shot', 'Slip Bobber with Minnow': 'Slip Bobber Rig', 'Slip Bobber with Leech': 'Slip Bobber Rig', 'Live Minnow under a Bobber': 'Slip Bobber Rig', 'Dodger and Fly/Spoon': 'Dodger/Flasher Rig', 'Jigging Raps': 'Jigging Rap', 'Bottom Bouncer Rig': 'Bottom Bouncer', 'Noisy Topwater': 'Extra Loud Topwater', 'Topwater "Creeper"': 'Topwater Creeper', 'Beetle Spins': 'Beetle Spin', 'Cut Bait (Shad/Sucker)': 'Cut Bait', 'Live Bluegill/Perch': 'Live Bluegill', 'Corn or Boilies on a Hair Rig': 'Boilies', 'Bright Pop-up Boilie': 'Boilies', 'Pack Bait with Corn/Boilies': 'Pack Bait', 'Method Feeder with Pack Bait': 'Method Feeder', 'Large Dough Ball': 'Dough Ball', 'Bright Pop-up Corn': 'Pop-up Corn'
             };
 
-            const fishTypes = {
-                largemouth: { name: 'Largemouth', imageSrc: 'images/largemouthbass.png' },
-                smallmouth: { name: 'Smallmouth', imageSrc: 'images/smallmouthbass.png' },
-                rainbowtrout:   { name: 'Rainbow Trout',   imageSrc: 'images/rainbowtrout.png' },
-                laketrout: { name: 'Lake Trout', imageSrc: 'images/laketrout.png' },
-                walleye: { name: 'Walleye', imageSrc: 'images/walleye.png' },
-                pike:    { name: 'Pike',    imageSrc: 'images/pike.png' },
-                muskie:   { name: 'Muskie',   imageSrc: 'images/muskie.png' },
-                perch: { name: 'Perch', imageSrc: 'images/perch.png' },
-                freshwaterdrum: { name: 'Freshwater Drum', imageSrc: 'images/freshwaterdrum.png' },
-                 crappie: { name: 'Crappie', imageSrc: 'images/crappie.png' },
-                catfish: { name: 'Catfish', imageSrc: 'images/catfish.png' },
-				brooktrout: { name: 'Brook Trout', imageSrc: 'images/brooktrout.png' },
-				splake: { name: 'Splake', imageSrc: 'images/splake.png' },
-				browntrout: { name: 'Brown Trout', imageSrc: 'images/browntrout.png' },
-                chinooksalmon: { name: 'Chinook Salmon', imageSrc: 'images/chinooksalmon.png' },
-				cohosalmon: { name: 'Coho Salmon', imageSrc: 'images/cohosalmon.png' },
-				atlanticsalmon: { name: 'Atlantic Salmon', imageSrc: 'images/atlanticsalmon.png' },
-                bluegill: { name: 'Bluegill', imageSrc: 'images/bluegill.png' },
-				lakewhitefish: { name: 'Lake Whitefish', imageSrc: 'images/lakewhitefish.png' },
-				carp: { name: 'Common Carp', imageSrc: 'images/carp.png' }
-            };
-
-            const clarityTypes = {
-                clear: { name: 'Clear', imageSrc: 'images/clear.png' },
-                muddy: { name: 'Muddy', imageSrc: 'images/muddy.png' }
-            };
-
-            const tempTypes = {
-                cool: { name: 'Cool', imageSrc: 'images/cool.png' },
-                warm: { name: 'Warm', imageSrc: 'images/warm.png' }
-            };
-
-            const colorMap = {
-                // --- BASS COLORS ---
-                'Green Pumpkin': { hex: '#4B5320', reason: 'The most versatile bass color. Perfectly mimics crawfish, gobies, and bluegill in most water clarities.' },
-                'Watermelon': { hex: '#75A850', reason: 'A translucent, natural green that excels in clear water, mimicking small fish and other forage.' },
-                'Bone White': { hex: '#F9F6EE', reason: 'A solid, highly visible color for topwater lures that provides a strong silhouette against the sky.' },
-                'Crawfish': { hex: '#C84A33', reason: 'Directly imitates crawfish, a primary food source for bass in rocky environments, especially in spring.' },
-                'Goby': { hex: '#967969', reason: 'Crucial in the Great Lakes region. It specifically imitates the round goby, a key forage species.' },
-                
-                // --- PIKE & MUSKIE COLORS ---
-                'Sucker': { hex: '#BC8F8F', reason: 'Imitates suckers, a large, high-protein forage fish targeted by apex predators like pike and muskie.' },
-                'Loon': { hex: '#333333', reason: 'A dark, solid color for large topwater lures that provides a strong silhouette against the sky, mimicking birds or small mammals.' },
-                'Walleye': { hex: '#D4AF37', reason: 'In many northern lakes, walleye are a primary food source for giant muskie. This pattern imitates that forage.' },
-
-                // --- TROUT & SALMON COLORS ---
-                'Rainbow Trout': { hex: '#B5E6B5', reason: 'Mimics rainbow trout, a common food source for larger predators like lake trout and brown trout in stocked waters.' },
-                'Smelt': { hex: '#A7B4B5', reason: 'A silvery, almost translucent pattern that imitates smelt, a key open-water baitfish for salmon and trout.' },
-                'Hot Pink': { hex: '#FF69B4', reason: 'A bright, high-visibility color used in stained water for salmon and trout, thought to imitate the color of eggs or trigger an aggressive response.' },
-
-                // --- PANFISH COLORS ---
-                'Shock Pink': { hex: '#FC0FC0', reason: 'A bright, shocking color that stands out and is highly effective for crappie and other panfish, especially in stained water.' },
-                
-                // --- CARP COLORS ---
-                'Carp Yellow': { hex: '#FFD700', reason: 'A classic carp color that perfectly mimics corn, one of their absolute favorite foods.' },
-                'Hi-Vis Orange': { hex: '#FFA500', reason: 'A high-visibility color that stands out well against a variety of dark lake bottoms, making it easy for carp to find.' },
-
-                // --- UNIVERSAL & MULTI-PURPOSE COLORS ---
-                'White': { hex: '#FFFFFF', reason: 'A highly visible color that effectively mimics the flash and profile of baitfish like shad, shiners, and ciscoes.' },
-                'Chartreuse': { hex: '#DFFF00', reason: 'An extremely bright, high-visibility color that excels in stained, muddy, or deep water for nearly all species.' },
-                'Black': { hex: '#000000', reason: 'Provides the strongest possible silhouette, making it effective in very muddy water and at night for all predators.' },
-                'Blue': { hex: '#0000FF', reason: 'Often combined with black for jigs and spinnerbaits, it provides a subtle contrast that is highly effective in both clear and stained water.' },
-                'Silver': { hex: '#C0C0C0', reason: 'Provides a realistic flash that mimics the scales of many common baitfish species like shiners and alewife.' },
-                'Gold': { hex: '#FFD700', reason: 'Effective in stained or tannic water, imitating the flash of species like perch or golden shiners.' },
-                'Perch': { hex: '#E8A317', reason: 'Directly imitates yellow perch, one of the most common and important forage fish in all of Ontario.' },
-                'Firetiger': { hex: '#F3B700', reason: 'A classic, aggressive pattern with bright green, chartreuse, and orange that is highly effective in stained water for all predator species.' },
-                'Natural Shad': { hex: '#B6C0C3', reason: 'A realistic color pattern that imitates common open-water baitfish like shad and shiners.' },
-                'Chrome': { hex: '#E8E8E8', reason: 'Provides the maximum possible flash, making it excellent on sunny days for triggering reaction strikes from aggressive predators.' },
-                'Red': { hex: '#FF0000', reason: 'Can trigger reaction strikes, imitate the color of gills on injured baitfish, or mimic the color of crawfish.' },
-                'Orange': { hex: '#FFA500', reason: 'A high-visibility color that works well in stained water, particularly effective for salmon, trout, and walleye.' },
-                'Yellow': { hex: '#FFFF00', reason: 'A bright, simple color that can be effective for panfish, walleye, and pike in stained water conditions.' },
-                'Purple': { hex: '#800080', reason: 'A dark, subtle color that works well in low light and clear water as an alternative to black, especially for walleye and smallmouth.' },
-                'Smoke': { hex: '#848884', reason: 'A subtle, translucent color that is very effective in ultra-clear water for wary smallmouth and lake trout.' },
-                'Glow': { hex: '#E0FFD6', reason: 'Essential for deep water species like lake trout and salmon, as it remains visible where other colors fade to gray.' }
-            };
-
-            // Generic gear recommendations by fish
-            const gearMap = {
-                largemouth: { rod: 'Medium to Medium-Heavy Power, Fast Action', line: '10-17lb Fluorocarbon or 30-50lb Braid' },
-                smallmouth: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or 10-20lb Braid with leader' },
-                rainbowtrout: { rod: 'Ultra-Light to Light Power, Moderate Action', line: '2-6lb Monofilament or Fluorocarbon' },
-                laketrout: { rod: 'Medium-Heavy Power, Moderate-Fast Action', line: '20-40lb Braid with Fluorocarbon Leader' },
-                walleye: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or 10-20lb Braid' },
-                pike: { rod: 'Medium-Heavy to Heavy Power, Fast Action', line: '40-65lb Braid with a steel leader' },
-                muskie: { rod: 'Heavy to Extra-Heavy Power, Fast Action', line: '80-100lb Braid with a 100-150lb Fluorocarbon or Wire Leader' },
-                perch: { rod: 'Light to Ultra-Light Power, Fast Action', line: '4-6lb Monofilament or Fluorocarbon' },
-                freshwaterdrum: { rod: 'Medium-Light to Medium Power, Fast Action', line: '8-12lb Monofilament or Fluorocarbon' },
-                crappie: { rod: 'Ultra-Light Power, Fast Action', line: '2-4lb Monofilament' },
-                catfish: { rod: 'Medium-Heavy to Heavy Power, Moderate-Fast Action', line: '20-50lb Monofilament or Braid' },
-				brooktrout: { rod: 'Ultra-Light to Light Power, Moderate Action', line: '2-6lb Monofilament or Fluorocarbon' },
-				splake: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or Braid' },
-				browntrout: { rod: 'Light to Medium-Light Power, Fast Action', line: '4-8lb Fluorocarbon' },
-				chinooksalmon: { rod: 'Medium-Heavy to Heavy Power, Moderate Action', line: '20-30lb Monofilament or 30-50lb Braid' },
-                cohosalmon: { rod: 'Medium Power, Moderate-Fast Action', line: '10-15lb Monofilament or 20-30lb Braid' },
-				atlanticsalmon: { rod: 'Medium Power, Fast Action', line: '8-12lb Monofilament or 15-30lb Braid' },
-				bluegill: { rod: 'Ultra-Light Power, Moderate Action', line: '2-4lb Monofilament' },
-				lakewhitefish: { rod: 'Medium-Light Power, Fast Action', line: '4-8lb Fluorocarbon or Braid with Leader' },
-				carp: { rod: '10-12ft Rod with a large capacity reel (Baitrunner style recommended)', line: '15-20lb Monofilament or 30-50lb Braid' }
-
-            };
-			
-			const lureMap = {
-                'Drop Shot': { image: 'images/lures/dropshot.png' },
-                'Topwater Popper': { image: 'images/lures/popper.png' },
-                'Jerkbait': { image: 'images/lures/jerkbait.png' },
-                'Large Jerkbaits': { image: 'images/lures/jerkbait.png' },
-                'Small Jerkbaits': { image: 'images/lures/jerkbait.png' },
-                'Ned Rig': { image: 'images/lures/nedrig.png' },
-                'Flipping Jig': { image: 'images/lures/jig.png' },
-                'Big Jig': { image: 'images/lures/jig.png' },
-                'Big Jigs': { image: 'images/lures/jig.png' },
-                'Jig': { image: 'images/lures/jig.png' },
-                'Football Jig': { image: 'images/lures/jig.png' },
-                'Jig with a Minnow': { image: 'images/lures/jig.png' },
-                'Jig and Minnow': { image: 'images/lures/jig.png' },
-                'Jig with Large Minnow': { image: 'images/lures/jig.png' },
-                'Jig and Worm': { image: 'images/lures/jig.png' },
-                'Scented Jigs': { image: 'images/lures/jig.png' },
-                'Bright Jigs with Scent': { image: 'images/lures/jig.png' },
-                'Small Jigs': { image: 'images/lures/jig.png' },
-                'Small Jig': { image: 'images/lures/jig.png' },
-                'Bright Jigs': { image: 'images/lures/jig.png' },
-                'Glow Jigs with Sucker Meat': { image: 'images/lures/jig.png' },
-                'Glow Jigs with Bait': { image: 'images/lures/jig.png' },
-                'Small Jig with Plastic': { image: 'images/lures/jig.png' },
-                'Spinnerbait': { image: 'images/lures/spinnerbait.png' },
-                'Big Spinnerbait': { image: 'images/lures/spinnerbait.png' },
-                'Large Spinnerbaits': { image: 'images/lures/spinnerbait.png' },
-                'Giant Spinnerbaits': { image: 'images/lures/spinnerbait.png' },
-                'Small Spinners': { image: 'images/lures/inlinespinner.png' },
-                'Small Spinner': { image: 'images/lures/inlinespinner.png' },
-                'Inline Spinners': { image: 'images/lures/inlinespinner.png' },
-                'Small Inline Spinner': { image: 'images/lures/inlinespinner.png' },
-                'Large Spinners': { image: 'images/lures/inlinespinner.png' },
-                'Big Spinners': { image: 'images/lures/inlinespinner.png' },
-                'Weighted Spinners': { image: 'images/lures/inlinespinner.png' },
-                'Heavy Spinners': { image: 'images/lures/inlinespinner.png' },
-                'Chatterbait': { image: 'images/lures/chatterbait.png' },
-                'Chatterbaits': { image: 'images/lures/chatterbait.png' },
-                'Lipless Crankbait': { image: 'images/lures/liplesscrank.png' },
-                'Rattling Lipless Cranks': { image: 'images/lures/liplesscrank.png' },
-                'Rattling Lipless Crankbait': { image: 'images/lures/liplesscrank.png' },
-                'Swimbait': { image: 'images/lures/swimbait.png' },
-                'Swimbaits': { image: 'images/lures/swimbait.png' },
-                'Large Swimbaits': { image: 'images/lures/swimbait.png' },
-                'Small Swimbaits': { image: 'images/lures/swimbait.png' },
-                'Small Swimbait': { image: 'images/lures/swimbait.png' },
-                'Senko Worm': { image: 'images/lures/senko.png' },
-                'Spoon': { image: 'images/lures/spoon.png' },
-                'Spoons': { image: 'images/lures/spoon.png' },
-                'Small Spoons': { image: 'images/lures/spoon.png' },
-                'Large Spoons': { image: 'images/lures/spoon.png' },
-                'Trolling Spoons': { image: 'images/lures/spoon.png' },
-                'Flutter Spoons': { image: 'images/lures/spoon.png' },
-                'Jigging Spoons': { image: 'images/lures/spoon.png' },
-                'Small Jigging Spoon': { image: 'images/lures/spoon.png' },
-                'Glow-in-the-Dark Spoons': { image: 'images/lures/spoon.png' },
-                'Glow Spoons': { image: 'images/lures/spoon.png' },
-                'Heavy Spoons with Rattles': { image: 'images/lures/spoon.png' },
-                'Silver Spoon': { image: 'images/lures/spoon.png' },
-                'Large Trolling Spoons': { image: 'images/lures/spoon.png' },
-                'Tube Jig': { image: 'images/lures/tube.png' },
-                'White Tube Jigs': { image: 'images/lures/tube.png' },
-                'Heavy Tube Jigs': { image: 'images/lures/tube.png' },
-                'Glow Tube Jigs': { image: 'images/lures/tube.png' },
-                'Crappie Tubes': { image: 'images/lures/tube.png' },
-                'Crankbait': { image: 'images/lures/crankbait.png' },
-                'Giant Crankbaits': { image: 'images/lures/crankbait.png' },
-                'Crawfish Crankbait': { image: 'images/lures/crankbait.png' },
-                'Bright Crankbait': { image: 'images/lures/crankbait.png' },
-                'Small Crankbait': { image: 'images/lures/crankbait.png' },
-                'Rattling Crankbait': { image: 'images/lures/crankbait.png' },
-                'Blade Bait': { image: 'images/lures/bladebait.png' },
-                'Blade Baits': { image: 'images/lures/bladebait.png' },
-                'Rattling Blade Bait': { image: 'images/lures/bladebait.png' },
-                'A-Rig': { image: 'images/lures/arig.png' },
-                'Topwater Spook': { image: 'images/lures/spook.png' },
-                'Large Spooks': { image: 'images/lures/spook.png' },
-                'Fluke': { image: 'images/lures/fluke.png' },
-                'Creature Bait': { image: 'images/lures/creaturebait.png' },
-                'Topwater Plopper': { image: 'images/lures/plopper.png' },
-                'Whopper Ploppers': { image: 'images/lures/plopper.png' },
-                'Bucktails': { image: 'images/lures/bucktail.png' },
-                'Large Bucktails ("Double 10s")': { image: 'images/lures/bucktail.png' },
-                'Glide Baits': { image: 'images/lures/glidebait.png' },
-                'Large Glide Baits': { image: 'images/lures/glidebait.png' },
-                'Big Soft Plastics ("Bulldawg")': { image: 'images/lures/bulldawg.png' },
-                'Big Soft Plastics': { image: 'images/lures/bulldawg.png' },
-                'Live Worms': { image: 'images/lures/livebait.png' },
-                'Nightcrawlers': { image: 'images/lures/livebait.png' },
-                'Wax Worms': { image: 'images/lures/livebait.png' },
-                'Worms': { image: 'images/lures/livebait.png' },
-                'Scented Dough': { image: 'images/lures/powerbait.png' },
-                'PowerBait': { image: 'images/lures/powerbait.png' },
-                'Scented Dough Bait': { image: 'images/lures/powerbait.png' },
-                'Scented Baits': { image: 'images/lures/powerbait.png' },
-                'Live Minnows': { image: 'images/lures/livebait.png' },
-                'Live Minnow': { image: 'images/lures/livebait.png' },
-                'Crappie Minnows': { image: 'images/lures/livebait.png' },
-                'Minnows': { image: 'images/lures/livebait.png' },
-                'Drop Shot with Minnow': { image: 'images/lures/dropshot.png' },
-                'Slip Bobber with Minnow': { image: 'images/lures/slipbobber.png' },
-                'Live Minnow on a Jig': { image: 'images/lures/jig.png' },
-                'Live Minnow under a Bobber': { image: 'images/lures/slipbobber.png' },
-                'Kastmasters': { image: 'images/lures/spoon.png' },
-                'Large, Vibrating Lures': { image: 'images/lures/chatterbait.png' },
-                'Vibrating Lures': { image: 'images/lures/chatterbait.png' },
-                'Dodger and Fly/Spoon': { image: 'images/lures/dodgerfly.png' },
-                'Bondy Bait': { image: 'images/lures/bondybait.png' },
-                'Jigging Raps': { image: 'images/lures/jiggingrap.png' },
-                'Bottom Bouncer Rig': { image: 'images/lures/bottombouncer.png' },
-                'Lindy Rig': { image: 'images/lures/lindyrig.png' },
-                'Rippin\' Rap': { image: 'images/lures/rippinrap.png' },
-                'Slip Bobber with Leech': { image: 'images/lures/slipbobber.png' },
-                'Large Minnow Lures': { image: 'images/lures/minnowlure.png' },
-                'Noisy Topwater': { image: 'images/lures/noisytopwater.png' },
-                'Extra Loud Topwater': { image: 'images/lures/noisytopwater.png' },
-                'Topwater "Creeper"': { image: 'images/lures/creeper.png' },
-                'Beetle Spin': { image: 'images/lures/beetlespin.png' },
-                'Beetle Spins': { image: 'images/lures/beetlespin.png' },
-                'Cut Bait (Shad/Sucker)': { image: 'images/lures/cutbait.png' },
-                'Cut Bait': { image: 'images/lures/cutbait.png' },
-                'Live Bluegill/Perch': { image: 'images/lures/livebait.png' },
-                'Live Bluegill': { image: 'images/lures/livebait.png' },
-                'Chicken Livers': { image: 'images/lures/chickenliver.png' },
-                'Stink Bait': { image: 'images/lures/stinkbait.png' },
-                'Live Bait': { image: 'images/lures/livebait.png' },
-                'Small Jigs under a Bobber': { image: 'images/lures/jig.png' },
-                'Jig under a Bobber': { image: 'images/lures/slipbobber.png' },
-                'Small Rattling Lures': { image: 'images/lures/liplesscrank.png' },
-				'Scented Glow Jigs': { image: 'images/lures/jig.png' },
-				// --- Carp Baits ---
-                'Boilies': { image: 'images/lures/boilies.png' },
-                'Corn or Boilies on a Hair Rig': { image: 'images/lures/boilies.png' },
-                'Bright Pop-up Boilie': { image: 'images/lures/boilies.png' },
-                'Pack Bait': { image: 'images/lures/packbait.png' },
-                'Pack Bait with Corn/Boilies': { image: 'images/lures/packbait.png' },
-                'Method Feeder': { image: 'images/lures/methodfeeder.png' },
-                'Method Feeder with Pack Bait': { image: 'images/lures/methodfeeder.png' },
-                'Large Dough Ball': { image: 'images/lures/doughball.png' },
-                'Dough Ball': { image: 'images/lures/doughball.png' },
-                'Zig Rig': { image: 'images/lures/zigrig.png' },
-                'Bread': { image: 'images/lures/bread.png' },
-                'Bright Pop-up Corn': { image: 'images/lures/popupcorn.png' },
-                'Pop-up Corn': { image: 'images/lures/popupcorn.png' },
-				// --- Live Bait ---
-                'Live Minnow': { image: 'images/lures/minnow.png' },
-                'Live Minnows': { image: 'images/lures/minnow.png' },
-                'Crappie Minnows': { image: 'images/lures/minnow.png' },
-                'Live Worms': { image: 'images/lures/worm.png' },
-                'Worms': { image: 'images/lures/worm.png' },
-                'Nightcrawlers': { image: 'images/lures/worm.png' },
-                'Wax Worms': { image: 'images/lures/worm.png' },
-				'Small Minnows': { image: 'images/lures/minnow.png' },
-            };
-
-
-
-            // --- Fully Populated Recommendation Database ---
             const recommendations = {
                largemouth: {
                     sunny: {
@@ -1406,10 +1126,8 @@ bluegill: {
 
             };
 
-
-		   
-            // This function will process the recommendations object into a more detailed format for rendering.
             function parseRecommendations(data) {
+                if (Object.keys(data).length === 0) return {};
                 const parsedData = {};
                 for (const fish in data) {
                     parsedData[fish] = {};
@@ -1419,33 +1137,9 @@ bluegill: {
                             parsedData[fish][weather][clarity] = {};
                             for (const temp in data[fish][weather][clarity]) {
                                 const rec = data[fish][weather][clarity][temp];
-                                
-                                // Parse Lures
-                                const parsedLures = rec.lures.map(lure => ({
-                                    name: lure.name,
-                                    technique: lure.technique || 'Vary retrieve speed to find what works.',
-                                    reason: lure.reason || `Effective for ${fish} in these conditions.`,
-                                    isPrimary: lure.isPrimary || false // MODIFIED: Carry over the isPrimary flag
-                                }));
-
-                                // Parse Colors
-                                const parsedColors = rec.colors.map(colorName => {
-                                    const colorData = colorMap[colorName] || { hex: '#808080', reason: 'A good general-purpose color.' };
-                                    return {
-                                        name: colorName,
-                                        hex: colorData.hex,
-                                        reason: colorData.reason
-                                    };
-                                });
-
-                                // Build the new, fully-detailed object for this recommendation
-                                parsedData[fish][weather][clarity][temp] = {
-                                    lures: parsedLures,
-                                    colors: parsedColors,
-                                    gear: rec.gear,
-                                    location: rec.location,
-                                    tips: rec.tips
-                                };
+                                const parsedLures = rec.lures.map(lure => ({ name: lure.name, technique: lure.technique || 'Vary retrieve speed to find what works.', reason: lure.reason || `Effective for ${fish} in these conditions.`, isPrimary: lure.isPrimary || false }));
+                                const parsedColors = rec.colors.map(colorName => { const d = colorMap[colorName] || {}; return { name: colorName, hex: d.hex, reason: d.reason }; });
+                                parsedData[fish][weather][clarity][temp] = { lures: parsedLures, colors: parsedColors, gear: rec.gear, location: rec.location, tips: rec.tips };
                             }
                         }
                     }
@@ -1455,51 +1149,21 @@ bluegill: {
 
             const fullRecommendations = parseRecommendations(recommendations);
 
-
-            // --- Render Functions ---
-            
             function createSelectionButtons(container, data, getSelectedValue, onSelectCallback, dataKey, imageClass = 'w-10 h-10') {
                 container.innerHTML = '';
                 for (const key in data) {
                     const item = data[key];
                     const button = document.createElement('button');
                     button.className = 'selection-btn text-center p-3 bg-gray-700 border-2 border-gray-600 rounded-lg text-gray-300 hover:border-blue-500 hover:text-white';
-                    if (key === getSelectedValue()) {
-                        button.classList.add('active');
-                    }
+                    if (key === getSelectedValue()) button.classList.add('active');
                     button.dataset[dataKey] = key;
-                    
-                    let innerHTML = '';
-                    if (item.svg) innerHTML += item.svg;
-                    if (item.imageSrc) innerHTML += `<img src="${item.imageSrc}" alt="${item.name}" class="${imageClass} mx-auto mb-1 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/96x96/1E293B/FFFFFF?text=?';">`;
-                    
-                    innerHTML += `<span class="text-sm font-medium">${item.name}</span>`;
-                    button.innerHTML = innerHTML;
-
-                    button.addEventListener('click', () => {
-                        onSelectCallback(key);
-                        container.querySelectorAll('.selection-btn').forEach(btn => btn.classList.remove('active'));
-                        button.classList.add('active');
-                    });
+                    button.innerHTML = `${item.imageSrc ? `<img src="${item.imageSrc}" alt="${item.name}" class="${imageClass} mx-auto mb-1 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/96x96/1E293B/FFFFFF?text=?';">` : ''}<span class="text-sm font-medium">${item.name}</span>`;
+                    button.addEventListener('click', () => { onSelectCallback(key); container.querySelectorAll('.selection-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); });
                     container.appendChild(button);
                 }
             }
 
-            function isColorDark(hex) {
-                if (!hex || !hex.startsWith('#')) return false;
-                try {
-                    const rgb = parseInt(hex.substring(1), 16);
-                    const r = (rgb >> 16) & 0xff;
-                    const g = (rgb >> 8) & 0xff;
-                    const b = (rgb >> 0) & 0xff;
-                    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-                    return yiq < 128;
-                } catch(e) {
-                    return false;
-                }
-            }
-
-            function renderLures(lures) {
+            function renderLures(lures, tackleboxContents) {
                 lureResult.innerHTML = '';
                 if (!lures || lures.length === 0) {
                     lureResult.innerHTML = '<p class="text-gray-400">No specific lure recommendations available.</p>';
@@ -1507,127 +1171,87 @@ bluegill: {
                 }
                 lures.forEach(lure => {
                     const card = document.createElement('div');
-                    // MODIFIED: Added 'relative' class for badge positioning
-                    card.className = 'relative bg-gray-800/50 p-4 rounded-lg border border-gray-700';
+                    const recommendedLureName = lure.name;
+                    const baseOfRecommended = lureBaseMap[recommendedLureName] || recommendedLureName;
+                    const isInTacklebox = tackleboxContents.includes(baseOfRecommended);
+
+                    card.className = isInTacklebox ? 'relative bg-emerald-900/50 p-4 rounded-lg border-2 border-emerald-500' : 'relative bg-gray-800/50 p-4 rounded-lg border border-gray-700';
                     
                     const lureInfo = lureMap[lure.name] || {};
                     const imageSrc = lureInfo.image || 'https://placehold.co/200x100/1E293B/FFFFFF?text=Lure';
+                    
+                    let badgeHTML = '';
+                    if (lure.isPrimary) badgeHTML += `<div class="absolute top-0 right-0 bg-yellow-400 text-gray-900 text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">⭐ Go-To</div>`;
+                    if (isInTacklebox) badgeHTML += `<div class="absolute top-0 left-0 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">✔ In Your Box</div>`;
 
-                    // MODIFIED: Added logic to create and include the badge HTML
-                    const isPrimary = lure.isPrimary;
-                    const badgeHTML = isPrimary 
-                        ? `<div class="absolute top-0 right-0 bg-yellow-400 text-gray-900 text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">⭐ Go-To</div>` 
-                        : '';
-
-                    card.innerHTML = `
-                        ${badgeHTML}
-                        <img src="${imageSrc}" alt="${lure.name}" class="w-full h-24 object-contain bg-white rounded-md mb-3">
-                        <h4 class="font-bold text-base text-white">${lure.name}</h4>
-                        <p class="text-sm text-gray-400 mt-1"><span class="font-semibold text-gray-300">Technique:</span> ${lure.technique}</p>
-                        <p class="text-sm text-gray-400 mt-2"><span class="font-semibold text-gray-300">Why it works:</span> ${lure.reason}</p>
-                    `;
+                    card.innerHTML = `${badgeHTML}<img src="${imageSrc}" alt="${lure.name}" class="w-full h-24 object-contain bg-white rounded-md mb-3" onerror="this.onerror=null;this.src='https://placehold.co/200x100/1E293B/FFFFFF?text=?';"><h4 class="font-bold text-base text-white">${lure.name}</h4><p class="text-sm text-gray-400 mt-1"><span class="font-semibold text-gray-300">Technique:</span> ${lure.technique}</p><p class="text-sm text-gray-400 mt-2"><span class="font-semibold text-gray-300">Why it works:</span> ${lure.reason}</p>`;
                     lureResult.appendChild(card);
                 });
             }
 
-
             function renderColors(colors) {
                 colorResult.innerHTML = '';
-                 if (!colors || colors.length === 0) {
-                    colorResult.innerHTML = '<p class="text-gray-400">No specific color recommendations available.</p>';
-                    return;
-                }
+                if (!colors || colors.length === 0) { colorResult.innerHTML = '<p class="text-gray-400">No specific color recommendations available.</p>'; return; }
                 colors.forEach(color => {
                     const card = document.createElement('div');
                     card.className = 'bg-gray-800/50 p-4 rounded-lg border border-gray-700 flex flex-col';
-                    
-                    const textColor = isColorDark(color.hex) ? 'text-white' : 'text-black';
-
-                    card.innerHTML = `
-                        <div class="flex items-center mb-2">
-                            <span class="w-6 h-6 rounded-full mr-3 border border-gray-500" style="background-color: ${color.hex};"></span>
-                            <h4 class="font-bold text-base text-white">${color.name}</h4>
-                        </div>
-                        <p class="text-sm text-gray-400"><span class="font-semibold text-gray-300">Why it works:</span> ${color.reason}</p>
-                    `;
+                    card.innerHTML = `<div class="flex items-center mb-2"><span class="w-6 h-6 rounded-full mr-3 border border-gray-500" style="background-color: ${color.hex};"></span><h4 class="font-bold text-base text-white">${color.name}</h4></div><p class="text-sm text-gray-400"><span class="font-semibold text-gray-300">Why it works:</span> ${color.reason}</p>`;
                     colorResult.appendChild(card);
                 });
             }
             
             function renderGear(gear) {
-                gearResult.innerHTML = '';
-                 if (!gear) {
-                    gearResult.innerHTML = '<p class="text-gray-400">No specific gear recommendations available.</p>';
-                    return;
-                }
-                gearResult.innerHTML = `
-                    <p class="text-gray-300"><span class="font-semibold text-blue-300">Rod:</span> ${gear.rod}</p>
-                    <p class="text-gray-300 mt-2"><span class="font-semibold text-blue-300">Line:</span> ${gear.line}</p>
-                `;
+                gearResult.innerHTML = !gear ? '<p class="text-gray-400">No specific gear recommendations available.</p>' : `<p class="text-gray-300"><span class="font-semibold text-blue-300">Rod:</span> ${gear.rod}</p><p class="text-gray-300 mt-2"><span class="font-semibold text-blue-300">Line:</span> ${gear.line}</p>`;
             }
 
             function renderLocation(location) {
-                locationResult.innerHTML = '';
-                if (!location) {
-                    locationResult.innerHTML = '<p class="text-gray-400">No specific location recommendations available.</p>';
-                    return;
-                }
-                locationResult.innerHTML = `
-                    <h4 class="font-bold text-base text-white">${location.title}</h4>
-                    <p class="text-gray-400 mt-1">${location.description}</p>
-                `;
+                locationResult.innerHTML = !location ? '<p class="text-gray-400">No specific location recommendations available.</p>' : `<h4 class="font-bold text-base text-white">${location.title}</h4><p class="text-gray-400 mt-1">${location.description}</p>`;
             }
 
             function renderProTips(tips) {
                 tipResult.innerHTML = '';
-                if (!tips || tips.length === 0) {
-                    tipResult.innerHTML = '<p class="text-gray-400">No pro tips available.</p>';
-                    return;
-                }
+                if (!tips || tips.length === 0) { tipResult.innerHTML = '<p class="text-gray-400">No pro tips available.</p>'; return; }
                 const container = document.createElement('div');
                 container.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
-
                 tips.forEach(tip => {
                     const tipBox = document.createElement('div');
                     tipBox.className = 'bg-gray-800/50 p-4 rounded-lg border border-gray-700 flex flex-col';
-                    tipBox.innerHTML = `
-                        <h4 class="font-bold text-base text-blue-300">${tip.title}</h4>
-                        <p class="text-gray-400 mt-1 text-sm">${tip.description}</p>
-                    `;
+                    tipBox.innerHTML = `<h4 class="font-bold text-base text-blue-300">${tip.title}</h4><p class="text-gray-400 mt-1 text-sm">${tip.description}</p>`;
                     container.appendChild(tipBox);
                 });
                 tipResult.appendChild(container);
             }
 
-             // --- Tab Switching Logic ---
             function switchTab(activeTab, inactiveTab, activeContent, inactiveContent) {
-                activeTab.classList.add('active');
-                inactiveTab.classList.remove('active');
-                activeContent.classList.add('active');
-                inactiveContent.classList.remove('active');
+                activeTab.classList.add('active'); inactiveTab.classList.remove('active');
+                activeContent.classList.add('active'); inactiveContent.classList.remove('active');
             }
 
             setupTab.addEventListener('click', () => switchTab(setupTab, strategyTab, setupContent, strategyContent));
             strategyTab.addEventListener('click', () => switchTab(strategyTab, setupTab, strategyContent, setupContent));
 
-            // --- Event Listener for Main Button ---
             getRecommendationBtn.addEventListener('click', () => {
+                const savedTacklebox = localStorage.getItem('myTacklebox');
+                let tackleboxContents = [];
+                if (savedTacklebox) {
+                    try {
+                        const rawTackleboxLures = JSON.parse(savedTacklebox).filter(item => item !== null).map(item => item.lure);
+                        const baseTackleboxLures = rawTackleboxLures.map(lureName => lureBaseMap[lureName] || lureName);
+                        tackleboxContents = [...new Set(baseTackleboxLures)]; // Use unique base names
+                    } catch (e) { console.error("Could not parse tacklebox data from localStorage:", e); }
+                }
+
                 const rec = fullRecommendations[selectedFish]?.[selectedWeather]?.[selectedClarity]?.[selectedTemp];
 
                 if (rec) {
-                    renderLures(rec.lures);
+                    renderLures(rec.lures, tackleboxContents);
                     renderColors(rec.colors);
                     renderGear(rec.gear);
                     renderLocation(rec.location);
                     renderProTips(rec.tips);
-                    
-                    // Reset to the first tab on new recommendation
                     switchTab(setupTab, strategyTab, setupContent, strategyContent);
-                    
                     resultsDiv.classList.remove('hidden');
-                    setTimeout(() => { 
-                        resultsDiv.classList.add('visible');
-                    }, 10);
+                    setTimeout(() => { resultsDiv.classList.add('visible'); }, 10);
                     resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
                 } else {
                     resultsDiv.classList.remove('hidden');
@@ -1635,15 +1259,10 @@ bluegill: {
                     setupContent.classList.add('active');
                     strategyContent.classList.remove('active');
                     lureResult.innerHTML = `<p class="text-gray-300 text-center col-span-1 md:col-span-2">Sorry, no recommendation found for this combination. Please try different selections.</p>`;
-                    colorResult.innerHTML = '';
-                    gearResult.innerHTML = '';
-                    locationResult.innerHTML = '';
-                    tipResult.innerHTML = '';
-                    
+                    colorResult.innerHTML = ''; gearResult.innerHTML = ''; locationResult.innerHTML = ''; tipResult.innerHTML = '';
                 }
             });
             
-            // --- Initial Render Calls ---
             createSelectionButtons(fishSelector, fishTypes, () => selectedFish, (key) => selectedFish = key, 'fish', 'w-24 h-24');
             createSelectionButtons(weatherSelector, weatherTypes, () => selectedWeather, (key) => selectedWeather = key, 'weather', 'w-10 h-10');
             createSelectionButtons(claritySelector, clarityTypes, () => selectedClarity, (key) => selectedClarity = key, 'clarity', 'w-10 h-10');
