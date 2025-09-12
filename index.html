@@ -13549,7 +13549,7 @@
                     switchTab(setupTab, strategyTab, setupContent, strategyContent);
                     resultsDiv.classList.remove('hidden');
                     setTimeout(() => { resultsDiv.classList.add('visible'); }, 10);
-                    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 } else {
                     resultsDiv.classList.remove('hidden'); 
                     resultsDiv.classList.add('visible'); 
@@ -13571,5 +13571,6 @@
     </script>
 </body>
 </html>
+
 
 
