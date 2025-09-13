@@ -265,8 +265,7 @@
             
             let selectedFish = 'largemouth', selectedWeather = 'sunny', selectedClarity = 'clear', selectedTemp = 'cool';
 
-            // --- Data Definitions ---
-            // This section is now empty! All data lives in your .js files.
+            // All data maps are loaded from the external JS files
 
             function parseRecommendations(data) {
                 if (Object.keys(data).length === 0) return {};
@@ -305,31 +304,86 @@
                 }
             }
 
-            function renderLures(lures, tackleboxContents) {
+            /**
+             * START: ***UPDATED*** FUNCTION renderLures
+             * This function is updated to support the new Smart Color Matching logic.
+             * It now accepts the recipe's colors (recommendedRecColors) and the new ownedMap.
+             */
+            function renderLures(lures, recommendedRecColors, tackleboxContents, ownedMap) { // Function signature updated
                 lureResult.innerHTML = '';
                 if (!lures || lures.length === 0) {
                     lureResult.innerHTML = '<p class="text-gray-400">No specific lure recommendations available.</p>';
                     return;
                 }
+
+                // Get the list of SPECIFIC recommended color names (e.g., ['Green Pumpkin', 'Black'])
+                const recommendedSpecificColorNames = recommendedRecColors.map(c => c.name);
+                // Translate them to our NEW 12 BASE categories (e.g., ['Green', 'Black'])
+                const recommendedBaseColorNames = recommendedSpecificColorNames.map(name => colorBaseMap[name] || name);
+                const uniqueRecommendedBaseColors = [...new Set(recommendedBaseColorNames)]; // Get the unique base colors
+
+
                 lures.forEach(lure => {
                     const card = document.createElement('div');
                     const recommendedLureName = lure.name;
                     const baseOfRecommended = lureBaseMap[recommendedLureName] || recommendedLureName;
                     const isInTacklebox = tackleboxContents.includes(baseOfRecommended);
-
-                    card.className = isInTacklebox ? 'relative bg-emerald-900/50 p-4 rounded-lg border-2 border-emerald-500' : 'relative bg-gray-800/50 p-4 rounded-lg border border-gray-700';
                     
                     const lureInfo = lureMap[lure.name] || {};
                     const imageSrc = lureInfo.image || 'https://placehold.co/200x100/1E293B/FFFFFF?text=Lure';
                     
-                    let badgeHTML = '';
-                    if (lure.isPrimary) badgeHTML += `<div class="absolute top-0 right-0 bg-yellow-400 text-gray-900 text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">⭐ Go-To</div>`;
-                    if (isInTacklebox) badgeHTML += `<div class="absolute top-0 left-0 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">✔ In Your Box</div>`;
+                    // --- NEW COLOR MATCH LOGIC ---
+                    let matchStatus = 0; // 0 = Not Owned, 1 = Owned (Wrong Color), 2 = Owned (Color Match)
+                    
+                    if (isInTacklebox) {
+                        // ownedMap (from the button click) is already a Set of BASE colors.
+                        // e.g., Set('Green', 'Black', 'Brown')
+                        const ownedBaseColorsSet = ownedMap[baseOfRecommended] || new Set();
+                        
+                        // Check if ANY of our BASE recommended colors (uniqueRecommendedBaseColors) exist in our OWNED base colors (ownedBaseColorsSet)
+                        const hasRecColor = uniqueRecommendedBaseColors.some(recBaseColor => ownedBaseColorsSet.has(recBaseColor));
+                        
+                        matchStatus = hasRecColor ? 2 : 1; // 2 for perfect match, 1 for just owning the type
+                    }
+                    // --- END NEW LOGIC ---
 
-                    card.innerHTML = `${badgeHTML}<img src="${imageSrc}" alt="${lure.name}" class="w-full h-24 object-contain bg-white rounded-md mb-3" onerror="this.onerror=null;this.src='https://placehold.co/200x100/1E293B/FFFFFF?text=?';"><h4 class="font-bold text-base text-white">${lure.name}</h4><p class="text-sm text-gray-400 mt-1"><span class="font-semibold text-gray-300">Technique:</span> ${lure.technique}</p><p class="text-sm text-gray-400 mt-2"><span class="font-semibold text-gray-300">Why it works:</span> ${lure.reason}</p>`;
+
+                    let badgeHTML = '';
+                    let cardClass = 'relative bg-gray-800/50 p-4 rounded-lg border border-gray-700'; // Default class
+
+                    if (lure.isPrimary) {
+                        badgeHTML += `<div class="absolute top-0 right-0 bg-yellow-400 text-gray-900 text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">⭐ Go-To</div>`;
+                    }
+
+                    // Generate new UI based on the 3-state matchStatus
+                    if (matchStatus === 2) {
+                        // STATE 2: Perfect Match (Lure + Color)
+                        cardClass = 'relative bg-emerald-900/50 p-4 rounded-lg border-2 border-emerald-500';
+                        badgeHTML += `<div class="absolute top-0 left-0 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">⭐ In Box (Color Match!)</div>`;
+                    } else if (matchStatus === 1) {
+                        // STATE 1: Owns Lure Type, but wrong color
+                        cardClass = 'relative bg-blue-900/50 p-4 rounded-lg border-2 border-blue-500';
+                        badgeHTML += `<div class="absolute top-0 left-0 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">✔ In Box (Wrong Color)</div>`;
+                    }
+                    // STATE 0: Not owned. No badge is added and default card class is used.
+                    // NO Wish List button is added, per your request.
+
+                    card.className = cardClass; // Apply the correct class to the card
+
+                    card.innerHTML = `${badgeHTML}
+                        <img src="${imageSrc}" alt="${lure.name}" class="w-full h-24 object-contain bg-white rounded-md mb-3" onerror="this.onerror=null;this.src='https://placehold.co/200x100/1E293B/FFFFFF?text=?';">
+                        <h4 class="font-bold text-base text-white">${lure.name}</h4>
+                        <p class="text-sm text-gray-400 mt-1"><span class="font-semibold text-gray-300">Technique:</span> ${lure.technique}</p>
+                        <p class="text-sm text-gray-400 mt-2"><span class="font-semibold text-gray-300">Why it works:</span> ${lure.reason}</p>`;
+                        // Note: No "actionHTML" button is here.
+                    
                     lureResult.appendChild(card);
                 });
             }
+             /**
+             * END: UPDATED FUNCTION renderLures
+             */
+
 
             function renderColors(colors) {
                 colorResult.innerHTML = '';
@@ -373,27 +427,57 @@
             strategyTab.addEventListener('click', () => switchTab(strategyTab, setupTab, strategyContent, setupContent));
 
            getRecommendationBtn.addEventListener('click', () => {
-                // CORRECTED KEY IS USED HERE
-                const savedTacklebox = localStorage.getItem('myTacklebag'); 
-                let tackleboxContents = [];
+                
+                /**
+                 * START: ***UPDATED*** LOCALSTORAGE LOGIC
+                 * This logic now builds the tackleboxOwnedMap which tracks all owned BASE colors per lure type.
+                 * It includes the migration logic to handle your OLD data (e.g., 'Green Pumpkin') and your NEW data (e.g., 'Green') seamlessly.
+                 */
+                const savedTacklebox = localStorage.getItem('myTacklebag');
+                const tackleboxOwnedMap = {}; // This is our new "brain"
+                
                 if (savedTacklebox) {
                     try {
-                        // Updated to handle the multi-tray array structure
-                        const rawTackleboxLures = JSON.parse(savedTacklebox)
-                                            .flat() // Flattens the array of arrays into a single array
-                                            .filter(item => item !== null)
-                                            .map(item => item.lure);
+                        const rawTacklebag = JSON.parse(savedTacklebox)
+                                                .flat() // Flattens all trays into one array
+                                                .filter(item => item !== null);
                         
-                        const baseTackleboxLures = rawTackleboxLures.map(lureName => lureBaseMap[lureName] || lureName);
-                        tackleboxContents = [...new Set(baseTackleboxLures)];
-                    } catch (e) { 
-                        console.error("Could not parse tacklebox data from localStorage:", e); 
+                        rawTacklebag.forEach(item => {
+                            const baseLure = lureBaseMap[item.lure] || item.lure; 
+                            
+                            if (!tackleboxOwnedMap[baseLure]) {
+                                tackleboxOwnedMap[baseLure] = new Set(); // Use a Set to auto-handle duplicates
+                            }
+                            
+                            // --- DATA MIGRATION LOGIC ---
+                            // This translates all owned colors (both old specific ones AND new base ones) into a Set of BASE colors.
+                            item.colors.forEach(colorName => {
+                                // If colorName is 'Green Pumpkin' (old data), colorBaseMap['Green Pumpkin'] returns 'Green'.
+                                // If colorName is ALREADY 'Green' (new data), colorBaseMap['Green'] is undefined, so we use the fallback 'Green'.
+                                const baseColor = colorBaseMap[colorName] || colorName; 
+                                tackleboxOwnedMap[baseLure].add(baseColor);
+                            });
+                            // --- END MIGRATION LOGIC ---
+                        });
+
+                    } catch (e) {
+                        console.error("Could not parse tacklebox data from localStorage:", e);
                     }
                 }
+                
+                // This simple array is still our primary check for "do you own this type?"
+                const tackleboxContents = Object.keys(tackleboxOwnedMap);
+                /**
+                 * END: UPDATED LOCALSTORAGE LOGIC
+                 */
+
 
                 const rec = fullRecommendations[selectedFish]?.[selectedWeather]?.[selectedClarity]?.[selectedTemp];
                 if (rec) {
-                    renderLures(rec.lures, tackleboxContents);
+                    
+                    // *** UPDATED FUNCTION CALL ***: Pass the new ownedMap AND rec.colors (which are parsed color objects)
+                    renderLures(rec.lures, rec.colors, tackleboxContents, tackleboxOwnedMap);
+
                     renderColors(rec.colors);
                     renderGear(rec.gear);
                     renderLocation(rec.location);
