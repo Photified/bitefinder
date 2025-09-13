@@ -36,6 +36,34 @@
         .custom-scroll::-webkit-scrollbar { width: 8px; }
         .custom-scroll::-webkit-scrollbar-track { background: #2d3748; border-radius: 10px; }
         .custom-scroll::-webkit-scrollbar-thumb { background-color: #4a5568; border-radius: 10px; border: 2px solid #2d3748; }
+
+        /** --- STYLES FOR COLOR PICKER --- **/
+        .color-picker-label {
+            transition: all 0.2s ease-in-out;
+        }
+        .color-picker-label:hover {
+            filter: brightness(1.25);
+        }
+        /* This is the visual outline when the hidden checkbox is checked */
+        .color-picker-label input[type="checkbox"]:checked ~ .check-indicator {
+            opacity: 1;
+        }
+        /* This styles the "fake" checkbox to look like it's checked */
+        .color-picker-label input[type="checkbox"]:checked ~ .content-wrapper .fake-checkbox {
+            background-color: #3b82f6; /* blue-600 */
+            border-color: #60a5fa; /* blue-400 */
+        }
+        /* This adds the checkmark */
+        .color-picker-label input[type="checkbox"]:checked ~ .content-wrapper .fake-checkbox::after {
+            content: '\2713';
+            display: block;
+            color: white;
+            text-align: center;
+            line-height: 1.1;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        /** --- END NEW STYLES --- **/
     </style>
 </head>
 <body class="bg-gray-900 text-white p-4">
@@ -66,11 +94,22 @@
             <h3 id="modalTitle" class="text-lg font-semibold text-white mb-4 flex-shrink-0">Add Lure to Box</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow min-h-0">
                 <div class="flex flex-col min-h-0"><label class="block text-sm font-medium text-gray-300 mb-1 flex-shrink-0">1. Choose Lure</label><div id="lureListSelect" class="border border-gray-600 rounded-lg bg-gray-900 custom-scroll flex-grow"></div></div>
-                <div class="flex flex-col space-y-4 min-h-0"><div class="flex-shrink-0"><label for="lureQuantity" class="block text-sm font-medium text-gray-300 mb-1">2. Set Quantity</label><input type="number" id="lureQuantity" value="1" min="1" class="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"></div><div class="flex flex-col flex-grow min-h-0"><label class="block text-sm font-medium text-gray-300 mb-1 flex-shrink-0">3. Select Your Colors</label><div id="colorSelect" class="border border-gray-600 rounded-lg bg-gray-900 custom-scroll flex-grow p-2"></div></div></div>
+                <div class="flex flex-col space-y-4 min-h-0">
+                    <div class="flex-shrink-0">
+                        <label for="lureQuantity" class="block text-sm font-medium text-gray-300 mb-1">2. Set Quantity</label>
+                        <input type="number" id="lureQuantity" value="1" min="1" class="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    </div>
+                    <div class="flex flex-col flex-grow min-h-0">
+                        <label class="block text-sm font-medium text-gray-300 mb-1 flex-shrink-0">3. Select Color Categories</label>
+                        <div id="colorSelect" class="border border-gray-700 rounded-lg bg-gray-900 custom-scroll flex-grow p-2 space-y-2">
+                            </div>
+                    </div>
+                </div>
             </div>
             <div class="flex-shrink-0 flex items-center justify-end gap-4 mt-6 pt-4 border-t border-gray-700"><button id="closeModalBtn" class="text-gray-400 hover:text-white text-sm">Cancel</button><button id="saveLureBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg btn-glow text-sm">Save to Box</button></div>
         </div>
     </div>
+
     <div id="confirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
         <div class="bg-gray-800 rounded-lg p-6 border border-red-500/50 max-w-sm w-full card-glow">
             <h3 id="confirmTitle" class="text-lg font-semibold text-white mb-2">Confirm Action</h3>
@@ -78,19 +117,17 @@
             <div class="flex items-center justify-end gap-4"><button id="confirmCancelBtn" class="text-gray-400 hover:text-white text-sm font-medium py-2 px-4">Cancel</button><button id="confirmOkBtn" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg btn-glow text-sm">Confirm</button></div>
         </div>
     </div>
-
+    
     <script src="shared-data.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // The lureMap, colorMap, and displayLures objects have been REMOVED from here.
-            // They are now loaded from shared-data.js
+            // All data maps loaded from shared-data.js
 
             const tackleboxContainer = document.getElementById('tacklebox-container');
             const trayTabs = document.getElementById('tray-tabs');
             const lureModal = document.getElementById('lureModal');
             const modalTitle = document.getElementById('modalTitle');
-            const lureListSelect = document.getElementById('lureListSelect');
             const lureQuantity = document.getElementById('lureQuantity');
             const colorSelectContainer = document.getElementById('colorSelect');
             const saveLureBtn = document.getElementById('saveLureBtn');
@@ -108,21 +145,59 @@
             function saveStateToLocalStorage() { localStorage.setItem('myTacklebag', JSON.stringify(tacklebagState)); }
             function loadStateFromLocalStorage() { const s = localStorage.getItem('myTacklebag'); if (s) { tacklebagState = JSON.parse(s); } if (!tacklebagState || tacklebagState.length === 0) { tacklebagState = [new Array(10).fill(null)]; } }
             
+            /**
+             * START: ***UPDATED*** updateSlotUI function
+             * This function now correctly renders CIRCLES for both old AND new data, as you requested.
+             * It uses the new baseColorHexMap for new data and the old colorMap for old data.
+             */
             function updateSlotUI(slotIndex, data) {
                 const slot = document.querySelector(`.tacklebox-slot[data-index='${slotIndex}']`);
                 if (!slot) return;
                 const backFace = slot.querySelector('.flip-card-back');
                 if (data) {
                     
-                    // *** CHANGED THIS LINE ***
-                    const lureInfo = canonicalLureMap[data.lure]; // Was lureMap
-                    
+                    const lureInfo = canonicalLureMap[data.lure];
                     const imageSrc = lureInfo ? lureInfo.image : 'https://placehold.co/100x64/1F2937/4B5563?text=?';
-                    const colorsHTML = data.colors.map(c => `<span class="w-4 h-4 rounded-full border border-gray-500" title="${c}" style="background-color: ${colorMap[c]?.hex||'#808080'};"></span>`).join('');
-                    backFace.innerHTML = `<div class="w-full text-center"><img src="${imageSrc}" alt="${data.lure}" class="w-full h-16 object-contain bg-white rounded-md mb-2" onerror="this.onerror=null;this.src='https://placehold.co/100x64/1F2937/4B5563?text=?';"><h4 class="font-bold text-sm text-white truncate">${data.lure}</h4></div><div class="w-full flex justify-between items-center text-xs text-gray-400 mt-2"><span>Qty: <span class="font-semibold text-gray-200">${data.quantity}</span></span><div class="flex items-center gap-1 flex-wrap justify-end">${colorsHTML}</div></div><div class="w-full flex justify-between items-center mt-2"><button class="remove-lure-btn text-xs text-red-400 hover:text-red-300">&times; Remove</button><button class="edit-lure-btn text-xs text-blue-400 hover:text-blue-300">Edit</button></div>`;
+                    
+                    // NEW Color Display Logic: Renders CIRCLES for both old and new data
+                    const colorsHTML = data.colors.map(colorName => {
+                        let hex = '#808080'; // Default gray for safety
+                        let title = colorName;
+
+                        // 1. Is it NEW data (a base category)? Get its hex from the new baseColorHexMap.
+                        if (baseColorHexMap[colorName]) {
+                            hex = baseColorHexMap[colorName];
+                            title = colorName; // Title is just 'Green', 'Brown', etc.
+                        } 
+                        // 2. Is it OLD data (a specific color)? Get its hex from the old colorMap.
+                        else if (colorMap[colorName]) {
+                            hex = colorMap[colorName].hex;
+                            title = colorName; // Title is 'Green Pumpkin', 'Watermelon', etc.
+                        }
+                        
+                        // Render the circle (the UI you wanted back)
+                        return `<span class="w-4 h-4 rounded-full border border-gray-500" title="${title}" style="background-color: ${hex};"></span>`;
+                    }).join('');
+
+                    // Reverted backFace HTML to match your original layout (Qty on left, circles on right)
+                    backFace.innerHTML = `
+                        <div class="w-full text-center">
+                            <img src="${imageSrc}" alt="${data.lure}" class="w-full h-16 object-contain bg-white rounded-md mb-2" onerror="this.onerror=null;this.src='https://placehold.co/100x64/1F2937/4B5563?text=?';">
+                            <h4 class="font-bold text-sm text-white truncate">${data.lure}</h4>
+                        </div>
+                        <div class="w-full flex justify-between items-center text-xs text-gray-400 mt-2">
+                            <span>Qty: <span class="font-semibold text-gray-200">${data.quantity}</span></span>
+                            <div class="flex items-center gap-1 flex-wrap justify-end">${colorsHTML}</div>
+                        </div>
+                        <div class="w-full flex justify-between items-center mt-2 pt-2 border-t border-gray-600">
+                            <button class="remove-lure-btn text-xs text-red-400 hover:text-red-300">&times; Remove</button>
+                            <button class="edit-lure-btn text-xs text-blue-400 hover:text-blue-300">Edit</button>
+                        </div>`;
                     slot.classList.add('is-flipped');
                 } else { slot.classList.remove('is-flipped'); }
             }
+            /** END: UPDATED updateSlotUI function */
+
             
             function renderSlots() {
                 tackleboxContainer.innerHTML = '';
@@ -176,12 +251,27 @@
             function openModal(slotIndex, existingData = null) {
                 currentEditingSlot = slotIndex;
                 lureQuantity.value = existingData ? existingData.quantity : 1;
-                document.querySelectorAll('#colorSelect input[type="checkbox"]').forEach(cb => cb.checked = existingData ? existingData.colors.includes(cb.value) : false);
+
+                // --- START MIGRATION & POPULATION LOGIC ---
+                let ownedBaseColors = new Set();
+                if (existingData && existingData.colors) {
+                    existingData.colors.forEach(colorName => {
+                        const baseColor = colorBaseMap[colorName] || colorName; 
+                        ownedBaseColors.add(baseColor);
+                    });
+                }
+                
+                document.querySelectorAll('#colorSelect input[type="checkbox"]').forEach(cb => {
+                    cb.checked = ownedBaseColors.has(cb.value);
+                });
+                // --- END MIGRATION LOGIC ---
+
                 document.querySelectorAll('.lure-select-row').forEach(card => card.classList.remove('selected'));
                 let lureToSelect = existingData ? existingData.lure : displayLures[Object.keys(displayLures)[0]][0];
                 const cardToSelect = document.querySelector(`.lure-select-row[data-lure-name="${lureToSelect}"]`);
                 if (cardToSelect) { cardToSelect.classList.add('selected'); cardToSelect.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-                modalTitle.textContent = `Edit Lure in Slot ${slotIndex + 1}`;
+                
+                modalTitle.textContent = existingData ? `Edit Lure in Slot ${slotIndex + 1}` : `Add Lure to Slot ${slotIndex + 1}`;
                 lureModal.classList.remove('hidden');
             }
 
@@ -221,16 +311,21 @@
                 }
             }
 
+
             lureListSelect.addEventListener('click', (e) => { const r = e.target.closest('.lure-select-row'); if (r) { document.querySelectorAll('.lure-select-row').forEach(x=>x.classList.remove('selected')); r.classList.add('selected'); } });
+            
             saveLureBtn.addEventListener('click', () => {
                 if (currentEditingSlot === null) return;
                 const s = lureListSelect.querySelector('.selected'); if (!s) { alert('Please select a lure.'); return; }
-                const c = Array.from(document.querySelectorAll('#colorSelect input:checked')).map(cb => cb.value);
+                
+                const c = Array.from(document.querySelectorAll('#colorSelect input:checked')).map(cb => cb.value); 
+                
                 tacklebagState[activeTrayIndex][currentEditingSlot] = { lure: s.dataset.lureName, quantity: parseInt(lureQuantity.value, 10), colors: c };
                 updateSlotUI(currentEditingSlot, tacklebagState[activeTrayIndex][currentEditingSlot]);
                 saveStateToLocalStorage();
                 closeModal();
             });
+
             closeModalBtn.addEventListener('click', closeModal);
             lureModal.addEventListener('click', (e) => { if (e.target === lureModal) closeModal(); });
             confirmCancelBtn.addEventListener('click', hideConfirmModal);
@@ -243,22 +338,64 @@
                 else if (e.target.closest('.remove-lure-btn')) showConfirmModal(i);
             });
 
+
             function populateLureListSelect() {
                 lureListSelect.innerHTML = '';
                 for (const cat in displayLures) {
                     const h = document.createElement('h4'); h.className = 'category-header font-bold text-sm text-blue-300 p-2 pt-3'; h.textContent = cat; lureListSelect.appendChild(h);
                     displayLures[cat].forEach(ln => {
-                        
-                        // *** CHANGED THIS LINE ***
-                        const li = canonicalLureMap[ln]; if (!li) return; // Was lureMap
-
+                        const li = canonicalLureMap[ln]; if (!li) return;
                         const r = document.createElement('button'); r.className = 'lure-select-row w-full p-2 rounded-lg flex flex-col items-center text-left'; r.dataset.lureName = ln;
                         r.innerHTML = `<img src="${li.image}" alt="${ln}" class="h-16 w-full object-contain bg-white rounded-md mb-2" onerror="this.onerror=null;this.src='https://placehold.co/100x64/111827/4B5563?text=?';"><span class="text-sm font-medium text-white text-center">${ln}</span>`;
                         lureListSelect.appendChild(r);
                     });
                 }
             }
-            function populateColorSelect() { colorSelectContainer.innerHTML = Object.keys(colorMap).sort().map(n=>`<label class="flex items-center space-x-2 p-1 hover:bg-gray-700 rounded-md cursor-pointer"><input type="checkbox" value="${n}" class="form-checkbox h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"><span class="w-4 h-4 rounded-full border border-gray-500" style="background-color:${colorMap[n].hex};"></span><span class="text-sm">${n}</span></label>`).join(''); }
+
+            /**
+             * START: ***UPDATED*** populateColorSelect function
+             * This is the function from the PREVIOUS file (which you liked).
+             * It creates the 12 full-color rows and uses CSS to handle selection.
+             * It now uses the new baseColorHexMap from shared-data.js.
+             */
+            function populateColorSelect() {
+                colorSelectContainer.innerHTML = '';
+                const sortedCategories = Object.keys(baseColorCategories).sort();
+                
+                const lightColorsWithBlackText = ['White', 'Yellow', 'Pink', 'Silver', 'Gold', 'Orange'];
+
+                for (const categoryName of sortedCategories) {
+                    const categoryInfo = baseColorCategories[categoryName];
+                    
+                    // Use the NEW baseColorHexMap to get the color
+                    const representativeHex = baseColorHexMap[categoryName] || '#374151'; // Default to gray
+                    const textColorClass = lightColorsWithBlackText.includes(categoryName) ? 'text-black' : 'text-white';
+
+                    const label = document.createElement('label');
+                    label.className = 'color-picker-label relative block p-2.5 rounded-md cursor-pointer border-2 border-transparent';
+                    // Apply a slightly darkened version for the background to make text pop
+                    // This is a simple brightness filter. We can adjust if needed.
+                    label.style.backgroundColor = representativeHex;
+                    label.style.filter = 'brightness(90%)'; // Make it slightly darker than the raw hex
+
+                    label.innerHTML = `
+                        <input type="checkbox" value="${categoryName}" class="absolute opacity-0 w-full h-full inset-0 z-20 cursor-pointer">
+                        
+                        <div class="check-indicator absolute inset-0 rounded-md border-4 border-blue-400 ring-2 ring-blue-300 opacity-0 transition-opacity z-10 pointer-events-none"></div>
+                        
+                        <div class="content-wrapper relative z-0 flex items-start space-x-3 pointer-events-none ${textColorClass}">
+                            <div class="fake-checkbox w-5 h-5 rounded border-2 ${textColorClass === 'text-black' ? 'border-gray-700' : 'border-gray-300'} bg-transparent/50 flex-shrink-0 mt-0.5"></div>
+                            <div>
+                                <span class="text-sm font-semibold">${categoryName}</span>
+                                <p class="text-xs opacity-80">${categoryInfo.description}</p>
+                            </div>
+                        </div>
+                    `;
+                    colorSelectContainer.appendChild(label);
+                }
+            }
+            /** END: UPDATED function */
+
 
             function init() { loadStateFromLocalStorage(); populateLureListSelect(); populateColorSelect(); renderTabs(); renderSlots(); }
             init();
