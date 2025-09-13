@@ -79,11 +79,12 @@
         </div>
     </div>
 
+    <script src="shared-data.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const lureMap = { 'Drop Shot': { image: 'images/lures/dropshot.png' }, 'Topwater Popper': { image: 'images/lures/popper.png' }, 'Jerkbait': { image: 'images/lures/jerkbait.png' }, 'Ned Rig': { image: 'images/lures/nedrig.png' }, 'Jig': { image: 'images/lures/jig.png' }, 'Spinnerbait': { image: 'images/lures/spinnerbait.png' }, 'Inline Spinner': { image: 'images/lures/inlinespinner.png' }, 'Chatterbait': { image: 'images/lures/chatterbait.png' }, 'Lipless Crankbait': { image: 'images/lures/liplesscrank.png' }, 'Swimbait': { image: 'images/lures/swimbait.png' }, 'Senko Worm': { image: 'images/lures/senko.png' }, 'Spoon': { image: 'images/lures/spoon.png' }, 'Flutter Spoon': { image: 'images/lures/flutterspoon.png' }, 'Tube Jig': { image: 'images/lures/tube.png' }, 'Crankbait': { image: 'images/lures/crankbait.png' }, 'Blade Bait': { image: 'images/lures/bladebait.png' }, 'A-Rig': { image: 'images/lures/arig.png' }, 'Topwater Spook': { image: 'images/lures/spook.png' }, 'Fluke': { image: 'images/lures/fluke.png' }, 'Creature Bait': { image: 'images/lures/creaturebait.png' }, 'Topwater Plopper': { image: 'images/lures/plopper.png' }, 'Bucktail': { image: 'images/lures/bucktail.png' }, 'Glide Bait': { image: 'images/lures/glidebait.png' }, 'Bulldawg': { image: 'images/lures/bulldawg.png' }, 'Live Worm': { image: 'images/lures/worm.png' }, 'Scented Dough Bait': { image: 'images/lures/powerbait.png' }, 'Live Minnow': { image: 'images/lures/minnow.png' }, 'Slip Bobber Rig': { image: 'images/lures/slipbobber.png' }, 'Dodger/Flasher Rig': { image: 'images/lures/dodgerfly.png' }, 'Bondy Bait': { image: 'images/lures/bondybait.png' }, 'Jigging Rap': { image: 'images/lures/jiggingrap.png' }, 'Bottom Bouncer': { image: 'images/lures/bottombouncer.png' }, 'Lindy Rig': { image: 'images/lures/lindyrig.png' }, 'Topwater Creeper': { image: 'images/lures/creeper.png' }, 'Beetle Spin': { image: 'images/lures/beetlespin.png' }, 'Cut Bait': { image: 'images/lures/cutbait.png' }, 'Chicken Livers': { image: 'images/lures/chickenliver.png' }, 'Stink Bait': { image: 'images/lures/stinkbait.png' }, 'Boilies': { image: 'images/lures/boilies.png' }, 'Pack Bait': { image: 'images/lures/packbait.png' }, 'Method Feeder': { image: 'images/lures/methodfeeder.png' }, 'Dough Ball': { image: 'images/lures/doughball.png' }, 'Zig Rig': { image: 'images/lures/zigrig.png' }, 'Bread': { image: 'images/lures/bread.png' }, 'Pop-up Corn': { image: 'images/lures/popupcorn.png' }, 'Frog': { image: 'images/lures/frog.png' }, 'Jigging Spoon': { image: 'images/lures/jiggingspoon.png' }, 'Squarebill Crankbait': { image: 'images/lures/squarebillcrankbait.png' } };
-            const colorMap = { 'Green Pumpkin': { hex: '#4B5320'}, 'Watermelon': { hex: '#75A850'}, 'Bone White': { hex: '#F9F6EE'}, 'Crawfish': { hex: '#C84A33'}, 'Goby': { hex: '#967969'}, 'Sucker': { hex: '#BC8F8F'}, 'Loon': { hex: '#333333'}, 'Walleye': { hex: '#D4AF37'}, 'Rainbow Trout': { hex: '#B5E6B5'}, 'Smelt': { hex: '#A7B4B5'}, 'Hot Pink': { hex: '#FF69B4'}, 'Shock Pink': { hex: '#FC0FC0'}, 'Carp Yellow': { hex: '#FFD700'}, 'Hi-Vis Orange': { hex: '#FFA500'}, 'White': { hex: '#FFFFFF'}, 'Chartreuse': { hex: '#DFFF00'}, 'Black': { hex: '#000000'}, 'Blue': { hex: '#0000FF'}, 'Silver': { hex: '#C0C0C0'}, 'Gold': { hex: '#FFD700'}, 'Perch': { hex: '#E8A317'}, 'Firetiger': { hex: '#F3B700'}, 'Natural Shad': { hex: '#B6C0C3'}, 'Chrome': { hex: '#E8E8E8'}, 'Red': { hex: '#FF0000'}, 'Orange': { hex: '#FFA500'}, 'Yellow': { hex: '#FFFF00'}, 'Purple': { hex: '#800080'}, 'Smoke': { hex: '#848884'}, 'Glow': { hex: '#E0FFD6'} };
-            const displayLures = { "Hard Baits": ["Jerkbait", "Crankbait", "Squarebill Crankbait", "Lipless Crankbait", "Glide Bait"], "Topwater": ["Topwater Popper", "Topwater Spook", "Topwater Plopper", "Topwater Creeper", "Frog"], "Soft Baits": ["Swimbait", "Senko Worm", "Fluke", "Creature Bait", "Bulldawg"], "Jigs & Rigs": ["Jig", "Drop Shot", "Ned Rig", "Tube Jig", "A-Rig", "Jigging Rap", "Bondy Bait"], "Spoons & Spinners": ["Spoon", "Flutter Spoon", "Jigging Spoon", "Inline Spinner", "Spinnerbait", "Bucktail", "Beetle Spin"], "Bladed & Vibrating": ["Chatterbait", "Blade Bait"], "Terminal Rigs": ["Slip Bobber Rig", "Bottom Bouncer", "Lindy Rig", "Dodger/Flasher Rig"], "Live & Scented Bait": ["Live Minnow", "Live Worm", "Cut Bait", "Chicken Livers", "Stink Bait", "Scented Dough Bait"], "Carp Baits": ["Boilies", "Pack Bait", "Method Feeder", "Dough Ball", "Zig Rig", "Bread", "Pop-up Corn"] };
+            // The lureMap, colorMap, and displayLures objects have been REMOVED from here.
+            // They are now loaded from shared-data.js
 
             const tackleboxContainer = document.getElementById('tacklebox-container');
             const trayTabs = document.getElementById('tray-tabs');
@@ -112,7 +113,10 @@
                 if (!slot) return;
                 const backFace = slot.querySelector('.flip-card-back');
                 if (data) {
-                    const lureInfo = lureMap[data.lure];
+                    
+                    // *** CHANGED THIS LINE ***
+                    const lureInfo = canonicalLureMap[data.lure]; // Was lureMap
+                    
                     const imageSrc = lureInfo ? lureInfo.image : 'https://placehold.co/100x64/1F2937/4B5563?text=?';
                     const colorsHTML = data.colors.map(c => `<span class="w-4 h-4 rounded-full border border-gray-500" title="${c}" style="background-color: ${colorMap[c]?.hex||'#808080'};"></span>`).join('');
                     backFace.innerHTML = `<div class="w-full text-center"><img src="${imageSrc}" alt="${data.lure}" class="w-full h-16 object-contain bg-white rounded-md mb-2" onerror="this.onerror=null;this.src='https://placehold.co/100x64/1F2937/4B5563?text=?';"><h4 class="font-bold text-sm text-white truncate">${data.lure}</h4></div><div class="w-full flex justify-between items-center text-xs text-gray-400 mt-2"><span>Qty: <span class="font-semibold text-gray-200">${data.quantity}</span></span><div class="flex items-center gap-1 flex-wrap justify-end">${colorsHTML}</div></div><div class="w-full flex justify-between items-center mt-2"><button class="remove-lure-btn text-xs text-red-400 hover:text-red-300">&times; Remove</button><button class="edit-lure-btn text-xs text-blue-400 hover:text-blue-300">Edit</button></div>`;
@@ -149,7 +153,6 @@
                     if (tacklebagState.length > 1) {
                         const deleteBtn = document.createElement('button');
                         deleteBtn.className = 'ml-2 text-red-500 hover:text-red-400 text-lg font-bold';
-                        deleteBtn.innerHTML = '&times;';
                         deleteBtn.dataset.index = index;
                         deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); showDeleteTrayConfirm(index); });
                         tabContainer.appendChild(deleteBtn);
@@ -245,7 +248,10 @@
                 for (const cat in displayLures) {
                     const h = document.createElement('h4'); h.className = 'category-header font-bold text-sm text-blue-300 p-2 pt-3'; h.textContent = cat; lureListSelect.appendChild(h);
                     displayLures[cat].forEach(ln => {
-                        const li = lureMap[ln]; if (!li) return;
+                        
+                        // *** CHANGED THIS LINE ***
+                        const li = canonicalLureMap[ln]; if (!li) return; // Was lureMap
+
                         const r = document.createElement('button'); r.className = 'lure-select-row w-full p-2 rounded-lg flex flex-col items-center text-left'; r.dataset.lureName = ln;
                         r.innerHTML = `<img src="${li.image}" alt="${ln}" class="h-16 w-full object-contain bg-white rounded-md mb-2" onerror="this.onerror=null;this.src='https://placehold.co/100x64/111827/4B5563?text=?';"><span class="text-sm font-medium text-white text-center">${ln}</span>`;
                         lureListSelect.appendChild(r);
