@@ -165,10 +165,14 @@
             Find Your Bait
         </button>
 
-        <a href="mytacklebox.html" class="block w-full text-center mt-3 bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold py-2 px-4 rounded-lg transition duration-300">
-            My Tacklebox
-        </a>
-
+        <div class="flex items-center gap-4 mt-3">
+            <a href="mytacklebox.html" class="block w-1/2 text-center bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold py-2 px-4 rounded-lg transition duration-300">
+                My Tacklebox
+            </a>
+            <a href="logbook.html" class="block w-1/2 text-center bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold py-2 px-4 rounded-lg transition duration-300">
+                My Logbook
+            </a>
+        </div>
         <div id="results" class="bg-gray-900/50 rounded-lg p-6 border border-gray-700 hidden">
             <div class="flex border-b border-gray-700 mb-4">
                 <button id="setupTab" class="tab-btn active flex-1 py-2 px-4 font-semibold rounded-t-lg">Recommended Setup</button>
@@ -366,8 +370,7 @@
                         badgeHTML += `<div class="absolute top-0 left-0 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">✔ In Box (Wrong Color)</div>`;
                     }
                     // STATE 0: Not owned. No badge is added and default card class is used.
-                    // NO Wish List button is added, per your request.
-
+                    
                     card.className = cardClass; // Apply the correct class to the card
 
                     card.innerHTML = `${badgeHTML}
@@ -375,7 +378,6 @@
                         <h4 class="font-bold text-base text-white">${lure.name}</h4>
                         <p class="text-sm text-gray-400 mt-1"><span class="font-semibold text-gray-300">Technique:</span> ${lure.technique}</p>
                         <p class="text-sm text-gray-400 mt-2"><span class="font-semibold text-gray-300">Why it works:</span> ${lure.reason}</p>`;
-                        // Note: No "actionHTML" button is here.
                     
                     lureResult.appendChild(card);
                 });
@@ -450,7 +452,6 @@
                             }
                             
                             // --- DATA MIGRATION LOGIC ---
-                            // This translates all owned colors (both old specific ones AND new base ones) into a Set of BASE colors.
                             item.colors.forEach(colorName => {
                                 // If colorName is 'Green Pumpkin' (old data), colorBaseMap['Green Pumpkin'] returns 'Green'.
                                 // If colorName is ALREADY 'Green' (new data), colorBaseMap['Green'] is undefined, so we use the fallback 'Green'.
@@ -465,7 +466,6 @@
                     }
                 }
                 
-                // This simple array is still our primary check for "do you own this type?"
                 const tackleboxContents = Object.keys(tackleboxOwnedMap);
                 /**
                  * END: UPDATED LOCALSTORAGE LOGIC

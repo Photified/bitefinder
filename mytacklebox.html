@@ -20,12 +20,27 @@
         .tacklebox-slot.is-flipped .flip-card { transform: rotateY(180deg); }
         .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; border: 2px solid #4b5563; }
         .flip-card-front { background-color: #374151; }
-        .flip-card-back { background-color: #1f2937; transform: rotateY(180deg); flex-direction: column; padding: 0.75rem; justify-content: space-between; }
+        
+        /** --- THIS IS THE UPDATED STYLE --- **/
+        .flip-card-back { 
+            background-color: #111827; /* Changed to bg-gray-900 (darker) to contrast with the page */ 
+            transform: rotateY(180deg); 
+            flex-direction: column; 
+            padding: 0.75rem; 
+            justify-content: space-between; 
+        }
+        /** --- END OF UPDATE --- **/
         
         .lure-select-row { border: 2px solid transparent; transition: all 0.2s ease-in-out; cursor: pointer; }
         .lure-select-row:hover { background-color: #374151; }
         .lure-select-row.selected { border-color: #60a5fa; background-color: #1e40af; }
-        .category-header { position: sticky; top: -8px; background-color: #111827; z-index: 10; }
+        
+        .category-header { 
+            position: sticky; 
+            top: -8px; 
+            background-color: #1f2937; /* This is bg-gray-800 */
+            z-index: 10; 
+        }
 
         .tray-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 0.5rem; scrollbar-width: none; }
         .tray-tabs::-webkit-scrollbar { display: none; }
@@ -44,16 +59,13 @@
         .color-picker-label:hover {
             filter: brightness(1.25);
         }
-        /* This is the visual outline when the hidden checkbox is checked */
         .color-picker-label input[type="checkbox"]:checked ~ .check-indicator {
             opacity: 1;
         }
-        /* This styles the "fake" checkbox to look like it's checked */
         .color-picker-label input[type="checkbox"]:checked ~ .content-wrapper .fake-checkbox {
-            background-color: #3b82f6; /* blue-600 */
-            border-color: #60a5fa; /* blue-400 */
+            background-color: #3b82f6; 
+            border-color: #60a5fa; 
         }
-        /* This adds the checkmark */
         .color-picker-label input[type="checkbox"]:checked ~ .content-wrapper .fake-checkbox::after {
             content: '\2713';
             display: block;
@@ -90,26 +102,26 @@
 </div>
 
     <div id="lureModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-gray-800 rounded-lg p-6 border border-gray-600 max-w-lg w-full card-glow flex flex-col max-h-[90vh]">
+        <div class="bg-gray-900 rounded-lg p-6 border border-gray-600 max-w-lg w-full card-glow flex flex-col max-h-[90vh]">
             <h3 id="modalTitle" class="text-lg font-semibold text-white mb-4 flex-shrink-0">Add Lure to Box</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow min-h-0">
-                <div class="flex flex-col min-h-0"><label class="block text-sm font-medium text-gray-300 mb-1 flex-shrink-0">1. Choose Lure</label><div id="lureListSelect" class="border border-gray-600 rounded-lg bg-gray-900 custom-scroll flex-grow"></div></div>
+                <div class="flex flex-col min-h-0"><label class="block text-sm font-medium text-gray-300 mb-1 flex-shrink-0">1. Choose Lure</label><div id="lureListSelect" class="border border-gray-600 rounded-lg bg-gray-800 custom-scroll flex-grow"></div></div>
                 <div class="flex flex-col space-y-4 min-h-0">
                     <div class="flex-shrink-0">
                         <label for="lureQuantity" class="block text-sm font-medium text-gray-300 mb-1">2. Set Quantity</label>
-                        <input type="number" id="lureQuantity" value="1" min="1" class="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <input type="number" id="lureQuantity" value="1" min="1" class="bg-gray-800 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                     </div>
                     <div class="flex flex-col flex-grow min-h-0">
                         <label class="block text-sm font-medium text-gray-300 mb-1 flex-shrink-0">3. Select Color Categories</label>
-                        <div id="colorSelect" class="border border-gray-700 rounded-lg bg-gray-900 custom-scroll flex-grow p-2 space-y-2">
-                            </div>
+                        <div id="colorSelect" class="border border-gray-700 rounded-lg bg-gray-800 custom-scroll flex-grow p-2 space-y-2">
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="flex-shrink-0 flex items-center justify-end gap-4 mt-6 pt-4 border-t border-gray-700"><button id="closeModalBtn" class="text-gray-400 hover:text-white text-sm">Cancel</button><button id="saveLureBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg btn-glow text-sm">Save to Box</button></div>
         </div>
     </div>
-
+    
     <div id="confirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
         <div class="bg-gray-800 rounded-lg p-6 border border-red-500/50 max-w-sm w-full card-glow">
             <h3 id="confirmTitle" class="text-lg font-semibold text-white mb-2">Confirm Action</h3>
@@ -128,6 +140,7 @@
             const trayTabs = document.getElementById('tray-tabs');
             const lureModal = document.getElementById('lureModal');
             const modalTitle = document.getElementById('modalTitle');
+            const lureListSelect = document.getElementById('lureListSelect'); 
             const lureQuantity = document.getElementById('lureQuantity');
             const colorSelectContainer = document.getElementById('colorSelect');
             const saveLureBtn = document.getElementById('saveLureBtn');
@@ -145,11 +158,6 @@
             function saveStateToLocalStorage() { localStorage.setItem('myTacklebag', JSON.stringify(tacklebagState)); }
             function loadStateFromLocalStorage() { const s = localStorage.getItem('myTacklebag'); if (s) { tacklebagState = JSON.parse(s); } if (!tacklebagState || tacklebagState.length === 0) { tacklebagState = [new Array(10).fill(null)]; } }
             
-            /**
-             * START: ***UPDATED*** updateSlotUI function
-             * This function now correctly renders CIRCLES for both old AND new data, as you requested.
-             * It uses the new baseColorHexMap for new data and the old colorMap for old data.
-             */
             function updateSlotUI(slotIndex, data) {
                 const slot = document.querySelector(`.tacklebox-slot[data-index='${slotIndex}']`);
                 if (!slot) return;
@@ -159,27 +167,22 @@
                     const lureInfo = canonicalLureMap[data.lure];
                     const imageSrc = lureInfo ? lureInfo.image : 'https://placehold.co/100x64/1F2937/4B5563?text=?';
                     
-                    // NEW Color Display Logic: Renders CIRCLES for both old and new data
                     const colorsHTML = data.colors.map(colorName => {
-                        let hex = '#808080'; // Default gray for safety
+                        let hex = '#808080'; 
                         let title = colorName;
 
-                        // 1. Is it NEW data (a base category)? Get its hex from the new baseColorHexMap.
                         if (baseColorHexMap[colorName]) {
                             hex = baseColorHexMap[colorName];
-                            title = colorName; // Title is just 'Green', 'Brown', etc.
+                            title = colorName; 
                         } 
-                        // 2. Is it OLD data (a specific color)? Get its hex from the old colorMap.
                         else if (colorMap[colorName]) {
                             hex = colorMap[colorName].hex;
-                            title = colorName; // Title is 'Green Pumpkin', 'Watermelon', etc.
+                            title = colorName; 
                         }
                         
-                        // Render the circle (the UI you wanted back)
                         return `<span class="w-4 h-4 rounded-full border border-gray-500" title="${title}" style="background-color: ${hex};"></span>`;
                     }).join('');
 
-                    // Reverted backFace HTML to match your original layout (Qty on left, circles on right)
                     backFace.innerHTML = `
                         <div class="w-full text-center">
                             <img src="${imageSrc}" alt="${data.lure}" class="w-full h-16 object-contain bg-white rounded-md mb-2" onerror="this.onerror=null;this.src='https://placehold.co/100x64/1F2937/4B5563?text=?';">
@@ -196,7 +199,6 @@
                     slot.classList.add('is-flipped');
                 } else { slot.classList.remove('is-flipped'); }
             }
-            /** END: UPDATED updateSlotUI function */
 
             
             function renderSlots() {
@@ -252,7 +254,6 @@
                 currentEditingSlot = slotIndex;
                 lureQuantity.value = existingData ? existingData.quantity : 1;
 
-                // --- START MIGRATION & POPULATION LOGIC ---
                 let ownedBaseColors = new Set();
                 if (existingData && existingData.colors) {
                     existingData.colors.forEach(colorName => {
@@ -264,7 +265,6 @@
                 document.querySelectorAll('#colorSelect input[type="checkbox"]').forEach(cb => {
                     cb.checked = ownedBaseColors.has(cb.value);
                 });
-                // --- END MIGRATION LOGIC ---
 
                 document.querySelectorAll('.lure-select-row').forEach(card => card.classList.remove('selected'));
                 let lureToSelect = existingData ? existingData.lure : displayLures[Object.keys(displayLures)[0]][0];
@@ -352,12 +352,6 @@
                 }
             }
 
-            /**
-             * START: ***UPDATED*** populateColorSelect function
-             * This is the function from the PREVIOUS file (which you liked).
-             * It creates the 12 full-color rows and uses CSS to handle selection.
-             * It now uses the new baseColorHexMap from shared-data.js.
-             */
             function populateColorSelect() {
                 colorSelectContainer.innerHTML = '';
                 const sortedCategories = Object.keys(baseColorCategories).sort();
@@ -367,16 +361,13 @@
                 for (const categoryName of sortedCategories) {
                     const categoryInfo = baseColorCategories[categoryName];
                     
-                    // Use the NEW baseColorHexMap to get the color
-                    const representativeHex = baseColorHexMap[categoryName] || '#374151'; // Default to gray
+                    const representativeHex = baseColorHexMap[categoryName] || '#374151'; 
                     const textColorClass = lightColorsWithBlackText.includes(categoryName) ? 'text-black' : 'text-white';
 
                     const label = document.createElement('label');
                     label.className = 'color-picker-label relative block p-2.5 rounded-md cursor-pointer border-2 border-transparent';
-                    // Apply a slightly darkened version for the background to make text pop
-                    // This is a simple brightness filter. We can adjust if needed.
                     label.style.backgroundColor = representativeHex;
-                    label.style.filter = 'brightness(90%)'; // Make it slightly darker than the raw hex
+                    label.style.filter = 'brightness(90%)'; 
 
                     label.innerHTML = `
                         <input type="checkbox" value="${categoryName}" class="absolute opacity-0 w-full h-full inset-0 z-20 cursor-pointer">
@@ -394,7 +385,6 @@
                     colorSelectContainer.appendChild(label);
                 }
             }
-            /** END: UPDATED function */
 
 
             function init() { loadStateFromLocalStorage(); populateLureListSelect(); populateColorSelect(); renderTabs(); renderSlots(); }
