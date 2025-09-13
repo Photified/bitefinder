@@ -2,7 +2,7 @@
 
 /**
  * The "master" list of all colors and their reasons.
- * Cut from index.html.
+ * This remains unchanged.
  */
 const colorMap = {
     'Green Pumpkin': { hex: '#4B5320', reason: 'The most versatile bass color. Perfectly mimics crawfish, gobies, and bluegill in most water clarities.' },
@@ -37,10 +37,110 @@ const colorMap = {
     'Glow': { hex: '#E0FFD6', reason: 'Essential for deep water species like lake trout and salmon, as it remains visible where other colors fade to gray.' }
 };
 
+
+/**
+ * Your 12 Base Categories to be shown in the mytacklebox.html modal.
+ * This remains unchanged.
+ */
+const baseColorCategories = {
+    'Black': { description: 'For max contrast, night fishing, or muddy water. (e.g., Black, Black/Blue, Loon)' },
+    'White': { description: 'Mimics baitfish bellies. High visibility. (e.g., White, Bone White, Glow)' },
+    'Green': { description: 'Mimics vegetation, bluegill, or perch. (e.g., Green Pumpkin, Watermelon)' },
+    'Brown': { description: 'The most natural color, mimics crawfish, gobies, or the bottom. (e.g., Sucker, Goby)' },
+    'Blue': { description: 'Often part of a dark pattern (like Black/Blue) or an open-water baitfish flash.' },
+    'Red': { description: 'Imitates crawfish, injured bait (gills), or a hot trigger color. (e.g., Crawfish)' },
+    'Yellow': { description: 'Hi-vis trigger or perch pattern. (e.g., Yellow, Chartreuse, Firetiger, Carp Yellow)' },
+    'Orange': { description: 'A bright trigger color for stained water, salmon, or craw patterns. (e.g., Orange)' },
+    'Pink': { description: 'A key trigger color for trout, salmon, and panfish. (e.g., Hot Pink, Shock Pink)' },
+    'Purple': { description: 'A subtle dark color for clear or dark water, often used as an alternative to black.' },
+    'Silver': { description: 'Provides bright flash, mimicking scales of most baitfish. (e.g., Silver, Chrome, Smelt, Shad, Smoke)' },
+    'Gold': { description: 'Provides a warmer flash, great for stained water or imitating perch/shiners. (e.g., Gold, Perch pattern)' }
+};
+
+/**
+ * NEW: Representative HEX codes for your 12 Base Categories.
+ * This map provides ONE color to display for each category swatch.
+ */
+const baseColorHexMap = {
+    'Black': '#000000',
+    'White': '#FFFFFF',
+    'Green': '#4B5320',       // Using Green Pumpkin hex
+    'Brown': '#967969',       // Using Goby hex
+    'Blue': '#0000FF',
+    'Red': '#FF0000',
+    'Yellow': '#DFFF00',      // Using Chartreuse hex
+    'Orange': '#FFA500',
+    'Pink': '#FF69B4',        // Using Hot Pink hex
+    'Purple': '#800080',
+    'Silver': '#C0C0C0',
+    'Gold': '#FFD700'
+};
+
+
+/**
+ * The Color Translation "Brain".
+ * This maps specific colors to your 12 base categories. Unchanged.
+ */
+const colorBaseMap = {
+    // Green Bucket
+    'Green Pumpkin': 'Green',
+    'Watermelon': 'Green',
+
+    // Brown Bucket
+    'Goby': 'Brown',
+    'Sucker': 'Brown',
+    
+    // White Bucket
+    'Bone White': 'White',
+    'White': 'White',
+    'Glow': 'White',
+
+    // Black Bucket
+    'Black': 'Black',
+    'Loon': 'Black',
+
+    // Blue Bucket
+    'Blue': 'Blue',
+
+    // Red Bucket
+    'Crawfish': 'Red',
+    'Red': 'Red',
+
+    // Yellow Bucket
+    'Chartreuse': 'Yellow', 
+    'Firetiger': 'Yellow', 
+    'Yellow': 'Yellow',
+    'Carp Yellow': 'Yellow',
+
+    // Orange Bucket
+    'Orange': 'Orange',
+    'Hi-Vis Orange': 'Orange',
+
+    // Pink Bucket
+    'Hot Pink': 'Pink',
+    'Shock Pink': 'Pink',
+
+    // Purple Bucket
+    'Purple': 'Purple',
+
+    // Silver Bucket
+    'Silver': 'Silver',
+    'Chrome': 'Silver',
+    'Natural Shad': 'Silver',
+    'Smelt': 'Silver',
+    'Rainbow Trout': 'Silver', 
+    'Smoke': 'Silver', 
+
+    // Gold Bucket
+    'Gold': 'Gold',
+    'Perch': 'Gold', 
+    'Walleye': 'Gold' 
+};
+
+
 /**
  * The CANONICAL "master" list of all lures.
- * Cut from mytacklebox.html.
- * **IMPORTANT**: Renamed from lureMap to canonicalLureMap to avoid conflicts.
+ * This remains unchanged.
  */
 const canonicalLureMap = {
     'Drop Shot': { image: 'images/lures/dropshot.png' },
@@ -95,7 +195,7 @@ const canonicalLureMap = {
 
 /**
  * The category list for the tacklebox modal.
- * Cut from mytacklebox.html.
+ * This remains unchanged.
  */
 const displayLures = {
     "Hard Baits": ["Jerkbait", "Crankbait", "Squarebill Crankbait", "Lipless Crankbait", "Glide Bait"],
