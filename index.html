@@ -309,22 +309,20 @@
             }
 
             /**
-             * START: ***UPDATED*** FUNCTION renderLures
-             * This function is updated to support the new Smart Color Matching logic.
-             * It now accepts the recipe's colors (recommendedRecColors) and the new ownedMap.
+             * START: ***UPDATED FUNCTION RENDERLURES (STRATEGY #3)***
+             * This function is updated to accept the new loggedLureSet
+             * It adds a new badge state for logged catches.
              */
-            function renderLures(lures, recommendedRecColors, tackleboxContents, ownedMap) { // Function signature updated
+            function renderLures(lures, recommendedRecColors, tackleboxContents, ownedMap, loggedLureSet) { // Function signature updated
                 lureResult.innerHTML = '';
                 if (!lures || lures.length === 0) {
                     lureResult.innerHTML = '<p class="text-gray-400">No specific lure recommendations available.</p>';
                     return;
                 }
 
-                // Get the list of SPECIFIC recommended color names (e.g., ['Green Pumpkin', 'Black'])
                 const recommendedSpecificColorNames = recommendedRecColors.map(c => c.name);
-                // Translate them to our NEW 12 BASE categories (e.g., ['Green', 'Black'])
                 const recommendedBaseColorNames = recommendedSpecificColorNames.map(name => colorBaseMap[name] || name);
-                const uniqueRecommendedBaseColors = [...new Set(recommendedBaseColorNames)]; // Get the unique base colors
+                const uniqueRecommendedBaseColors = [...new Set(recommendedBaseColorNames)];
 
 
                 lures.forEach(lure => {
@@ -336,19 +334,16 @@
                     const lureInfo = lureMap[lure.name] || {};
                     const imageSrc = lureInfo.image || 'https://placehold.co/200x100/1E293B/FFFFFF?text=Lure';
                     
-                    // --- NEW COLOR MATCH LOGIC ---
                     let matchStatus = 0; // 0 = Not Owned, 1 = Owned (Wrong Color), 2 = Owned (Color Match)
                     
                     if (isInTacklebox) {
-                        // ownedMap (from the button click) is already a Set of BASE colors.
-                        // e.g., Set('Green', 'Black', 'Brown')
                         const ownedBaseColorsSet = ownedMap[baseOfRecommended] || new Set();
-                        
-                        // Check if ANY of our BASE recommended colors (uniqueRecommendedBaseColors) exist in our OWNED base colors (ownedBaseColorsSet)
                         const hasRecColor = uniqueRecommendedBaseColors.some(recBaseColor => ownedBaseColorsSet.has(recBaseColor));
-                        
-                        matchStatus = hasRecColor ? 2 : 1; // 2 for perfect match, 1 for just owning the type
+                        matchStatus = hasRecColor ? 2 : 1;
                     }
+                    
+                    // --- NEW LOGBOOK BADGE LOGIC ---
+                    const hasBeenLogged = loggedLureSet.has(baseOfRecommended);
                     // --- END NEW LOGIC ---
 
 
@@ -359,19 +354,25 @@
                         badgeHTML += `<div class="absolute top-0 right-0 bg-yellow-400 text-gray-900 text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">⭐ Go-To</div>`;
                     }
 
-                    // Generate new UI based on the 3-state matchStatus
+                    // --- NEW 3-STATE BADGE LOGIC (WITH LOGBOOK) ---
+                    let logText = hasBeenLogged ? ' + Logged!' : ''; // Create a text snippet to add
+
                     if (matchStatus === 2) {
                         // STATE 2: Perfect Match (Lure + Color)
                         cardClass = 'relative bg-emerald-900/50 p-4 rounded-lg border-2 border-emerald-500';
-                        badgeHTML += `<div class="absolute top-0 left-0 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">⭐ In Box (Color Match!)</div>`;
+                        badgeHTML += `<div class="absolute top-0 left-0 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">⭐ In Box (Match!${logText})</div>`;
                     } else if (matchStatus === 1) {
                         // STATE 1: Owns Lure Type, but wrong color
                         cardClass = 'relative bg-blue-900/50 p-4 rounded-lg border-2 border-blue-500';
-                        badgeHTML += `<div class="absolute top-0 left-0 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">✔ In Box (Wrong Color)</div>`;
+                        badgeHTML += `<div class="absolute top-0 left-0 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">✔ In Box (Wrong Color${logText})</div>`;
+                    } else if (hasBeenLogged) { 
+                        // STATE 3 (NEW): Not in tacklebox, BUT it has been logged
+                        cardClass = 'relative bg-purple-900/50 p-4 rounded-lg border-2 border-purple-500'; // Purple to stand out
+                        badgeHTML += `<div class="absolute top-0 left-0 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">📓 Logged Catch!</div>`;
                     }
-                    // STATE 0: Not owned. No badge is added and default card class is used.
+                    // STATE 0 (Default): Not owned, not logged. No left badge is added.
                     
-                    card.className = cardClass; // Apply the correct class to the card
+                    card.className = cardClass; 
 
                     card.innerHTML = `${badgeHTML}
                         <img src="${imageSrc}" alt="${lure.name}" class="w-full h-24 object-contain bg-white rounded-md mb-3" onerror="this.onerror=null;this.src='https://placehold.co/200x100/1E293B/FFFFFF?text=?';">
@@ -414,6 +415,7 @@
                 tips.forEach(tip => {
                     const tipBox = document.createElement('div');
                     tipBox.className = 'bg-gray-800/50 p-4 rounded-lg border border-gray-700 flex flex-col';
+                    // Using innerHTML to allow for the bold/italic formatting from our new logbook logic
                     tipBox.innerHTML = `<h4 class="font-bold text-base text-blue-300">${tip.title}</h4><p class="text-gray-400 mt-1 text-sm">${tip.description}</p>`;
                     container.appendChild(tipBox);
                 });
@@ -472,16 +474,62 @@
                  */
 
 
+                /**
+                 * START: ***NEW (MODIFIED)*** LOGBOOK INTEGRATION LOGIC
+                 * Reads the logbook, then creates TWO data structures:
+                 * 1. logbookTips: An array of formatted tip objects for the "Pro Tips" tab.
+                 * 2. loggedLureSet: A Set of BASE lure names for the selected fish (e.g., Set('Jig', 'Spinnerbait')) for fast lookups in renderLures.
+                 */
+                const savedLog = localStorage.getItem('myFishingLog');
+                let logbookTips = []; // This will hold our new tip objects
+                const loggedLureSet = new Set(); // This will hold our logged lure base names
+                
+                if (savedLog) {
+                    try {
+                        const rawLog = JSON.parse(savedLog);
+                        
+                        // Filter the entire log for entries that ONLY match the currently selected fish
+                        const matchingEntries = rawLog.filter(entry => entry.species === selectedFish);
+
+                        // Sort them by date, newest first
+                        matchingEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                        matchingEntries.forEach(entry => {
+                            // 1. Add the BASE lure name to our Set for the badge logic
+                            // (Note: 'entry.lure' from the logbook is already the base name, e.g., "Jig")
+                            loggedLureSet.add(entry.lure); 
+
+                            // 2. Convert each matching log entry into a "tip" object for the Strategy tab
+                            const noteHtml = entry.notes ? `Your note: "<i>${entry.notes}</i>"` : 'You didn\'t leave a note.';
+                            logbookTips.push({
+                                title: `⭐ Your Log: ${entry.date}`,
+                                description: `At <b>${entry.location}</b>, you caught one on a <b>${entry.color} ${entry.lure}</b>. (${noteHtml})`
+                            });
+                        });
+
+                    } catch (e) {
+                        console.error("Could not parse logbook data:", e);
+                    }
+                }
+                /**
+                 * END: NEW LOGBOOK INTEGRATION LOGIC
+                 */
+
+
                 const rec = fullRecommendations[selectedFish]?.[selectedWeather]?.[selectedClarity]?.[selectedTemp];
                 if (rec) {
                     
-                    // *** UPDATED FUNCTION CALL ***: Pass the new ownedMap AND rec.colors (which are parsed color objects)
-                    renderLures(rec.lures, rec.colors, tackleboxContents, tackleboxOwnedMap);
+                    // *** UPDATED FUNCTION CALL ***: Pass ALL our data sets to renderLures
+                    renderLures(rec.lures, rec.colors, tackleboxContents, tackleboxOwnedMap, loggedLureSet);
 
                     renderColors(rec.colors);
                     renderGear(rec.gear);
                     renderLocation(rec.location);
-                    renderProTips(rec.tips);
+                    
+                    // Combine our new logbook tips with the expert tips
+                    const allTips = [...logbookTips, ...(rec.tips || [])]; // Uses spread syntax to safely merge the arrays
+                    renderProTips(allTips); // Render the combined list
+                    
                     switchTab(setupTab, strategyTab, setupContent, strategyContent);
                     resultsDiv.classList.remove('hidden');
                     setTimeout(() => { resultsDiv.classList.add('visible'); }, 10);
@@ -495,7 +543,15 @@
                     colorResult.innerHTML = ''; 
                     gearResult.innerHTML = ''; 
                     locationResult.innerHTML = ''; 
-                    tipResult.innerHTML = '';
+                    
+                    // Even if there's no expert rec, show any matching logbook tips!
+                    if (logbookTips.length > 0) {
+                        renderProTips(logbookTips);
+                        // Also, we must switch to the Strategy Tab so the user can see their tips!
+                        switchTab(strategyTab, setupTab, strategyContent, setupContent);
+                    } else {
+                        tipResult.innerHTML = ''; // NOW we clear it, only if no expert rec AND no log tips exist
+                    }
                 }
             });
             
