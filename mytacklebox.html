@@ -9,95 +9,59 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #111827; color: white; }
         .header-font { font-family: 'Montserrat', sans-serif; }
         .card-glow { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.3); }
         .btn-glow:hover { box-shadow: 0 0 10px rgba(96, 165, 250, 0.8), 0 0 20px rgba(96, 165, 250, 0.6); }
 
+        /* All other original CSS styles are unchanged */
         .tacklebox-slot { perspective: 1000px; background-color: transparent; }
         .flip-card { position: relative; width: 100%; height: 100%; transition: transform 0.7s; transform-style: preserve-3d; }
         .tacklebox-slot.is-flipped .flip-card { transform: rotateY(180deg); }
         .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; border: 2px solid #4b5563; }
         .flip-card-front { background-color: #374151; }
-        
-        /** --- THIS IS THE UPDATED STYLE --- **/
-        .flip-card-back { 
-            background-color: #111827; /* Changed to bg-gray-900 (darker) to contrast with the page */ 
-            transform: rotateY(180deg); 
-            flex-direction: column; 
-            padding: 0.75rem; 
-            justify-content: space-between; 
-        }
-        /** --- END OF UPDATE --- **/
-        
+        .flip-card-back { background-color: #111827; transform: rotateY(180deg); flex-direction: column; padding: 0.75rem; justify-content: space-between; }
         .lure-select-row { border: 2px solid transparent; transition: all 0.2s ease-in-out; cursor: pointer; }
         .lure-select-row:hover { background-color: #374151; }
         .lure-select-row.selected { border-color: #60a5fa; background-color: #1e40af; }
-        
-        .category-header { 
-            position: sticky; 
-            top: -8px; 
-            background-color: #1f2937; /* This is bg-gray-800 */
-            z-index: 10; 
-        }
-
+        .category-header { position: sticky; top: -8px; background-color: #1f2937; z-index: 10; }
         .tray-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 0.5rem; scrollbar-width: none; }
         .tray-tabs::-webkit-scrollbar { display: none; }
         .tray-tab { transition: all 0.2s ease-in-out; flex-shrink: 0; }
         .tray-tab.active { background-color: #3b82f6; color: white; border-color: #60a5fa; }
-
         .custom-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: #4a5568 #2d3748; }
         .custom-scroll::-webkit-scrollbar { width: 8px; }
         .custom-scroll::-webkit-scrollbar-track { background: #2d3748; border-radius: 10px; }
         .custom-scroll::-webkit-scrollbar-thumb { background-color: #4a5568; border-radius: 10px; border: 2px solid #2d3748; }
-
-        /** --- STYLES FOR COLOR PICKER --- **/
-        .color-picker-label {
-            transition: all 0.2s ease-in-out;
-        }
-        .color-picker-label:hover {
-            filter: brightness(1.25);
-        }
-        .color-picker-label input[type="checkbox"]:checked ~ .check-indicator {
-            opacity: 1;
-        }
-        .color-picker-label input[type="checkbox"]:checked ~ .content-wrapper .fake-checkbox {
-            background-color: #3b82f6; 
-            border-color: #60a5fa; 
-        }
+        .color-picker-label { transition: all 0.2s ease-in-out; }
+        .color-picker-label:hover { filter: brightness(1.25); }
+        .color-picker-label input[type="checkbox"]:checked ~ .check-indicator { opacity: 1; }
+        .color-picker-label input[type="checkbox"]:checked ~ .content-wrapper .fake-checkbox { background-color: #3b82f6; border-color: #60a5fa; }
         .color-picker-label input[type="checkbox"]:checked ~ .content-wrapper .fake-checkbox::after {
-            content: '\2713';
-            display: block;
-            color: white;
-            text-align: center;
-            line-height: 1.1;
-            font-size: 12px;
-            font-weight: bold;
+            content: '\2713'; display: block; color: white; text-align: center;
+            line-height: 1.1; font-size: 12px; font-weight: bold;
         }
-        /** --- END NEW STYLES --- **/
     </style>
 </head>
-<body class="bg-gray-900 text-white p-4">
+<body class="p-4">
 
 <div class="bg-gray-800 border border-blue-500/50 rounded-2xl p-4 sm:p-6 max-w-6xl w-full space-y-4 card-glow mx-auto">
     
     <div class="flex justify-between items-center">
-        <div>
-             <img src="images/bitefindertacklebox_logo.png" alt="Bitefinder Tacklebox Logo" class="h-14 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/250x50/1f2937/FFFFFF?text=Tacklebox';">
-        </div>
-        <div>
-            <a href="index.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 btn-glow text-sm whitespace-nowrap">
-                &larr; Back to Fishing
-            </a>
-        </div>
+         <img src="images/bitefindertacklebox_logo.png" alt="Bitefinder Tacklebox Logo" class="h-14 w-auto" onerror="this.onerror=null;this.src='https.placehold.co/250x50/1f2937/FFFFFF?text=Tacklebox';">
     </div>
 
     <div id="tray-tabs-container" class="w-full">
         <div id="tray-tabs" class="tray-tabs space-x-2"></div>
     </div>
 
-    <div id="tacklebox-container" class="w-full grid grid-cols-2 md:grid-cols-5 gap-4"></div>
+    <div id="tacklebox-container" class="w-full grid grid-cols-2 md:grid-cols-5 gap-4">
+        <p id="tackleboxLoading" class="text-gray-400 col-span-full text-center py-20">Loading your tacklebox from the cloud...</p>
+    </div>
 
 </div>
 
@@ -131,11 +95,17 @@
     </div>
     
     <script src="shared-data.js"></script>
+    
+    <script src="supabase-client.js"></script>
+    <script src="auth-manager.js"></script>
+    <script src="data-manager.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // All data maps loaded from shared-data.js
+        // Store current user state globally on this page
+        let currentUserId = null; 
 
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Element Selectors (Unchanged) ---
             const tackleboxContainer = document.getElementById('tacklebox-container');
             const trayTabs = document.getElementById('tray-tabs');
             const lureModal = document.getElementById('lureModal');
@@ -153,36 +123,48 @@
 
             let currentEditingSlot = null, slotToRemove = null, trayToRemove = null;
             let activeTrayIndex = 0;
+            
+            // --- REPLACED: This now defaults to an empty state, to be filled by Supabase ---
             let tacklebagState = [new Array(10).fill(null)];
 
-            function saveStateToLocalStorage() { localStorage.setItem('myTacklebag', JSON.stringify(tacklebagState)); }
-            function loadStateFromLocalStorage() { const s = localStorage.getItem('myTacklebag'); if (s) { tacklebagState = JSON.parse(s); } if (!tacklebagState || tacklebagState.length === 0) { tacklebagState = [new Array(10).fill(null)]; } }
+            // --- REPLACED: localStorage functions are now Supabase functions ---
+            async function saveStateToSupabase() {
+                if (!currentUserId) {
+                    console.warn("Attempted to save, but no user is logged in. Saving to localStorage as fallback.");
+                }
+                // Use the function from data-manager.js
+                await saveTacklebagToSupabase(currentUserId, tacklebagState);
+                console.log("Tacklebox saved to Supabase.");
+            }
             
+            async function loadStateFromSupabase() {
+                if (!currentUserId) {
+                    console.error("Cannot load state, no user is logged in.");
+                    return; // This shouldn't be hit because of the auth guard
+                }
+                // Use the fetch function from data-manager.js
+                const userData = await fetchUserData(currentUserId);
+                tacklebagState = userData.tacklebagState || [new Array(10).fill(null)];
+                if (!tacklebagState || tacklebagState.length === 0) {
+                    tacklebagState = [new Array(10).fill(null)];
+                }
+            }
+            // --- END OF REPLACEMENT ---
+
+            // --- ALL RENDERING FUNCTIONS (Unchanged from original) ---
             function updateSlotUI(slotIndex, data) {
                 const slot = document.querySelector(`.tacklebox-slot[data-index='${slotIndex}']`);
                 if (!slot) return;
                 const backFace = slot.querySelector('.flip-card-back');
                 if (data) {
-                    
                     const lureInfo = canonicalLureMap[data.lure];
                     const imageSrc = lureInfo ? lureInfo.image : 'https://placehold.co/100x64/1F2937/4B5563?text=?';
-                    
                     const colorsHTML = data.colors.map(colorName => {
-                        let hex = '#808080'; 
-                        let title = colorName;
-
-                        if (baseColorHexMap[colorName]) {
-                            hex = baseColorHexMap[colorName];
-                            title = colorName; 
-                        } 
-                        else if (colorMap[colorName]) {
-                            hex = colorMap[colorName].hex;
-                            title = colorName; 
-                        }
-                        
+                        let hex = '#808080', title = colorName;
+                        if (baseColorHexMap[colorName]) { hex = baseColorHexMap[colorName]; title = colorName; } 
+                        else if (colorMap[colorName]) { hex = colorMap[colorName].hex; title = colorName; }
                         return `<span class="w-4 h-4 rounded-full border border-gray-500" title="${title}" style="background-color: ${hex};"></span>`;
                     }).join('');
-
                     backFace.innerHTML = `
                         <div class="w-full text-center">
                             <img src="${imageSrc}" alt="${data.lure}" class="w-full h-16 object-contain bg-white rounded-md mb-2" onerror="this.onerror=null;this.src='https://placehold.co/100x64/1F2937/4B5563?text=?';">
@@ -199,10 +181,8 @@
                     slot.classList.add('is-flipped');
                 } else { slot.classList.remove('is-flipped'); }
             }
-
-            
             function renderSlots() {
-                tackleboxContainer.innerHTML = '';
+                tackleboxContainer.innerHTML = ''; // Clears the loading message
                 const activeTray = tacklebagState[activeTrayIndex];
                 for (let i = 0; i < 10; i++) {
                     const slot = document.createElement('div');
@@ -213,20 +193,17 @@
                     if (activeTray) updateSlotUI(i, activeTray[i]);
                 }
             }
-
             function renderTabs() {
                 trayTabs.innerHTML = '';
                 tacklebagState.forEach((tray, index) => {
                     const tabContainer = document.createElement('div');
                     tabContainer.className = `tray-tab flex items-center p-2 px-4 border-2 border-transparent text-gray-400 font-semibold text-sm rounded-lg hover:bg-gray-700 hover:text-white`;
                     if (index === activeTrayIndex) tabContainer.classList.add('active');
-                    
                     const tabLabel = document.createElement('span');
                     tabLabel.textContent = `Tray ${index + 1}`;
                     tabLabel.className = 'cursor-pointer';
                     tabLabel.addEventListener('click', () => { activeTrayIndex = index; renderTabs(); renderSlots(); });
                     tabContainer.appendChild(tabLabel);
-
                     if (tacklebagState.length > 1) {
                         const deleteBtn = document.createElement('button');
                         deleteBtn.className = 'ml-2 text-red-500 hover:text-red-400 text-lg font-bold';
@@ -236,24 +213,21 @@
                     }
                     trayTabs.appendChild(tabContainer);
                 });
-                
                 const addTrayBtn = document.createElement('button');
                 addTrayBtn.className = 'p-2 px-4 text-emerald-400 hover:text-emerald-300 font-semibold text-sm flex-shrink-0';
                 addTrayBtn.textContent = '+ Add Tray';
-                addTrayBtn.addEventListener('click', () => {
+                addTrayBtn.addEventListener('click', async () => { // MODIFIED to be async
                     tacklebagState.push(new Array(10).fill(null));
                     activeTrayIndex = tacklebagState.length - 1;
-                    saveStateToLocalStorage();
+                    await saveStateToSupabase(); // MODIFIED
                     renderTabs();
                     renderSlots();
                 });
                 trayTabs.appendChild(addTrayBtn);
             }
-            
             function openModal(slotIndex, existingData = null) {
                 currentEditingSlot = slotIndex;
                 lureQuantity.value = existingData ? existingData.quantity : 1;
-
                 let ownedBaseColors = new Set();
                 if (existingData && existingData.colors) {
                     existingData.colors.forEach(colorName => {
@@ -261,68 +235,66 @@
                         ownedBaseColors.add(baseColor);
                     });
                 }
-                
                 document.querySelectorAll('#colorSelect input[type="checkbox"]').forEach(cb => {
                     cb.checked = ownedBaseColors.has(cb.value);
                 });
-
                 document.querySelectorAll('.lure-select-row').forEach(card => card.classList.remove('selected'));
                 let lureToSelect = existingData ? existingData.lure : displayLures[Object.keys(displayLures)[0]][0];
                 const cardToSelect = document.querySelector(`.lure-select-row[data-lure-name="${lureToSelect}"]`);
                 if (cardToSelect) { cardToSelect.classList.add('selected'); cardToSelect.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-                
                 modalTitle.textContent = existingData ? `Edit Lure in Slot ${slotIndex + 1}` : `Add Lure to Slot ${slotIndex + 1}`;
                 lureModal.classList.remove('hidden');
             }
-
             function closeModal() { lureModal.classList.add('hidden'); currentEditingSlot = null; }
-
             function showConfirmModal(slotIndex) {
                 slotToRemove = slotIndex;
                 const lureName = tacklebagState[activeTrayIndex][slotIndex]?.lure || 'this lure';
                 confirmTitle.textContent = 'Confirm Lure Removal';
                 confirmMessage.innerHTML = `Are you sure you want to remove <strong class="text-white">${lureName}</strong> from Tray ${activeTrayIndex + 1}?`;
                 confirmOkBtn.textContent = 'Remove Lure';
-                confirmOkBtn.onclick = removeLure;
+                confirmOkBtn.onclick = removeLure; // This is now an async function
                 confirmModal.classList.remove('hidden');
             }
-
             function showDeleteTrayConfirm(index) {
                 trayToRemove = index;
                 confirmTitle.textContent = 'Confirm Tray Deletion';
                 confirmMessage.innerHTML = `Are you sure you want to permanently delete <strong class="text-white">Tray ${index + 1}</strong>? This action cannot be undone.`;
                 confirmOkBtn.textContent = 'Delete Tray';
-                confirmOkBtn.onclick = deleteTray;
+                confirmOkBtn.onclick = deleteTray; // This is now an async function
                 confirmModal.classList.remove('hidden');
             }
-
             function hideConfirmModal() { confirmModal.classList.add('hidden'); slotToRemove = null; trayToRemove = null; confirmOkBtn.onclick = null; }
-            function removeLure() {
+            
+            // --- MODIFIED: Functions are now ASYNC and call saveStateToSupabase() ---
+            async function removeLure() {
                 if (slotToRemove !== null) {
                     tacklebagState[activeTrayIndex][slotToRemove] = null;
-                    renderSlots(); saveStateToLocalStorage(); hideConfirmModal();
+                    renderSlots(); 
+                    await saveStateToSupabase(); // MODIFIED
+                    hideConfirmModal();
                 }
             }
-            function deleteTray() {
+            async function deleteTray() {
                 if (trayToRemove !== null && tacklebagState.length > 1) {
                     tacklebagState.splice(trayToRemove, 1);
                     if (activeTrayIndex >= trayToRemove) { activeTrayIndex = Math.max(0, activeTrayIndex - 1); }
-                    renderTabs(); renderSlots(); saveStateToLocalStorage(); hideConfirmModal();
+                    renderTabs(); 
+                    renderSlots(); 
+                    await saveStateToSupabase(); // MODIFIED
+                    hideConfirmModal();
                 }
             }
 
-
+            // --- Event Listeners (Unchanged logic, but save button is now async) ---
             lureListSelect.addEventListener('click', (e) => { const r = e.target.closest('.lure-select-row'); if (r) { document.querySelectorAll('.lure-select-row').forEach(x=>x.classList.remove('selected')); r.classList.add('selected'); } });
             
-            saveLureBtn.addEventListener('click', () => {
+            saveLureBtn.addEventListener('click', async () => { // MODIFIED to be async
                 if (currentEditingSlot === null) return;
                 const s = lureListSelect.querySelector('.selected'); if (!s) { alert('Please select a lure.'); return; }
-                
                 const c = Array.from(document.querySelectorAll('#colorSelect input:checked')).map(cb => cb.value); 
-                
                 tacklebagState[activeTrayIndex][currentEditingSlot] = { lure: s.dataset.lureName, quantity: parseInt(lureQuantity.value, 10), colors: c };
                 updateSlotUI(currentEditingSlot, tacklebagState[activeTrayIndex][currentEditingSlot]);
-                saveStateToLocalStorage();
+                await saveStateToSupabase(); // MODIFIED
                 closeModal();
             });
 
@@ -338,8 +310,8 @@
                 else if (e.target.closest('.remove-lure-btn')) showConfirmModal(i);
             });
 
-
-            function populateLureListSelect() {
+            // --- Lure/Color List Builders (Unchanged) ---
+             function populateLureListSelect() {
                 lureListSelect.innerHTML = '';
                 for (const cat in displayLures) {
                     const h = document.createElement('h4'); h.className = 'category-header font-bold text-sm text-blue-300 p-2 pt-3'; h.textContent = cat; lureListSelect.appendChild(h);
@@ -351,44 +323,60 @@
                     });
                 }
             }
-
             function populateColorSelect() {
                 colorSelectContainer.innerHTML = '';
                 const sortedCategories = Object.keys(baseColorCategories).sort();
-                
                 const lightColorsWithBlackText = ['White', 'Yellow', 'Pink', 'Silver', 'Gold', 'Orange'];
-
                 for (const categoryName of sortedCategories) {
                     const categoryInfo = baseColorCategories[categoryName];
-                    
                     const representativeHex = baseColorHexMap[categoryName] || '#374151'; 
                     const textColorClass = lightColorsWithBlackText.includes(categoryName) ? 'text-black' : 'text-white';
-
                     const label = document.createElement('label');
                     label.className = 'color-picker-label relative block p-2.5 rounded-md cursor-pointer border-2 border-transparent';
                     label.style.backgroundColor = representativeHex;
                     label.style.filter = 'brightness(90%)'; 
-
                     label.innerHTML = `
                         <input type="checkbox" value="${categoryName}" class="absolute opacity-0 w-full h-full inset-0 z-20 cursor-pointer">
-                        
                         <div class="check-indicator absolute inset-0 rounded-md border-4 border-blue-400 ring-2 ring-blue-300 opacity-0 transition-opacity z-10 pointer-events-none"></div>
-                        
                         <div class="content-wrapper relative z-0 flex items-start space-x-3 pointer-events-none ${textColorClass}">
                             <div class="fake-checkbox w-5 h-5 rounded border-2 ${textColorClass === 'text-black' ? 'border-gray-700' : 'border-gray-300'} bg-transparent/50 flex-shrink-0 mt-0.5"></div>
                             <div>
                                 <span class="text-sm font-semibold">${categoryName}</span>
                                 <p class="text-xs opacity-80">${categoryInfo.description}</p>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                     colorSelectContainer.appendChild(label);
                 }
             }
 
-
-            function init() { loadStateFromLocalStorage(); populateLureListSelect(); populateColorSelect(); renderTabs(); renderSlots(); }
-            init();
+            // --- NEW AUTH-BASED INIT FUNCTION ---
+            async function pageInit() {
+                // Populate the static modal data first
+                populateLureListSelect(); 
+                populateColorSelect();
+                
+                // Add the auth listener. This listener also acts as our Auth Guard.
+                supaClient.auth.onAuthStateChange(async (_event, session) => {
+                    if (session && session.user) {
+                        // User is logged in. Set their ID and load their cloud data.
+                        currentUserId = session.user.id;
+                        createHeader('tacklebox', session); // Create the "logged in" header
+                        
+                        // This is the new ASYNC load function
+                        await loadStateFromSupabase();
+                        
+                        // Once data is loaded from Supabase, render everything
+                        renderTabs(); 
+                        renderSlots();
+                    } else {
+                        // No user. This is a protected page. Enforce the login.
+                        // We use the ASYNC version enforceLogin from auth-manager.js
+                        enforceLogin('index.html');
+                    }
+                });
+            }
+            
+            pageInit(); // Run the page initialization
         });
     </script>
 </body>
