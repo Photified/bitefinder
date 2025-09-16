@@ -1,27 +1,26 @@
 // FILE: data-manager.js
-// VERSION 3: This version adds the critical try...catch offline-fallback logic.
+// VERSION 4: SIMPLIFIED CLOUD-ONLY LOGIC. This removes all localStorage backups to fix the loading hang.
 
 /**
  * NOTE: The initializeUserDocument function was moved into auth-manager.js
- * because it is part of the core signup flow.
  */
-
 
 /**
  * Fetches ALL data (logbook AND tacklebox) for the currently logged-in user.
- * This function is now "offline-first". It tries the cloud, but falls back to local data.
+ * This is a cloud-only version.
  */
 async function fetchUserData(userId) {
     if (!userId) {
-         // Logged-out mode: Load from localStorage fallback (this is for guest mode)
-         console.log("No user ID, loading data from localStorage (guest mode).");
-         return loadDataFromLocalStorage();
+         // Guest mode user. They have no cloud data. Return empty state.
+         return {
+            fishingLog: [],
+            tacklebagState: [new Array(10).fill(null)]
+         };
     }
     
-    console.log("Fetching user data from Supabase for user:", userId);
+    console.log("Fetching cloud data for user:", userId);
     try {
         // --- ONLINE PATH ---
-        // We try to fetch the data from the cloud first.
         const { data, error } = await supaClient
             .from('profiles')
             .select('fishing_log, tacklebag_state') // Selects our two JSONB columns
@@ -29,105 +28,70 @@ async function fetchUserData(userId) {
             .single(); 
 
         if (error && error.code !== 'PGRST116') { 
-            // PGRST116 is the "row not found" error, which is not a failure, just an empty profile.
+            // PGRST116 just means "no row was found", which is fine (it's a new user).
             // Any other error should be thrown.
             throw error; 
         }
 
-        // SUCCESS: We are online. Data is either the user's data or null (if no profile row).
-        
-        // Ensure data exists, otherwise use defaults
-        const fishingLogData = data?.fishing_log || [];
-        const tacklebagData = data?.tacklebag_state || [new Array(10).fill(null)];
-
-        // NOW, we update our local backup to match the cloud.
-        localStorage.setItem('myFishingLog', JSON.stringify(fishingLogData));
-        localStorage.setItem('myTacklebag', JSON.stringify(tacklebagData));
-        console.log("Cloud data fetched and local backup updated.");
-
-        // Return the fresh cloud data to the app.
+        // Return the cloud data (or empty defaults if no profile row was found)
         return {
-            fishingLog: fishingLogData,
-            tacklebagState: tacklebagData
+            fishingLog: data?.fishing_log || [],
+            tacklebagState: data?.tacklebag_state || [new Array(10).fill(null)]
         };
 
     } catch (error) {
-        // --- OFFLINE PATH / FAILURE PATH ---
-        // The fetch failed (either user is offline, or a real error like RLS/typo happened).
-        console.warn(`Supabase fetch failed (${error.message}). App is in OFFLINE MODE. Loading from local backup.`);
-        
-        // We fall back to loading whatever data we have saved in localStorage.
-        return loadDataFromLocalStorage();
+        // --- FAILURE PATH ---
+        // If anything goes wrong, log the error and return an empty state so the app doesn't crash.
+        console.error("CRITICAL FETCH ERROR:", error.message);
+        return {
+            fishingLog: [],
+            tacklebagState: [new Array(10).fill(null)]
+        };
     }
 }
 
-/**
- * A helper function to load data from localStorage (used by both guest mode and offline mode)
- */
-function loadDataFromLocalStorage() {
-    const savedLog = localStorage.getItem('myFishingLog') || '[]';
-    const savedTacklebox = localStorage.getItem('myTacklebag') || JSON.stringify([new Array(10).fill(null)]);
-    return {
-        fishingLog: JSON.parse(savedLog),
-        tacklebagState: JSON.parse(savedTacklebox)
-    };
-}
-
 
 /**
- * DUAL-SAVE: Saves the tacklebag to Supabase AND localStorage.
+ * CLOUD-ONLY SAVE: Saves the tacklebag ONLY to Supabase.
  */
 async function saveTacklebagToSupabase(userId, tacklebagState) {
-    // Always save to localStorage immediately, so it works offline.
-    localStorage.setItem('myTacklebag', JSON.stringify(tacklebagState));
-
-    if (!userId) {
-        // Logged-out user, only save to local.
-        return;
-    }
+    if (!userId) return; // Not logged in, do nothing.
     
-    // User is logged in, ALSO try to save to the cloud.
     const { error } = await supaClient
         .from('profiles')
         .update({ tacklebag_state: tacklebagState })
         .eq('id', userId); 
         
     if (error) {
-        console.error("Error saving tacklebox to cloud:", error.message);
-        alert("Error: Could not sync tacklebox to the cloud. Your changes are saved locally but not backed up.");
+        console.error("Error saving tacklebox to Supabase:", error.message);
+        alert("Error: Could not sync tacklebox to the cloud.");
     } else {
-        console.log("Tacklebox saved to Supabase (and local backup).");
+        console.log("Tacklebox saved to Supabase.");
     }
 }
 
 /**
- * DUAL-SAVE: Saves the logbook to Supabase AND localStorage.
+ * CLOUD-ONLY SAVE: Saves the logbook ONLY to Supabase.
  */
 async function saveLogToSupabase(userId, fishingLog) {
-     // Always save to localStorage immediately.
-     localStorage.setItem('myFishingLog', JSON.stringify(fishingLog));
-
-     if (!userId) {
-        // Logged-out user, only save to local.
-        return;
-    }
+     if (!userId) return; // Not logged in, do nothing.
     
-    // User is logged in, ALSO try to save to the cloud.
     const { error } = await supaClient
         .from('profiles')
         .update({ fishing_log: fishingLog })
         .eq('id', userId);
     
      if (error) {
-        console.error("Error saving logbook to cloud:", error.message);
-        alert("Error: Could not sync logbook to the cloud. Your changes are saved locally but not backed up.");
+        console.error("Error saving logbook to Supabase:", error.message);
+        alert("Error: Could not sync logbook to the cloud.");
     } else {
-        console.log("Logbook saved to Supabase (and local backup).");
+        console.log("Logbook saved to Supabase.");
     }
 }
 
 /**
  * Creates a public social post (this function requires internet).
+ * (This function is unchanged)
  */
 async function createPublicSocialPost(logEntryData, imageFile, userId, username) {
     if (!userId) throw new Error("You must be logged in to post.");
@@ -135,11 +99,10 @@ async function createPublicSocialPost(logEntryData, imageFile, userId, username)
 
     console.log("Starting social post upload...");
 
-    // 1. Upload Image to Supabase Storage
     const filePath = `${userId}/${Date.now()}-${imageFile.name}`;
     
     const { error: uploadError } = await supaClient.storage
-        .from('fish-photos') // The public bucket you created
+        .from('fish-photos')
         .upload(filePath, imageFile);
 
     if (uploadError) {
@@ -147,7 +110,6 @@ async function createPublicSocialPost(logEntryData, imageFile, userId, username)
         throw uploadError;
     }
 
-    // 2. Get the Public URL
     const { data: urlData } = supaClient.storage
         .from('fish-photos')
         .getPublicUrl(filePath);
@@ -155,7 +117,6 @@ async function createPublicSocialPost(logEntryData, imageFile, userId, username)
     const publicImageUrl = urlData.publicUrl;
     console.log("File uploaded, URL:", publicImageUrl);
 
-    // 3. Create the public post row in the 'social_posts' table
     const newPostData = {
         user_id: userId,
         username: username,
