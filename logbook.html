@@ -429,7 +429,7 @@
 
             // --- Render Log Entries function (Unchanged from original) ---
             function renderLogEntries() {
-                logbookContainer.innerHTML = ''; // Clear container (which holds the loading msg)
+               
                 logbookDisplay.innerHTML = ''; // Clear display grid
                 
                 const sortedLog = [...myFishingLog].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -565,4 +565,5 @@
         });
     </script>
 </body>
+
 </html>
