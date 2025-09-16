@@ -18,7 +18,7 @@ async function fetchUserData(userId) {
         // We use select('*') and DO NOT use .single() to prevent the app from hanging.
         // This query is stable and will not hang.
         const { data, error } = await supaClient
-            .from('profiles')
+            .from('social_posts')
             .select('*')
             .eq('id', userId); // WHERE id = our_user_id
 
@@ -169,4 +169,5 @@ async function createPublicSocialPost(logEntryData, imageFile, userId, username)
 
     console.log("Public social post created!");
     return true;
+
 }
