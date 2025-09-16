@@ -5,12 +5,7 @@
  * Fetches ALL data (logbook AND tacklebox) for the currently logged-in user.
  * This function handles BOTH guest mode (localStorage) and logged-in mode (Supabase).
  */
-async function fetchUserData(userId) {
-    if (!userId) {
-         // Guest mode user. Load from localStorage.
-         console.log("No user ID, loading data from localStorage (guest mode).");
-         return loadDataFromLocalStorage();
-    }
+async function fetc
     
     console.log("Fetching cloud data for user:", userId);
     try {
@@ -171,3 +166,4 @@ async function createPublicSocialPost(logEntryData, imageFile, userId, username)
     return true;
 
 }
+
