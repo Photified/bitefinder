@@ -23,7 +23,7 @@ async function fetchUserData(userId) {
         // --- ONLINE PATH ---
         const { data, error } = await supaClient
             .from('profiles')
-            .select('fishing_log, tacklebag_state') // Selects our two JSONB columns
+            .select('*') 
             .eq('id', userId)
             .single(); 
 
