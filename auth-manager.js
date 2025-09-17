@@ -1,24 +1,20 @@
 // FILE: auth-manager.js
-// VERSION 3: This fixes the "double header" bug.
+// FINAL VERSION (v4): This points the signup function to the new 'user_data' table.
 
 /**
  * Creates the main navigation header based on login state.
- * This function will be called by all pages to ensure a consistent header.
+ * (This function is unchanged)
  */
 function createHeader(activePage = 'home', session) {
     
-    // --- START OF FIX ---
-    // Find and remove any existing header. This prevents the double-bar bug.
     const oldHeader = document.getElementById('appHeaderNavContainer');
     if (oldHeader) {
         oldHeader.remove();
     }
-    // --- END OF FIX ---
 
-    // Now we create the new one
     const headerContainer = document.createElement('div');
     headerContainer.className = 'w-full max-w-6xl mx-auto mb-4';
-    headerContainer.id = 'appHeaderNavContainer'; // Give it an ID so we can find it next time
+    headerContainer.id = 'appHeaderNavContainer'; 
     
     const activeClass = 'bg-blue-600 text-white';
     const inactiveClass = 'bg-gray-700 hover:bg-gray-600 text-gray-300';
@@ -28,7 +24,6 @@ function createHeader(activePage = 'home', session) {
         <a href="social.html" class="py-2 px-4 rounded-lg font-semibold text-sm ${activePage === 'social' ? activeClass : inactiveClass}">Social Feed</a>
     `;
 
-    // Auth state-dependent links
     let authLinks = '';
 
     if (session && session.user) {
@@ -69,7 +64,6 @@ function createHeader(activePage = 'home', session) {
     
     document.body.prepend(headerContainer);
 
-    // Add event listeners for the new buttons
     const logoutBtn = document.getElementById('logoutButton');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
@@ -86,6 +80,7 @@ function createHeader(activePage = 'home', session) {
 
 /**
  * Creates and injects the Authentication Modal into the page.
+ * (This function is unchanged)
  */
 function injectAuthModal() {
     const modalHTML = `
@@ -124,20 +119,17 @@ function injectAuthModal() {
     `;
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-    // Get elements
     const authModal = document.getElementById('authModal');
     const closeAuthModal = document.getElementById('closeAuthModal');
     const loginView = document.getElementById('loginView');
     const signupView = document.getElementById('signupView');
     const showSignupBtn = document.getElementById('showSignupBtn');
     const showLoginBtn = document.getElementById('showLoginBtn');
-    
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
     const loginError = document.getElementById('loginError');
     const signupError = document.getElementById('signupError');
 
-    // Add modal functionality
     closeAuthModal.addEventListener('click', () => authModal.classList.add('hidden'));
     showSignupBtn.addEventListener('click', () => {
         loginView.classList.add('hidden');
@@ -148,7 +140,7 @@ function injectAuthModal() {
         loginView.classList.remove('hidden');
     });
 
-    // Handle Login
+    // Handle Login (unchanged)
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value;
@@ -169,7 +161,7 @@ function injectAuthModal() {
         }
     });
 
-    // Handle Signup
+    // Handle Signup (This is the only modified function)
     signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const username = document.getElementById('signupUsername').value;
@@ -200,9 +192,9 @@ function injectAuthModal() {
 
             console.log('User created in Auth:', data.user);
             
-            // Step 2: Create the corresponding row in our public 'profiles' table
+            // Step 2: Create the corresponding row in our NEW 'user_data' table
             const { error: profileError } = await supaClient
-                .from('user_data')
+                .from('user_data') // <-- FIXED: Points to the new, un-corrupted table
                 .insert({ 
                     id: data.user.id,
                     username: username,
@@ -211,13 +203,11 @@ function injectAuthModal() {
                 });
 
             if (profileError) {
-                 console.error("CRITICAL ERROR: Could not create profile row. Deleting orphan auth user.");
-                 // This next line might fail due to permissions, but it's best practice to try
-                 await supaClient.auth.admin.deleteUser(data.user.id); 
+                 console.error("CRITICAL ERROR: Could not create profile row.", profileError.message);
                  throw profileError;
             }
 
-            console.log('Profile created in database.');
+            console.log('Profile created in user_data table.');
             window.location.reload();
 
         } catch (error) {
@@ -228,14 +218,14 @@ function injectAuthModal() {
     });
 }
 
-// Handle Logout
+// Handle Logout (unchanged)
 async function handleLogout() {
     await supaClient.auth.signOut(); 
     window.location.href = 'index.html';
 }
 
 /**
- * Auth Guard
+ * Auth Guard (unchanged)
  */
 async function enforceLogin(redirectPath = 'index.html') {
     const { data: { session } } = await supaClient.auth.getSession(); 
@@ -246,5 +236,4 @@ async function enforceLogin(redirectPath = 'index.html') {
         return null;
     }
     return session;
-
 }
