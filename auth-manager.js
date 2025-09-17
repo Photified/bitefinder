@@ -202,7 +202,7 @@ function injectAuthModal() {
             
             // Step 2: Create the corresponding row in our public 'profiles' table
             const { error: profileError } = await supaClient
-                .from('profiles')
+                .from('user_data')
                 .insert({ 
                     id: data.user.id,
                     username: username,
@@ -246,4 +246,5 @@ async function enforceLogin(redirectPath = 'index.html') {
         return null;
     }
     return session;
+
 }
