@@ -1,31 +1,32 @@
-// FILE: data-manager.js
-// FINAL VERSION (v5): This fixes the .single() hang bug and correctly handles both cloud and local data.
+// FILE: data-manager-v2.js
+// FINAL VERSION (v6): This points to the new 'user_data' table to fix the hang bug.
 
 /**
  * Fetches ALL data (logbook AND tacklebox) for the currently logged-in user.
  * This function handles BOTH guest mode (localStorage) and logged-in mode (Supabase).
  */
-async function fetc
+async function fetchUserData(userId) {
+    if (!userId) {
+         // Guest mode user. Load from localStorage.
+         console.log("No user ID, loading data from localStorage (guest mode).");
+         return loadDataFromLocalStorage();
+    }
     
-    console.log("Fetching cloud data for user:", userId);
+    console.log("Fetching cloud data for user from 'user_data' table:", userId);
     try {
         // --- THIS IS THE CORRECTED QUERY ---
-        // We use select('*') and DO NOT use .single() to prevent the app from hanging.
-        // This query is stable and will not hang.
+        // It now points at our new, un-corrupted 'user_data' table.
         const { data, error } = await supaClient
-            .from('social_posts')
+            .from('user_data') // <-- FIXED
             .select('*')
-            .eq('id', userId); // WHERE id = our_user_id
+            .eq('id', userId);
 
         // If anything went wrong, throw the error to the catch block
         if (error) {
-            throw error;
+            throw error; 
         }
 
         // The query worked! 'data' is now an ARRAY.
-        // If it's a new user, 'data' will be an empty array [].
-        // If it's an existing user, it will be an array with one object: [ {...} ]
-        
         const profileRow = data?.[0]; // Get the first (and only) row, or undefined
 
         // Also update our local backup to match the cloud, just in case the user goes offline later.
@@ -41,9 +42,8 @@ async function fetc
 
     } catch (error) {
         // --- FAILURE PATH ---
-        // If the fetch fails (user is offline, etc), log it and fall back to the local backup.
-        console.warn(`Supabase fetch failed (${error.message}). App is in OFFLINE MODE. Loading from local backup.`);
-        return loadDataFromLocalStorage();
+        console.error("CRITICAL FETCH ERROR:", error.message);
+        return loadDataFromLocalStorage(); // Fallback to local storage on any error
     }
 }
 
@@ -74,7 +74,7 @@ async function saveTacklebagToSupabase(userId, tacklebagState) {
     
     // User is logged in, ALSO try to save to the cloud.
     const { error } = await supaClient
-        .from('profiles')
+        .from('user_data') // <-- FIXED
         .update({ tacklebag_state: tacklebagState })
         .eq('id', userId); 
         
@@ -100,7 +100,7 @@ async function saveLogToSupabase(userId, fishingLog) {
     
     // User is logged in, ALSO try to save to the cloud.
     const { error } = await supaClient
-        .from('profiles')
+        .from('user_data') // <-- FIXED
         .update({ fishing_log: fishingLog })
         .eq('id', userId);
     
@@ -113,7 +113,7 @@ async function saveLogToSupabase(userId, fishingLog) {
 }
 
 /**
- * Creates a public social post (this function requires internet).
+ * Creates a public social post (this function is unchanged, it correctly points to social_posts).
  */
 async function createPublicSocialPost(logEntryData, imageFile, userId, username) {
     if (!userId) throw new Error("You must be logged in to post.");
@@ -124,7 +124,7 @@ async function createPublicSocialPost(logEntryData, imageFile, userId, username)
     const filePath = `${userId}/${Date.now()}-${imageFile.name}`;
     
     const { error: uploadError } = await supaClient.storage
-        .from('fish-photos') // The public bucket you created
+        .from('fish-photos') // Correct bucket
         .upload(filePath, imageFile);
 
     if (uploadError) {
@@ -154,7 +154,7 @@ async function createPublicSocialPost(logEntryData, imageFile, userId, username)
     };
 
     const { error: postError } = await supaClient
-        .from('social_posts')
+        .from('social_posts') // Correct table
         .insert(newPostData);
 
     if (postError) {
@@ -164,6 +164,4 @@ async function createPublicSocialPost(logEntryData, imageFile, userId, username)
 
     console.log("Public social post created!");
     return true;
-
 }
-
