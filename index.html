@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitefinder - Fishing Advisor</title>
+	<link rel="icon" type="image/x-icon" href="images/icon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .header-font {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .card-glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.8), 0 0 20px rgba(96, 165, 250, 0.6);
+        }
+        .selection-btn {
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .selection-btn svg { /* For weather icons */
+            transition: all 0.2s ease-in-out;
+            fill: #9ca3af; /* gray-400 */
+        }
+        .selection-btn:hover svg {
+            fill: white;
+        }
+        .selection-btn.active {
+            background-color: #3b82f6; /* blue-600 - Default for Fish Selector */
+            border-color: #60a5fa; /* blue-400 */
+            color: white;
+        }
+        .selection-btn.active svg {
+            fill: white;
+        }
+        
+        /* --- START: COLOR DIFFERENTIATION --- */
+       #weather-selector .selection-btn.active {
+    background-color: #0891b2; /* cyan-600 */
+    border-color: #22d3ee; /* cyan-400 */
+}
+       #clarity-selector .selection-btn.active {
+    background-color: #059669; /* emerald-600 */
+    border-color: #34d399; /* emerald-400 */
+}
+        #temp-selector .selection-btn.active {
+            background-color: #0f766e; /* teal-700 */
+            border-color: #14b8a6; /* teal-500 */
+        }
+        /* --- END: COLOR DIFFERENTIATION --- */
+
+        .selection-btn img {
+            transition: all 0.2s ease-in-out;
+            opacity: 0.4; /* Set default opacity for non-selected items */
+        }
+         .selection-btn:hover img {
+            opacity: 1; /* Full opacity on hover */
+        }
+        .selection-btn.active img {
+            opacity: 1; /* Full opacity when active/selected */
+        }
+
+        #results {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        #results.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .tab-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .tab-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* Style for the horizontally scrollable fish selector */
+        .fish-selector-scroll {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* For smooth scrolling on mobile */
+            padding-bottom: 1rem; /* Adds space for the scrollbar */
+            scrollbar-width: thin; /* For Firefox */
+            scrollbar-color: #4a5568 #2d3748; /* For Firefox */
+        }
+        .fish-selector-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+        .fish-selector-scroll::-webkit-scrollbar-track {
+            background: #2d3748;
+            border-radius: 10px;
+        }
+        .fish-selector-scroll::-webkit-scrollbar-thumb {
+            background-color: #4a5568;
+            border-radius: 10px;
+            border: 2px solid #2d3748;
+        }
+        .fish-selector-scroll > button { /* Target buttons inside the new class */
+            flex: 0 0 auto; /* Prevents buttons from shrinking */
+            width: 150px; /* Increased width to fit longer names */
+            height: 140px; 
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-gray-800 border border-blue-500/50 rounded-2xl p-4 sm:p-6 max-w-4xl w-full space-y-4 card-glow">
+        
+        <div class="text-center">
+            <img src="images/bitefinder_logo.png" alt="Bitefinder Logo" class="h-20 w-auto mx-auto" onerror="this.onerror=null;this.src='https://placehold.co/200x100/1E293B/FFFFFF?text=Bitefinder';">
+            <p class="text-gray-400 text-sm mt-1">Unlock Your Next Catch.</p>
+        </div>
+
+        <div class="space-y-4">
+            
+             <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">1. Select Target Species
+                    <a href="#" id="openProvinceModal" class="text-blue-400 hover:underline text-xs font-normal ml-2">[Find local species]</a>
+                </label>
+                <div id="fish-selector" class="fish-selector-scroll gap-3">
+                    </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">2. Select Weather Condition</label>
+                <div id="weather-selector" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">3. Water Clarity</label>
+                    <div id="clarity-selector" class="grid grid-cols-2 gap-3">
+                         </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">4. Water Temp</label>
+                    <div id="temp-selector" class="grid grid-cols-2 gap-3">
+                         </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="getRecommendation" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 btn-glow">
+            Find Your Bait
+        </button>
+
+        <div class="flex items-center gap-4 mt-3">
+            <a href="mytacklebox.html" class="block w-1/2 text-center bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold py-2 px-4 rounded-lg transition duration-300">
+                My Tacklebox
+            </a>
+            <a href="logbook.html" class="block w-1/2 text-center bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold py-2 px-4 rounded-lg transition duration-300">
+                My Logbook
+            </a>
+        </div>
+        <div id="results" class="bg-gray-900/50 rounded-lg p-6 border border-gray-700 hidden">
+            <div class="flex border-b border-gray-700 mb-4">
+                <button id="setupTab" class="tab-btn active flex-1 py-2 px-4 font-semibold rounded-t-lg">Recommended Setup</button>
+                <button id="strategyTab" class="tab-btn flex-1 py-2 px-4 font-semibold rounded-t-lg">Strategy & Tips</button>
+            </div>
+
+            <div id="setupContent" class="tab-content active space-y-6">
+                <div>
+                    <h3 class="font-semibold text-lg text-blue-300 mb-2">Primary Lures</h3>
+                    <div id="lure-result" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+                 <div>
+                    <h3 class="font-semibold text-lg text-blue-300 mb-2">Tackle Colors</h3>
+                    <div id="color-result" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg text-blue-300 mb-2">Recommended Gear</h3>
+                    <div id="gear-result" class="bg-gray-800/50 p-4 rounded-lg border border-gray-700"></div>
+                </div>
+            </div>
+            
+            <div id="strategyContent" class="tab-content space-y-6">
+                <div>
+                    <h3 class="font-semibold text-lg text-blue-300 mb-2">Where to Fish</h3>
+                    <div id="location-result" class="bg-gray-800/50 p-4 rounded-lg border border-gray-700"></div>
+                </div>
+                 <div>
+                    <h3 class="font-semibold text-lg text-blue-300 mb-2">Pro Tips</h3>
+                    <div id="tip-result"></div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="provinceModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-600 max-w-md w-full">
+            <h3 class="text-lg font-semibold text-white mb-4">Find Local Regulations & Species</h3>
+            <p class="text-gray-400 text-sm mb-4">Select your province or territory to open the official local fishing guide in a new tab.</p>
+            <select id="provinceSelect" class="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <option value="https://www.lioapplications.lrc.gov.on.ca/fishonline/index.html?viewer=fishonline.fishonline" selected>Ontario</option>
+                <option value="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/ecosystems/habitatwizard">British Columbia</option>
+                <option value="https://peche.faune.gouv.qc.ca/?lang=en">Québec</option>
+                <option value="https://www.albertaregulations.ca/fishingregs/">Alberta</option>
+                <option value="https://saskborder.com/fishing">Saskatchewan</option>
+                <option value="https://experience.arcgis.com/experience/2557cda82dcc4a348fbb71304cedcf6d">Manitoba</option>
+                <option value="https://www2.gnb.ca/content/gnb/en/departments/erd/fish-and-wildlife/content/go-fishing.html">New Brunswick</option>
+                <option value="https://www.fishnovascotia.ca/places">Nova Scotia</option>
+                <option value="https://www.princeedwardisland.ca/en/information/environment-energy-and-climate-action/angling-resources-and-information-centre">Prince Edward Island</option>
+                <option value="https://www.nfl.dfo-mpo.gc.ca/en/NL/AG/anglersguide">Newfoundland & Labrador</option>
+                <option value="https://yukon.ca/en/fishing">Yukon</option>
+                <option value="https://www.enr.gov.nt.ca/en/services/fishing/angling-guide">Northwest Territories</option>
+                <option value="https://www.gov.nu.ca/environment/information/fisheries-and-sealing">Nunavut</option>
+            </select>
+            <div class="flex items-center justify-end gap-4 mt-6">
+                <button id="closeProvinceModal" class="text-gray-400 hover:text-white text-sm">Close</button>
+                <button id="goToProvinceSite" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg btn-glow text-sm">Go to Site</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="recommendations-data.js"></script>
+    <script src="shared-data.js"></script>
+    <script src="app-data.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Element Selectors ---
+            const getRecommendationBtn = document.getElementById('getRecommendation');
+            const resultsDiv = document.getElementById('results');
+            const lureResult = document.getElementById('lure-result');
+            const colorResult = document.getElementById('color-result');
+            const gearResult = document.getElementById('gear-result');
+            const locationResult = document.getElementById('location-result');
+            const tipResult = document.getElementById('tip-result');
+            const setupTab = document.getElementById('setupTab');
+            const strategyTab = document.getElementById('strategyTab');
+            const setupContent = document.getElementById('setupContent');
+            const strategyContent = document.getElementById('strategyContent');
+            const fishSelector = document.getElementById('fish-selector');
+            const weatherSelector = document.getElementById('weather-selector');
+            const claritySelector = document.getElementById('clarity-selector');
+            const tempSelector = document.getElementById('temp-selector');
+            const provinceModal = document.getElementById('provinceModal');
+            const openProvinceModalBtn = document.getElementById('openProvinceModal');
+            const closeProvinceModalBtn = document.getElementById('closeProvinceModal');
+            const provinceSelect = document.getElementById('provinceSelect');
+            const goToProvinceSiteBtn = document.getElementById('goToProvinceSite');
+
+            openProvinceModalBtn.addEventListener('click', (e) => { e.preventDefault(); provinceModal.classList.remove('hidden'); });
+            closeProvinceModalBtn.addEventListener('click', () => { provinceModal.classList.add('hidden'); });
+            provinceModal.addEventListener('click', (e) => { if (e.target === provinceModal) { provinceModal.classList.add('hidden'); } });
+            goToProvinceSiteBtn.addEventListener('click', () => { const url = provinceSelect.value; if (url) { window.open(url, '_blank'); } provinceModal.classList.add('hidden'); });
+            
+            let selectedFish = 'largemouth', selectedWeather = 'sunny', selectedClarity = 'clear', selectedTemp = 'cool';
+
+            // All data maps are loaded from the external JS files
+
+            function parseRecommendations(data) {
+                if (Object.keys(data).length === 0) return {};
+                const parsedData = {};
+                for (const fish in data) {
+                    parsedData[fish] = {};
+                    for (const weather in data[fish]) {
+                        parsedData[fish][weather] = {};
+                        for (const clarity in data[fish][weather]) {
+                            parsedData[fish][weather][clarity] = {};
+                            for (const temp in data[fish][weather][clarity]) {
+                                const rec = data[fish][weather][clarity][temp];
+                                const parsedLures = rec.lures.map(lure => ({ name: lure.name, technique: lure.technique || 'Vary retrieve speed to find what works.', reason: lure.reason || `Effective for ${fish} in these conditions.`, isPrimary: lure.isPrimary || false }));
+                                const parsedColors = rec.colors.map(colorName => { const d = colorMap[colorName] || {}; return { name: colorName, hex: d.hex, reason: d.reason }; });
+                                parsedData[fish][weather][clarity][temp] = { lures: parsedLures, colors: parsedColors, gear: rec.gear, location: rec.location, tips: rec.tips };
+                            }
+                        }
+                    }
+                }
+                return parsedData; 
+            }
+
+            const fullRecommendations = parseRecommendations(recommendations);
+
+            function createSelectionButtons(container, data, getSelectedValue, onSelectCallback, dataKey, imageClass = 'w-10 h-10') {
+                container.innerHTML = '';
+                for (const key in data) {
+                    const item = data[key];
+                    const button = document.createElement('button');
+                    button.className = 'selection-btn text-center p-3 bg-gray-700 border-2 border-gray-600 rounded-lg text-gray-300 hover:border-blue-500 hover:text-white';
+                    if (key === getSelectedValue()) button.classList.add('active');
+                    button.dataset[dataKey] = key;
+                    button.innerHTML = `${item.imageSrc ? `<img src="${item.imageSrc}" alt="${item.name}" class="${imageClass} mx-auto mb-1 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/96x96/1E293B/FFFFFF?text=?';">` : ''}<span class="text-sm font-medium">${item.name}</span>`;
+                    button.addEventListener('click', () => { onSelectCallback(key); container.querySelectorAll('.selection-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); });
+                    container.appendChild(button);
+                }
+            }
+
+            /**
+             * START: ***UPDATED FUNCTION RENDERLURES (STRATEGY #3)***
+             * This function is updated to accept the new loggedLureSet
+             * It adds a new badge state for logged catches.
+             */
+            function renderLures(lures, recommendedRecColors, tackleboxContents, ownedMap, loggedLureSet) { // Function signature updated
+                lureResult.innerHTML = '';
+                if (!lures || lures.length === 0) {
+                    lureResult.innerHTML = '<p class="text-gray-400">No specific lure recommendations available.</p>';
+                    return;
+                }
+
+                const recommendedSpecificColorNames = recommendedRecColors.map(c => c.name);
+                const recommendedBaseColorNames = recommendedSpecificColorNames.map(name => colorBaseMap[name] || name);
+                const uniqueRecommendedBaseColors = [...new Set(recommendedBaseColorNames)];
+
+
+                lures.forEach(lure => {
+                    const card = document.createElement('div');
+                    const recommendedLureName = lure.name;
+                    const baseOfRecommended = lureBaseMap[recommendedLureName] || recommendedLureName;
+                    const isInTacklebox = tackleboxContents.includes(baseOfRecommended);
+                    
+                    const lureInfo = lureMap[lure.name] || {};
+                    const imageSrc = lureInfo.image || 'https://placehold.co/200x100/1E293B/FFFFFF?text=Lure';
+                    
+                    let matchStatus = 0; // 0 = Not Owned, 1 = Owned (Wrong Color), 2 = Owned (Color Match)
+                    
+                    if (isInTacklebox) {
+                        const ownedBaseColorsSet = ownedMap[baseOfRecommended] || new Set();
+                        const hasRecColor = uniqueRecommendedBaseColors.some(recBaseColor => ownedBaseColorsSet.has(recBaseColor));
+                        matchStatus = hasRecColor ? 2 : 1;
+                    }
+                    
+                    // --- NEW LOGBOOK BADGE LOGIC ---
+                    const hasBeenLogged = loggedLureSet.has(baseOfRecommended);
+                    // --- END NEW LOGIC ---
+
+
+                    let badgeHTML = '';
+                    let cardClass = 'relative bg-gray-800/50 p-4 rounded-lg border border-gray-700'; // Default class
+
+                    if (lure.isPrimary) {
+                        badgeHTML += `<div class="absolute top-0 right-0 bg-yellow-400 text-gray-900 text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">⭐ Go-To</div>`;
+                    }
+
+                    // --- NEW 3-STATE BADGE LOGIC (WITH LOGBOOK) ---
+                    let logText = hasBeenLogged ? ' + Logged!' : ''; // Create a text snippet to add
+
+                    if (matchStatus === 2) {
+                        // STATE 2: Perfect Match (Lure + Color)
+                        cardClass = 'relative bg-emerald-900/50 p-4 rounded-lg border-2 border-emerald-500';
+                        badgeHTML += `<div class="absolute top-0 left-0 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">⭐ In Box (Match!${logText})</div>`;
+                    } else if (matchStatus === 1) {
+                        // STATE 1: Owns Lure Type, but wrong color
+                        cardClass = 'relative bg-blue-900/50 p-4 rounded-lg border-2 border-blue-500';
+                        badgeHTML += `<div class="absolute top-0 left-0 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">✔ In Box (Wrong Color${logText})</div>`;
+                    } else if (hasBeenLogged) { 
+                        // STATE 3 (NEW): Not in tacklebox, BUT it has been logged
+                        cardClass = 'relative bg-purple-900/50 p-4 rounded-lg border-2 border-purple-500'; // Purple to stand out
+                        badgeHTML += `<div class="absolute top-0 left-0 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-br-lg rounded-tl-lg">📓 Logged Catch!</div>`;
+                    }
+                    // STATE 0 (Default): Not owned, not logged. No left badge is added.
+                    
+                    card.className = cardClass; 
+
+                    card.innerHTML = `${badgeHTML}
+                        <img src="${imageSrc}" alt="${lure.name}" class="w-full h-24 object-contain bg-white rounded-md mb-3" onerror="this.onerror=null;this.src='https://placehold.co/200x100/1E293B/FFFFFF?text=?';">
+                        <h4 class="font-bold text-base text-white">${lure.name}</h4>
+                        <p class="text-sm text-gray-400 mt-1"><span class="font-semibold text-gray-300">Technique:</span> ${lure.technique}</p>
+                        <p class="text-sm text-gray-400 mt-2"><span class="font-semibold text-gray-300">Why it works:</span> ${lure.reason}</p>`;
+                    
+                    lureResult.appendChild(card);
+                });
+            }
+             /**
+             * END: UPDATED FUNCTION renderLures
+             */
+
+
+            function renderColors(colors) {
+                colorResult.innerHTML = '';
+                if (!colors || colors.length === 0) { colorResult.innerHTML = '<p class="text-gray-400">No specific color recommendations available.</p>'; return; }
+                colors.forEach(color => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-gray-800/50 p-4 rounded-lg border border-gray-700 flex flex-col';
+                    card.innerHTML = `<div class="flex items-center mb-2"><span class="w-6 h-6 rounded-full mr-3 border border-gray-500" style="background-color: ${color.hex};"></span><h4 class="font-bold text-base text-white">${color.name}</h4></div><p class="text-sm text-gray-400"><span class="font-semibold text-gray-300">Why it works:</span> ${color.reason}</p>`;
+                    colorResult.appendChild(card);
+                });
+            }
+            
+            function renderGear(gear) {
+                gearResult.innerHTML = !gear ? '<p class="text-gray-400">No specific gear recommendations available.</p>' : `<p class="text-gray-300"><span class="font-semibold text-blue-300">Rod:</span> ${gear.rod}</p><p class="text-gray-300 mt-2"><span class="font-semibold text-blue-300">Line:</span> ${gear.line}</p>`;
+            }
+
+            function renderLocation(location) {
+                locationResult.innerHTML = !location ? '<p class="text-gray-400">No specific location recommendations available.</p>' : `<h4 class="font-bold text-base text-white">${location.title}</h4><p class="text-gray-400 mt-1">${location.description}</p>`;
+            }
+
+            function renderProTips(tips) {
+                tipResult.innerHTML = '';
+                if (!tips || tips.length === 0) { tipResult.innerHTML = '<p class="text-gray-400">No pro tips available.</p>'; return; }
+                const container = document.createElement('div');
+                container.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+                tips.forEach(tip => {
+                    const tipBox = document.createElement('div');
+                    tipBox.className = 'bg-gray-800/50 p-4 rounded-lg border border-gray-700 flex flex-col';
+                    // Using innerHTML to allow for the bold/italic formatting from our new logbook logic
+                    tipBox.innerHTML = `<h4 class="font-bold text-base text-blue-300">${tip.title}</h4><p class="text-gray-400 mt-1 text-sm">${tip.description}</p>`;
+                    container.appendChild(tipBox);
+                });
+                tipResult.appendChild(container);
+            }
+
+            function switchTab(activeTab, inactiveTab, activeContent, inactiveContent) {
+                activeTab.classList.add('active'); inactiveTab.classList.remove('active');
+                activeContent.classList.add('active'); inactiveContent.classList.remove('active');
+            }
+
+            setupTab.addEventListener('click', () => switchTab(setupTab, strategyTab, setupContent, strategyContent));
+            strategyTab.addEventListener('click', () => switchTab(strategyTab, setupTab, strategyContent, setupContent));
+
+           getRecommendationBtn.addEventListener('click', () => {
+                
+                /**
+                 * START: ***UPDATED*** LOCALSTORAGE LOGIC
+                 * This logic now builds the tackleboxOwnedMap which tracks all owned BASE colors per lure type.
+                 * It includes the migration logic to handle your OLD data (e.g., 'Green Pumpkin') and your NEW data (e.g., 'Green') seamlessly.
+                 */
+                const savedTacklebox = localStorage.getItem('myTacklebag');
+                const tackleboxOwnedMap = {}; // This is our new "brain"
+                
+                if (savedTacklebox) {
+                    try {
+                        const rawTacklebag = JSON.parse(savedTacklebox)
+                                                .flat() // Flattens all trays into one array
+                                                .filter(item => item !== null);
+                        
+                        rawTacklebag.forEach(item => {
+                            const baseLure = lureBaseMap[item.lure] || item.lure; 
+                            
+                            if (!tackleboxOwnedMap[baseLure]) {
+                                tackleboxOwnedMap[baseLure] = new Set(); // Use a Set to auto-handle duplicates
+                            }
+                            
+                            // --- DATA MIGRATION LOGIC ---
+                            item.colors.forEach(colorName => {
+                                // If colorName is 'Green Pumpkin' (old data), colorBaseMap['Green Pumpkin'] returns 'Green'.
+                                // If colorName is ALREADY 'Green' (new data), colorBaseMap['Green'] is undefined, so we use the fallback 'Green'.
+                                const baseColor = colorBaseMap[colorName] || colorName; 
+                                tackleboxOwnedMap[baseLure].add(baseColor);
+                            });
+                            // --- END MIGRATION LOGIC ---
+                        });
+
+                    } catch (e) {
+                        console.error("Could not parse tacklebox data from localStorage:", e);
+                    }
+                }
+                
+                const tackleboxContents = Object.keys(tackleboxOwnedMap);
+                /**
+                 * END: UPDATED LOCALSTORAGE LOGIC
+                 */
+
+
+                /**
+                 * START: ***NEW (MODIFIED)*** LOGBOOK INTEGRATION LOGIC
+                 * Reads the logbook, then creates TWO data structures:
+                 * 1. logbookTips: An array of formatted tip objects for the "Pro Tips" tab.
+                 * 2. loggedLureSet: A Set of BASE lure names for the selected fish (e.g., Set('Jig', 'Spinnerbait')) for fast lookups in renderLures.
+                 */
+                const savedLog = localStorage.getItem('myFishingLog');
+                let logbookTips = []; // This will hold our new tip objects
+                const loggedLureSet = new Set(); // This will hold our logged lure base names
+                
+                if (savedLog) {
+                    try {
+                        const rawLog = JSON.parse(savedLog);
+                        
+                        // Filter the entire log for entries that ONLY match the currently selected fish
+                        const matchingEntries = rawLog.filter(entry => entry.species === selectedFish);
+
+                        // Sort them by date, newest first
+                        matchingEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                        matchingEntries.forEach(entry => {
+                            // 1. Add the BASE lure name to our Set for the badge logic
+                            // (Note: 'entry.lure' from the logbook is already the base name, e.g., "Jig")
+                            loggedLureSet.add(entry.lure); 
+
+                            // 2. Convert each matching log entry into a "tip" object for the Strategy tab
+                            const noteHtml = entry.notes ? `Your note: "<i>${entry.notes}</i>"` : 'You didn\'t leave a note.';
+                            logbookTips.push({
+                                title: `⭐ Your Log: ${entry.date}`,
+                                description: `At <b>${entry.location}</b>, you caught one on a <b>${entry.color} ${entry.lure}</b>. (${noteHtml})`
+                            });
+                        });
+
+                    } catch (e) {
+                        console.error("Could not parse logbook data:", e);
+                    }
+                }
+                /**
+                 * END: NEW LOGBOOK INTEGRATION LOGIC
+                 */
+
+
+                const rec = fullRecommendations[selectedFish]?.[selectedWeather]?.[selectedClarity]?.[selectedTemp];
+                if (rec) {
+                    
+                    // *** UPDATED FUNCTION CALL ***: Pass ALL our data sets to renderLures
+                    renderLures(rec.lures, rec.colors, tackleboxContents, tackleboxOwnedMap, loggedLureSet);
+
+                    renderColors(rec.colors);
+                    renderGear(rec.gear);
+                    renderLocation(rec.location);
+                    
+                    // Combine our new logbook tips with the expert tips
+                    const allTips = [...logbookTips, ...(rec.tips || [])]; // Uses spread syntax to safely merge the arrays
+                    renderProTips(allTips); // Render the combined list
+                    
+                    switchTab(setupTab, strategyTab, setupContent, strategyContent);
+                    resultsDiv.classList.remove('hidden');
+                    setTimeout(() => { resultsDiv.classList.add('visible'); }, 10);
+                    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    resultsDiv.classList.remove('hidden'); 
+                    resultsDiv.classList.add('visible'); 
+                    setupContent.classList.add('active'); 
+                    strategyContent.classList.remove('active');
+                    lureResult.innerHTML = `<p class="text-gray-300 text-center col-span-1 md:col-span-2">Sorry, no recommendation found for this combination. Please try different selections.</p>`;
+                    colorResult.innerHTML = ''; 
+                    gearResult.innerHTML = ''; 
+                    locationResult.innerHTML = ''; 
+                    
+                    // Even if there's no expert rec, show any matching logbook tips!
+                    if (logbookTips.length > 0) {
+                        renderProTips(logbookTips);
+                        // Also, we must switch to the Strategy Tab so the user can see their tips!
+                        switchTab(strategyTab, setupTab, strategyContent, setupContent);
+                    } else {
+                        tipResult.innerHTML = ''; // NOW we clear it, only if no expert rec AND no log tips exist
+                    }
+                }
+            });
+            
+            createSelectionButtons(fishSelector, fishTypes, () => selectedFish, (key) => selectedFish = key, 'fish', 'w-24 h-24');
+            createSelectionButtons(weatherSelector, weatherTypes, () => selectedWeather, (key) => selectedWeather = key, 'weather', 'w-10 h-10');
+            createSelectionButtons(claritySelector, clarityTypes, () => selectedClarity, (key) => selectedClarity = key, 'clarity', 'w-10 h-10');
+            createSelectionButtons(tempSelector, tempTypes, () => selectedTemp, (key) => selectedTemp = key, 'temp', 'w-10 h-10');
+        });
+    </script>
+</body>
+</html>
