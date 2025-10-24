@@ -27,7 +27,8 @@ const fishTypes = {
     cohosalmon: { name: 'Coho Salmon', imageSrc: 'images/cohosalmon.png' },
     atlanticsalmon: { name: 'Atlantic Salmon', imageSrc: 'images/atlanticsalmon.png' },
     lakewhitefish: { name: 'Lake Whitefish', imageSrc: 'images/lakewhitefish.png' },
-    carp: { name: 'Common Carp', imageSrc: 'images/carp.png' }
+    carp: { name: 'Common Carp', imageSrc: 'images/carp.png' },
+	sturgeon: { name: 'Sturgeon', imageSrc: 'images/sturgeon.png' }
 };
 
 const clarityTypes = {
@@ -207,7 +208,8 @@ const lureMap = {
     'Flutter Spoons': { image: 'images/lures/flutterspoon.png' },
     'Frog': { image: 'images/lures/frog.png' },
     'Jigging Spoon': { image: 'images/lures/jiggingspoon.png' },
-    'Squarebill Crankbait': { image: 'images/lures/squarebillcrankbait.png' }
+    'Squarebill Crankbait': { image: 'images/lures/squarebillcrankbait.png' },
+	'Fish Roe': { image: 'images/lures/fishroe.png' }
 };
 
 const lureBaseMap = {

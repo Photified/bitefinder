@@ -1,4 +1,4 @@
- const gearMap = { largemouth: { rod: 'Medium to Medium-Heavy Power, Fast Action', line: '10-17lb Fluorocarbon or 30-50lb Braid' }, smallmouth: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or 10-20lb Braid with leader' }, rainbowtrout: { rod: 'Ultra-Light to Light Power, Moderate Action', line: '2-6lb Monofilament or Fluorocarbon' }, laketrout: { rod: 'Medium-Heavy Power, Moderate-Fast Action', line: '20-40lb Braid with Fluorocarbon Leader' }, walleye: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or 10-20lb Braid' }, pike: { rod: 'Medium-Heavy to Heavy Power, Fast Action', line: '40-65lb Braid with a steel leader' }, muskie: { rod: 'Heavy to Extra-Heavy Power, Fast Action', line: '80-100lb Braid with a 100-150lb Fluorocarbon or Wire Leader' }, perch: { rod: 'Light to Ultra-Light Power, Fast Action', line: '4-6lb Monofilament or Fluorocarbon' }, freshwaterdrum: { rod: 'Medium-Light to Medium Power, Fast Action', line: '8-12lb Monofilament or Fluorocarbon' }, crappie: { rod: 'Ultra-Light Power, Fast Action', line: '2-4lb Monofilament' }, catfish: { rod: 'Medium-Heavy to Heavy Power, Moderate-Fast Action', line: '20-50lb Monofilament or Braid' }, brooktrout: { rod: 'Ultra-Light to Light Power, Moderate Action', line: '2-6lb Monofilament or Fluorocarbon' }, splake: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or Braid' }, browntrout: { rod: 'Light to Medium-Light Power, Fast Action', line: '4-8lb Fluorocarbon' }, chinooksalmon: { rod: 'Medium-Heavy to Heavy Power, Moderate Action', line: '20-30lb Monofilament or 30-50lb Braid' }, cohosalmon: { rod: 'Medium Power, Moderate-Fast Action', line: '10-15lb Monofilament or 20-30lb Braid' }, atlanticsalmon: { rod: 'Medium Power, Fast Action', line: '8-12lb Monofilament or 15-30lb Braid' }, bluegill: { rod: 'Ultra-Light Power, Moderate Action', line: '2-4lb Monofilament' }, lakewhitefish: { rod: 'Medium-Light Power, Fast Action', line: '4-8lb Fluorocarbon or Braid with Leader' }, carp: { rod: '10-12ft Rod with a large capacity reel (Baitrunner style recommended)', line: '15-20lb Monofilament or 30-50lb Braid' } };
+ const gearMap = { largemouth: { rod: 'Medium to Medium-Heavy Power, Fast Action', line: '10-17lb Fluorocarbon or 30-50lb Braid' }, smallmouth: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or 10-20lb Braid with leader' }, rainbowtrout: { rod: 'Ultra-Light to Light Power, Moderate Action', line: '2-6lb Monofilament or Fluorocarbon' }, laketrout: { rod: 'Medium-Heavy Power, Moderate-Fast Action', line: '20-40lb Braid with Fluorocarbon Leader' }, walleye: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or 10-20lb Braid' }, pike: { rod: 'Medium-Heavy to Heavy Power, Fast Action', line: '40-65lb Braid with a steel leader' }, muskie: { rod: 'Heavy to Extra-Heavy Power, Fast Action', line: '80-100lb Braid with a 100-150lb Fluorocarbon or Wire Leader' }, perch: { rod: 'Light to Ultra-Light Power, Fast Action', line: '4-6lb Monofilament or Fluorocarbon' }, freshwaterdrum: { rod: 'Medium-Light to Medium Power, Fast Action', line: '8-12lb Monofilament or Fluorocarbon' }, crappie: { rod: 'Ultra-Light Power, Fast Action', line: '2-4lb Monofilament' }, catfish: { rod: 'Medium-Heavy to Heavy Power, Moderate-Fast Action', line: '20-50lb Monofilament or Braid' }, brooktrout: { rod: 'Ultra-Light to Light Power, Moderate Action', line: '2-6lb Monofilament or Fluorocarbon' }, splake: { rod: 'Medium-Light to Medium Power, Fast Action', line: '6-10lb Fluorocarbon or Braid' }, browntrout: { rod: 'Light to Medium-Light Power, Fast Action', line: '4-8lb Fluorocarbon' }, chinooksalmon: { rod: 'Medium-Heavy to Heavy Power, Moderate Action', line: '20-30lb Monofilament or 30-50lb Braid' }, cohosalmon: { rod: 'Medium Power, Moderate-Fast Action', line: '10-15lb Monofilament or 20-30lb Braid' }, atlanticsalmon: { rod: 'Medium Power, Fast Action', line: '8-12lb Monofilament or 15-30lb Braid' }, bluegill: { rod: 'Ultra-Light Power, Moderate Action', line: '2-4lb Monofilament' }, lakewhitefish: { rod: 'Medium-Light Power, Fast Action', line: '4-8lb Fluorocarbon or Braid with Leader' }, carp: { rod: '10-12ft Rod with a large capacity reel (Baitrunner style recommended)', line: '15-20lb Monofilament or 30-50lb Braid' }, sturgeon: { rod: 'Heavy Power, Moderate Action (8-12ft)', line: '80-150lb Braid with a heavy leader', reel: 'Large capacity conventional or spinning reel with strong drag' } };
            
 
             const recommendations = {
@@ -12871,6 +12871,642 @@
         }
     }
 }
+
+, // <-- Make sure this comma exists after the 'carp' object ends
+sturgeon: {
+    sunny: {
+        clear: {
+            warm: {
+                lures: [{
+                    name: 'Nightcrawlers',
+                    technique: 'Large bunch on a strong hook (circle hook recommended) with a sliding sinker rig.',
+                    reason: 'A primary food source, the scent draws them in from downstream.',
+                    isPrimary: true
+                }, {
+                    name: 'Cut Bait',
+                    technique: 'Fresh cut sucker, shad, or other oily fish on a bottom rig.',
+                    reason: 'Strong scent trail is crucial for attracting large sturgeon.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Cured salmon or trout eggs in mesh bags (spawn sacs) on bottom.',
+                    reason: 'A high-protein, natural bait irresistible when available.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deepest River Holes & Eddies',
+                    description: 'Sturgeon will seek the deepest, coolest water with moderate current. Look for holes >20ft, often below rapids or on outside bends.'
+                }, // End location object
+                tips: [{
+                    title: 'Heavy Tackle is Mandatory',
+                    description: 'Sturgeon are incredibly powerful and ancient fish. Use strong rods, reels, and line (80lb+ braid recommended).'
+                }, {
+                    title: 'Fish the Bottom',
+                    description: 'Use a heavy sliding sinker rig (3-8oz+ depending on current) to keep your bait pinned to the bottom where sturgeon feed.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Circle hooks drastically increase hookup ratios and are safer for the fish, typically hooking them in the corner of the mouth.'
+                }, {
+                    title: 'Patience is Key',
+                    description: 'Sturgeon fishing often involves long waits. Find a good spot and be prepared to wait for a bite.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Many sturgeon populations are protected. Know the specific rules for size limits, seasons, and handling in your area.'
+                }] // End tips array
+            }, // End warm object
+            cool: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Use fresh, oily cut bait (sucker, lamprey if legal) on a bottom rig.',
+                    reason: 'Scent is paramount in cooler water when fish are less active.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'A large bunch fished right on the bottom.',
+                    reason: 'Still effective, but the stronger scent of cut bait may be better.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Drift spawn sacs through deep holes or let sit on bottom.',
+                    reason: 'A highly effective bait, especially during spring or fall runs.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deepest Holes & Wintering Areas',
+                    description: 'Sturgeon congregate in the deepest available holes to conserve energy. Look for deep (>30ft) slow pools or eddies.'
+                }, // End location object
+                tips: [{
+                    title: 'Focus on Scent',
+                    description: 'In cooler water, scent is even more critical. Use the freshest, oiliest bait possible.'
+                }, {
+                    title: 'Fish SLOW',
+                    description: 'Let your bait sit. Bites will be subtle, often just a slight tightening of the line.'
+                }, {
+                    title: 'Find the Deepest Spot',
+                    description: 'Use your electronics or maps to locate the absolute deepest sections of the river or lake.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Ensure a solid hookup and safe release by using appropriate sized circle hooks (8/0+).'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area regarding seasons and handling.'
+                }] // End tips array
+            } // End cool object
+        }, // End clear object
+        muddy: { // Muddy water is often EXCELLENT for sturgeon
+            warm: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Large chunks of fresh, oily fish on a heavy bottom rig.',
+                    reason: 'The strong scent cuts through the muddy water effectively.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'A very large bunch to maximize scent and profile.',
+                    reason: 'A reliable option, especially in river current.'
+                }, {
+                    name: 'Stink Bait',
+                    technique: 'Commercial catfish stink baits can sometimes attract sturgeon.',
+                    reason: 'An alternative high-scent option.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Current Seams & Deeper Channels',
+                    description: 'Muddy water gets sturgeon feeding aggressively. Fish the edges of the main current in deeper channels or holes.'
+                }, // End location object
+                tips: [{
+                    title: 'Muddy Water is Prime Time!',
+                    description: 'Reduced visibility makes sturgeon less wary and triggers aggressive feeding based on scent.'
+                }, {
+                    title: 'Heavy Sinker Needed',
+                    description: 'Increased flow often requires heavier sinkers (6-10oz+) to hold bottom.'
+                }, {
+                    title: 'Recast Frequently',
+                    description: 'Recast every 30-45 minutes to refresh the scent trail from your bait.'
+                }, {
+                    title: 'Use Strong Hooks',
+                    description: 'Ensure your hooks are strong enough to handle a potentially large fish in heavy current.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area regarding seasons and handling.'
+                }] // End tips array
+            }, // End warm object
+            cool: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Use the oiliest, freshest cut bait you can find.',
+                    reason: 'Maximizes scent dispersal in cold, muddy water.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'Large bunch fished static on the bottom.',
+                    reason: 'A reliable scent-based approach.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Use brightly cured roe for added visual attraction if possible.',
+                    reason: 'Combines scent with some visual appeal.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deepest Slow Pools & Eddies',
+                    description: 'Fish will be concentrated in the deepest holes with the least amount of current to conserve energy.'
+                }, // End location object
+                tips: [{
+                    title: 'Maximize Scent',
+                    description: 'Use bait cures or scents if legal. Freshness is paramount.'
+                }, {
+                    title: 'Find the Slowest Deep Water',
+                    description: 'Sturgeon will avoid heavy current in cold, muddy conditions. Look for deep eddies.'
+                }, {
+                    title: 'Be Patient',
+                    description: 'This can be a slow bite. Waiting is part of the game.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Crucial for ensuring the fish is hooked properly for a safe release.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area regarding seasons and handling.'
+                }] // End tips array
+            } // End cool object
+        } // End muddy object
+    }, // End sunny object
+    cloudy: { // Cloudy conditions are generally good, similar to Muddy but maybe slightly less aggressive.
+        clear: {
+            warm: {
+                lures: [{
+                    name: 'Nightcrawlers',
+                    technique: 'Large bunch on a bottom rig in deep holes.',
+                    reason: 'Cloud cover makes them slightly more active than bright sun.',
+                    isPrimary: true
+                }, {
+                    name: 'Cut Bait',
+                    technique: 'Fresh cut bait is always a top choice.',
+                    reason: 'Strong scent trail attracts roaming fish.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Effective when available, fished on bottom.',
+                    reason: 'A natural, high-value food source.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deep Holes & Channel Edges',
+                    description: 'Fish may roam slightly shallower than bright sun, moving to the edges of deep holes or main river channels.'
+                }, // End location object
+                tips: [{
+                    title: 'Heavy Tackle is Mandatory',
+                    description: 'Always use gear capable of handling a very large, strong fish.'
+                }, {
+                    title: 'Fish the Bottom',
+                    description: 'Keep your bait pinned to the bottom using an appropriate sinker weight.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Best for hookup ratio and fish safety.'
+                }, {
+                    title: 'Patience is Key',
+                    description: 'Find a good spot in a known sturgeon area and wait.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            }, // End warm object
+            cool: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Fresh, oily cut bait on the bottom.',
+                    reason: 'Scent is the primary attractant in cooler water.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'Large bunch on the bottom.',
+                    reason: 'A reliable backup bait.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Drift or bottom fish spawn sacs.',
+                    reason: 'Highly effective during spring/fall.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deepest Holes & Wintering Areas',
+                    description: 'Fish will still be concentrated in the deepest, slowest water available.'
+                }, // End location object
+                tips: [{
+                    title: 'Focus on Scent',
+                    description: 'Use the freshest bait possible to maximize the scent trail.'
+                }, {
+                    title: 'Subtle Bites',
+                    description: 'Watch your line closely for any slight movement or tightening.'
+                }, {
+                    title: 'Use Rod Holders & Alarms',
+                    description: 'Essential for detecting bites during long waits, especially at night.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Ensure a safe hookup.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            } // End cool object
+        }, // End clear object
+        muddy: { // Treat cloudy/muddy very similar to sunny/muddy - excellent conditions.
+            warm: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Large chunks of fresh, oily fish on a heavy bottom rig.',
+                    reason: 'The strong scent cuts through the muddy water effectively.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'A very large bunch to maximize scent and profile.',
+                    reason: 'A reliable option, especially in river current.'
+                }, {
+                    name: 'Stink Bait',
+                    technique: 'Commercial catfish stink baits can sometimes attract sturgeon.',
+                    reason: 'An alternative high-scent option.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Current Seams & Deeper Channels',
+                    description: 'Muddy water gets sturgeon feeding aggressively. Fish the edges of the main current in deeper channels or holes.'
+                }, // End location object
+                tips: [{
+                    title: 'Muddy Water is Prime Time!',
+                    description: 'Reduced visibility makes sturgeon less wary and triggers aggressive feeding based on scent.'
+                }, {
+                    title: 'Heavy Sinker Needed',
+                    description: 'Increased flow often requires heavier sinkers (6-10oz+) to hold bottom.'
+                }, {
+                    title: 'Recast Frequently',
+                    description: 'Recast every 30-45 minutes to refresh the scent trail from your bait.'
+                }, {
+                    title: 'Use Strong Hooks',
+                    description: 'Ensure your hooks are strong enough to handle a potentially large fish in heavy current.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            }, // End warm object
+            cool: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Use the oiliest, freshest cut bait you can find.',
+                    reason: 'Maximizes scent dispersal in cold, muddy water.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'Large bunch fished static on the bottom.',
+                    reason: 'A reliable scent-based approach.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Use brightly cured roe for added visual attraction if possible.',
+                    reason: 'Combines scent with some visual appeal.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deepest Slow Pools & Eddies',
+                    description: 'Fish will be concentrated in the deepest holes with the least amount of current to conserve energy.'
+                }, // End location object
+                tips: [{
+                    title: 'Maximize Scent',
+                    description: 'Use bait cures or scents if legal. Freshness is paramount.'
+                }, {
+                    title: 'Find the Slowest Deep Water',
+                    description: 'Sturgeon will avoid heavy current in cold, muddy conditions. Look for deep eddies.'
+                }, {
+                    title: 'Be Patient',
+                    description: 'This can be a slow bite. Waiting is part of the game.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Crucial for ensuring the fish is hooked properly for a safe release.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            } // End cool object
+        } // End muddy object
+    }, // End cloudy object
+    rainy: { // Rain often increases current and can muddy the water - generally good conditions.
+        clear: {
+            warm: {
+                lures: [{
+                    name: 'Nightcrawlers',
+                    technique: 'Fish a large bunch on bottom near inflows.',
+                    reason: 'Rain washes in food and activates fish.',
+                    isPrimary: true
+                }, {
+                    name: 'Cut Bait',
+                    technique: 'Fish fresh cut bait in areas with increased current.',
+                    reason: 'Active fish will respond well to the strong scent.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Drift or bottom fish near river mouths.',
+                    reason: 'Rain can trigger movement towards spawning rivers.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Areas with Increased Flow/Inflow',
+                    description: 'Rain increases current and washes food into the system. Fish will congregate near inflows or in areas where current is concentrated.'
+                }, // End location object
+                tips: [{
+                    title: 'Rain Often Triggers Feeding',
+                    description: 'Increased flow and potentially reduced light can make sturgeon more active.'
+                }, {
+                    title: 'Target Inflows',
+                    description: 'Any creek or ditch bringing runoff into the main river can be a hotspot.'
+                }, {
+                    title: 'Heavier Sinkers May Be Needed',
+                    description: 'Adjust your sinker weight based on the increased current to hold bottom.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Ensure safe and effective hookups.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            }, // End warm object
+            cool: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Fish fresh cut bait on bottom.',
+                    reason: 'Scent is key in cool water, rain helps disperse it.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'Fish a large bunch in slower current areas.',
+                    reason: 'Always a reliable option.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Highly effective if available, fish near bottom.',
+                    reason: 'A prime bait during spring/fall rains.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deep Holes with Moderate Current',
+                    description: 'Fish will still seek deeper water but may tolerate slightly more current than in sunny/cool conditions due to the rain.'
+                }, // End location object
+                tips: [{
+                    title: 'Focus on Scent',
+                    description: 'Use the freshest, strongest smelling bait available.'
+                }, {
+                    title: 'Find Current Breaks',
+                    description: 'Fish the edges of the main flow, behind points or in eddies.'
+                }, {
+                    title: 'Stay Safe',
+                    description: 'Be mindful of rising water levels and slippery banks during rain.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Essential for conservation.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            } // End cool object
+        }, // End clear object
+        muddy: { // Rainy and muddy = Very good conditions. Similar to other muddy scenarios.
+            warm: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Large chunks of fresh, oily fish on a heavy bottom rig.',
+                    reason: 'The strong scent cuts through the muddy water effectively.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'A very large bunch to maximize scent and profile.',
+                    reason: 'A reliable option, especially in river current.'
+                }, {
+                    name: 'Stink Bait',
+                    technique: 'Commercial catfish stink baits can sometimes attract sturgeon.',
+                    reason: 'An alternative high-scent option.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Main River Channels & Bottlenecks',
+                    description: 'Rain and muddy water often create a feeding frenzy. Fish the main channel or any bottleneck that concentrates the current.'
+                }, // End location object
+                tips: [{
+                    title: 'Excellent Conditions!',
+                    description: 'Rainy, muddy, and warm often produces the best sturgeon fishing.'
+                }, {
+                    title: 'Use Very Heavy Sinkers',
+                    description: 'Increased flow requires heavy sinkers (8oz+) to hold bottom effectively.'
+                }, {
+                    title: 'Recast Often',
+                    description: 'Refresh your bait and scent trail every 30-45 minutes.'
+                }, {
+                    title: 'Use a Strong Rod Holder',
+                    description: 'A bite can be violent; ensure your rod is secure.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            }, // End warm object
+            cool: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Use the oiliest, freshest cut bait you can find.',
+                    reason: 'Maximizes scent dispersal in cold, muddy water.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'Large bunch fished static on the bottom.',
+                    reason: 'A reliable scent-based approach.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Use brightly cured roe for added visual attraction if possible.',
+                    reason: 'Combines scent with some visual appeal.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deepest Slow Pools & Eddies',
+                    description: 'Fish will be concentrated in the deepest holes with the least amount of current to conserve energy.'
+                }, // End location object
+                tips: [{
+                    title: 'Maximize Scent',
+                    description: 'Use bait cures or scents if legal. Freshness is paramount.'
+                }, {
+                    title: 'Find the Slowest Deep Water',
+                    description: 'Sturgeon will avoid heavy current in cold, muddy conditions. Look for deep eddies.'
+                }, {
+                    title: 'Be Patient',
+                    description: 'This can be a slow bite. Waiting is part of the game.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Crucial for ensuring the fish is hooked properly for a safe release.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            } // End cool object
+        } // End muddy object
+    }, // End rainy object
+    windy: { // Wind mainly affects boat control; sturgeon are deep and less affected than shallow species. Current is more important.
+        clear: {
+            warm: { // Treat similar to sunny/clear/warm, focus on boat control.
+                lures: [{
+                    name: 'Nightcrawlers',
+                    technique: 'Large bunch on a strong hook (circle hook recommended) with a sliding sinker rig.',
+                    reason: 'A primary food source, the scent draws them in.',
+                    isPrimary: true
+                }, {
+                    name: 'Cut Bait',
+                    technique: 'Fresh cut sucker, shad, or other oily fish on a bottom rig.',
+                    reason: 'Strong scent trail is crucial.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Cured salmon or trout eggs in mesh bags on bottom.',
+                    reason: 'A high-protein, natural bait.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deepest River Holes & Eddies (Anchor Securely)',
+                    description: 'Wind makes boat positioning difficult. Find deep holes (>20ft) and anchor securely upstream to fish them effectively.'
+                }, // End location object
+                tips: [{
+                    title: 'Anchoring is Key',
+                    description: 'Use a heavy anchor or two anchors to hold your boat position over the deep holes in the wind.'
+                }, {
+                    title: 'Use Enough Weight',
+                    description: 'Ensure your sinker holds bottom despite boat swing and potential wind-driven current.'
+                }, {
+                    title: 'Watch Your Line',
+                    description: 'Wind can create slack or false bites. Keep a close eye on your rod tips.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Best for hookups and fish safety.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            }, // End warm object
+            cool: { // Treat similar to sunny/clear/cool, focus on boat control.
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Use fresh, oily cut bait (sucker, lamprey if legal) on a bottom rig.',
+                    reason: 'Scent is paramount in cooler water.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'A large bunch fished right on the bottom.',
+                    reason: 'Still effective, but cut bait may be better.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Drift spawn sacs through deep holes or let sit on bottom.',
+                    reason: 'Highly effective during spring or fall runs.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deepest Holes & Wintering Areas (Anchor Securely)',
+                    description: 'Congregate in the deepest available holes. Anchor well to fish these spots effectively in the wind.'
+                }, // End location object
+                tips: [{
+                    title: 'Focus on Scent',
+                    description: 'Use the freshest, oiliest bait possible.'
+                }, {
+                    title: 'Secure Anchoring',
+                    description: 'Wind can make holding on deep spots difficult. Ensure your anchor(s) are set well.'
+                }, {
+                    title: 'Subtle Bite Detection',
+                    description: 'Wind makes bite detection harder. Use sensitive rod tips or bite alarms.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Ensure a solid hookup and safe release.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            } // End cool object
+        }, // End clear object
+        muddy: { // Windy and muddy can be good if manageable. Similar to other muddy scenarios.
+            warm: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Large chunks of fresh, oily fish on a heavy bottom rig.',
+                    reason: 'The strong scent cuts through the muddy water effectively.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'A very large bunch to maximize scent and profile.',
+                    reason: 'A reliable option, especially in river current.'
+                }, {
+                    name: 'Stink Bait',
+                    technique: 'Commercial catfish stink baits can sometimes attract sturgeon.',
+                    reason: 'An alternative high-scent option.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Current Seams & Deeper Channels (Anchor Securely)',
+                    description: 'Muddy water gets sturgeon feeding aggressively. Anchor securely to fish the edges of the main current in deeper channels or holes.'
+                }, // End location object
+                tips: [{
+                    title: 'Prime Time (If Safe!)',
+                    description: 'Windy and muddy can be excellent, but prioritize safety. Heavy current and wind is dangerous.'
+                }, {
+                    title: 'Heavy Sinker Needed',
+                    description: 'Wind + Current requires very heavy sinkers (8oz+) to hold bottom.'
+                }, {
+                    title: 'Recast Frequently',
+                    description: 'Refresh the scent trail often.'
+                }, {
+                    title: 'Use Strong Hooks & Leader',
+                    description: 'Ensure your terminal tackle can handle a large fish in tough conditions.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            }, // End warm object
+            cool: {
+                lures: [{
+                    name: 'Cut Bait',
+                    technique: 'Use the oiliest, freshest cut bait you can find.',
+                    reason: 'Maximizes scent dispersal in cold, muddy water.',
+                    isPrimary: true
+                }, {
+                    name: 'Nightcrawlers',
+                    technique: 'Large bunch fished static on the bottom.',
+                    reason: 'A reliable scent-based approach.'
+                }, {
+                    name: 'Fish Roe',
+                    technique: 'Use brightly cured roe for added visual attraction if possible.',
+                    reason: 'Combines scent with some visual appeal.'
+                }], // End lures array
+                colors: [], // End colors array
+                gear: gearMap.sturgeon, // End gear
+                location: {
+                    title: 'Deepest Slow Pools & Eddies (Anchor Securely)',
+                    description: 'Fish will be concentrated in deep holes with less current. Anchor carefully to fish these spots in the wind.'
+                }, // End location object
+                tips: [{
+                    title: 'Maximize Scent',
+                    description: 'Use bait cures or scents if legal. Freshness is paramount.'
+                }, {
+                    title: 'Find the Slowest Deep Water',
+                    description: 'Use electronics to find deep eddies or pools out of the main wind/current.'
+                }, {
+                    title: 'Be Patient & Prepared',
+                    description: 'This can be a slow bite. Use alarms and stay vigilant.'
+                }, {
+                    title: 'Use Circle Hooks',
+                    description: 'Crucial for ensuring the fish is hooked properly for a safe release.'
+                }, {
+                    title: 'Check Regulations!',
+                    description: 'Know the specific rules for your area.'
+                }] // End tips array
+            } // End cool object
+        } // End muddy object
+    } // End windy object
+} // End sturgeon object
 
 
             };
